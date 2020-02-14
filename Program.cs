@@ -18,7 +18,7 @@ namespace DrawShape
        
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(new Controler()));
+            Application.Run(new MainForm(new cPolygon()));
 
 
 

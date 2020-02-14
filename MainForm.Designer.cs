@@ -32,15 +32,13 @@ namespace DrawShape
         /// the contents of this method with the code editor.
         /// </summary>
         /// 
-        public string width;
-        public string height;
-        public string marginV;
-        public string marginH;
 
         private void InitializeComponent()
         {
             this.pnlAllForm = new System.Windows.Forms.Panel();
             this.pnlInput = new System.Windows.Forms.Panel();
+            this.txtDiameter = new System.Windows.Forms.TextBox();
+            this.txtSlides = new System.Windows.Forms.TextBox();
             this.lblUnitVertical = new System.Windows.Forms.Label();
             this.lblUnitHorizontal = new System.Windows.Forms.Label();
             this.txtMarginV = new System.Windows.Forms.TextBox();
@@ -81,6 +79,8 @@ namespace DrawShape
             this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlInput.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlInput.Controls.Add(this.txtDiameter);
+            this.pnlInput.Controls.Add(this.txtSlides);
             this.pnlInput.Controls.Add(this.lblUnitVertical);
             this.pnlInput.Controls.Add(this.lblUnitHorizontal);
             this.pnlInput.Controls.Add(this.txtMarginV);
@@ -96,8 +96,24 @@ namespace DrawShape
             this.pnlInput.Controls.Add(this.lblWidth);
             this.pnlInput.Location = new System.Drawing.Point(425, 25);
             this.pnlInput.Name = "pnlInput";
-            this.pnlInput.Size = new System.Drawing.Size(255, 260);
+            this.pnlInput.Size = new System.Drawing.Size(255, 274);
             this.pnlInput.TabIndex = 7;
+            // 
+            // txtDiameter
+            // 
+            this.txtDiameter.Location = new System.Drawing.Point(106, 239);
+            this.txtDiameter.Name = "txtDiameter";
+            this.txtDiameter.Size = new System.Drawing.Size(70, 22);
+            this.txtDiameter.TabIndex = 32;
+            this.txtDiameter.Text = "txtDiameter";
+            // 
+            // txtSlides
+            // 
+            this.txtSlides.Location = new System.Drawing.Point(106, 212);
+            this.txtSlides.Name = "txtSlides";
+            this.txtSlides.Size = new System.Drawing.Size(70, 22);
+            this.txtSlides.TabIndex = 31;
+            this.txtSlides.Text = "txtSlides";
             // 
             // lblUnitVertical
             // 
@@ -105,7 +121,7 @@ namespace DrawShape
             this.lblUnitVertical.Name = "lblUnitVertical";
             this.lblUnitVertical.Size = new System.Drawing.Size(35, 20);
             this.lblUnitVertical.TabIndex = 30;
-            this.lblUnitVertical.Text = "px";
+            this.lblUnitVertical.Text = "lblUnitVertical";
             // 
             // lblUnitHorizontal
             // 
@@ -113,7 +129,7 @@ namespace DrawShape
             this.lblUnitHorizontal.Name = "lblUnitHorizontal";
             this.lblUnitHorizontal.Size = new System.Drawing.Size(35, 20);
             this.lblUnitHorizontal.TabIndex = 29;
-            this.lblUnitHorizontal.Text = "px";
+            this.lblUnitHorizontal.Text = "lblUnitHorizontal";
             // 
             // txtMarginV
             // 
@@ -121,8 +137,7 @@ namespace DrawShape
             this.txtMarginV.Name = "txtMarginV";
             this.txtMarginV.Size = new System.Drawing.Size(70, 22);
             this.txtMarginV.TabIndex = 28;
-            this.txtMarginV.Text = "40";
-            this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+            this.txtMarginV.Text = "txtMarginV";
             // 
             // txtMarginH
             // 
@@ -130,8 +145,7 @@ namespace DrawShape
             this.txtMarginH.Name = "txtMarginH";
             this.txtMarginH.Size = new System.Drawing.Size(70, 22);
             this.txtMarginH.TabIndex = 27;
-            this.txtMarginH.Text = "40";
-            this.txtMarginH.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+            this.txtMarginH.Text = "txtMarginH";
             // 
             // lblMarginVertical
             // 
@@ -139,7 +153,7 @@ namespace DrawShape
             this.lblMarginVertical.Name = "lblMarginVertical";
             this.lblMarginVertical.Size = new System.Drawing.Size(90, 20);
             this.lblMarginVertical.TabIndex = 26;
-            this.lblMarginVertical.Text = "Margines V:";
+            this.lblMarginVertical.Text = "lblMarginVertical";
             // 
             // lblMarginHorizontal
             // 
@@ -147,7 +161,7 @@ namespace DrawShape
             this.lblMarginHorizontal.Name = "lblMarginHorizontal";
             this.lblMarginHorizontal.Size = new System.Drawing.Size(90, 20);
             this.lblMarginHorizontal.TabIndex = 25;
-            this.lblMarginHorizontal.Text = "Margines H:";
+            this.lblMarginHorizontal.Text = "lblMarginHorizontal";
             // 
             // btnDraw
             // 
@@ -156,9 +170,8 @@ namespace DrawShape
             this.btnDraw.Name = "btnDraw";
             this.btnDraw.Size = new System.Drawing.Size(222, 40);
             this.btnDraw.TabIndex = 24;
-            this.btnDraw.Text = "Rysuj Prostokąt";
+            this.btnDraw.Text = "btnDraw";
             this.btnDraw.UseVisualStyleBackColor = true;
-            this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
             // 
             // lblUnitH
             // 
@@ -166,9 +179,9 @@ namespace DrawShape
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblUnitH.Location = new System.Drawing.Point(178, 55);
             this.lblUnitH.Name = "lblUnitH";
-            this.lblUnitH.Size = new System.Drawing.Size(70, 69);
+            this.lblUnitH.Size = new System.Drawing.Size(70, 83);
             this.lblUnitH.TabIndex = 23;
-            this.lblUnitH.Text = "mm";
+            this.lblUnitH.Text = "lblUnitH";
             // 
             // lblUnitW
             // 
@@ -176,9 +189,9 @@ namespace DrawShape
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblUnitW.Location = new System.Drawing.Point(178, 25);
             this.lblUnitW.Name = "lblUnitW";
-            this.lblUnitW.Size = new System.Drawing.Size(70, 71);
+            this.lblUnitW.Size = new System.Drawing.Size(70, 85);
             this.lblUnitW.TabIndex = 22;
-            this.lblUnitW.Text = "mm";
+            this.lblUnitW.Text = "lblUnitW";
             // 
             // txtHeight
             // 
@@ -188,8 +201,7 @@ namespace DrawShape
             this.txtHeight.Name = "txtHeight";
             this.txtHeight.Size = new System.Drawing.Size(70, 22);
             this.txtHeight.TabIndex = 21;
-            this.txtHeight.Text = "0";
-            this.txtHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+            this.txtHeight.Text = "txtHeight";
             // 
             // txtWidth
             // 
@@ -199,8 +211,7 @@ namespace DrawShape
             this.txtWidth.Name = "txtWidth";
             this.txtWidth.Size = new System.Drawing.Size(70, 22);
             this.txtWidth.TabIndex = 20;
-            this.txtWidth.Text = "0";
-            this.txtWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+            this.txtWidth.Text = "txtWidth";
             // 
             // lblHeight
             // 
@@ -208,9 +219,9 @@ namespace DrawShape
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblHeight.Location = new System.Drawing.Point(13, 55);
             this.lblHeight.Name = "lblHeight";
-            this.lblHeight.Size = new System.Drawing.Size(80, 69);
+            this.lblHeight.Size = new System.Drawing.Size(80, 83);
             this.lblHeight.TabIndex = 19;
-            this.lblHeight.Text = "Wysokość:";
+            this.lblHeight.Text = "lblHeight";
             // 
             // lblWidth
             // 
@@ -218,18 +229,18 @@ namespace DrawShape
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblWidth.Location = new System.Drawing.Point(13, 25);
             this.lblWidth.Name = "lblWidth";
-            this.lblWidth.Size = new System.Drawing.Size(80, 71);
+            this.lblWidth.Size = new System.Drawing.Size(80, 85);
             this.lblWidth.TabIndex = 18;
-            this.lblWidth.Text = "Szerokość:";
+            this.lblWidth.Text = "lblWidth";
             // 
             // pnlMenu
             // 
             this.pnlMenu.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlMenu.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pnlMenu.Location = new System.Drawing.Point(425, 277);
+            this.pnlMenu.Location = new System.Drawing.Point(425, 305);
             this.pnlMenu.Name = "pnlMenu";
-            this.pnlMenu.Size = new System.Drawing.Size(255, 148);
+            this.pnlMenu.Size = new System.Drawing.Size(255, 120);
             this.pnlMenu.TabIndex = 1;
             // 
             // pnlDraw
@@ -259,75 +270,20 @@ namespace DrawShape
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(705, 450);
             this.Controls.Add(this.pnlAllForm);
             this.MaximumSize = new System.Drawing.Size(1000, 700);
-            this.MinimumSize = new System.Drawing.Size(705, 450);
+            this.MinimumSize = new System.Drawing.Size(723, 497);
             this.Name = "MainForm";
-            this.Text = "frmDraw";
             this.Text = "Create Rectangle";
-            this.ResizeEnd += new System.EventHandler(this.CalibrationForm_Resize);
-            this.Resize += new System.EventHandler(this.CalibrationForm_Resize);
-
             this.pnlAllForm.ResumeLayout(false);
             this.pnlInput.ResumeLayout(false);
             this.pnlInput.PerformLayout();
             this.pnlDraw.ResumeLayout(false);
             this.ResumeLayout(false);
-           
 
         }
 
-        private void CalibrationForm_Resize(object sender, EventArgs e)
-        {
-
-            width = txtWidth.Text;
-            height = txtHeight.Text;
-            marginV = txtMarginV.Text;
-            marginH = txtMarginH.Text;
-            this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);
-            this.pnlCanvas.Refresh();
-            
-        }
-
-        public void pnlCanvas_Paint(object sender, PaintEventArgs e)
-        {
-            controler.drawShape(sender, pnlCanvas, e, width, height, marginV, marginH);
-
-        }
-
-        private void onlyNumberKeyPress(object sender, KeyPressEventArgs e)
-        {
-            //e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
-            for (int h = 58; h <= 127; h++)
-            {
-                if (e.KeyChar == h)             //58 to 127 is alphabets tat will be         blocked
-                {
-                    e.Handled = true;
-                }
-            }
-            for (int k = 32; k <= 47; k++)
-            {
-                if (e.KeyChar == k)              //32 to 47 are special characters tat will be blocked
-                {
-                    
-                    e.Handled = true;
-                }
-            }
-        }
-
-        private void btnDraw_Click(object sender, EventArgs e)
-        {
-            width = txtWidth.Text;
-            height = txtHeight.Text;
-            marginV = txtMarginV.Text;
-            marginH = txtMarginH.Text;
-
-            this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);
-            this.pnlCanvas.Refresh();
-        }
         #endregion
 
         private System.Windows.Forms.Panel pnlAllForm;
@@ -348,6 +304,8 @@ namespace DrawShape
         private Label lblMarginVertical;
         private Label lblMarginHorizontal;
         private Button btnDraw;
+        private TextBox txtDiameter;
+        private TextBox txtSlides;
     }
 }
 

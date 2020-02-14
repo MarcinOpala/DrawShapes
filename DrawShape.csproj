@@ -47,9 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BorderPoints.cs" />
-    <Compile Include="Controler.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="Line.cs" />
+    <Compile Include="cPolygon.cs" />
+    <Compile Include="cSegment.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
