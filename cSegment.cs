@@ -19,8 +19,8 @@ namespace DrawShape
         public Point next = new Point(0, 0);
 
         public List<Point> pointsList = new List<Point>();
-      //  public List<Line> linesList = new List<Line>();
         public cSegment() {}
+
 
                   // >>>> FIRST SEGMENT OF REGULAR POLYGON <<<<
         public cSegment(Point o, double r, int s)           
@@ -33,7 +33,7 @@ namespace DrawShape
             double a = (b * (Math.PI)) / 180;               //ANGLE -RADIAN
             double cosA_divBy2 = Math.Cos(a);               
             double sinA_divBy2 = Math.Sin(a);
-            double h = r - (r*(1 - cosA_divBy2));           //DISTANCE - CIRCLE: FROM (o.x, o.y) TO (o.x, fitst.y)
+            double h = r - (r*(1 - cosA_divBy2));           //DISTANCE - CIRCLE: FROM (o.x, o.y) TO (o.x, first.y)
             c = 2 * r * sinA_divBy2;
 
             Point first = new Point(0, 0);
@@ -47,6 +47,7 @@ namespace DrawShape
             pointsList.Insert(0, first);
             pointsList.Insert(1, second);
         }
+
 
                   // >>>> POINT TO NEXT -> LAST SEGMENT OF REGULAR POLYGON <<<<
         public cSegment(PointF before, int s, double c, double setAngle)      
@@ -64,6 +65,7 @@ namespace DrawShape
             pointsList.Insert(0, next);
         }
 
+
                  // >>>> POINT TO SIMPLE LINE <<<<
         public Point first = new Point(0, 0);
         public Point second = new Point(0, 0);
@@ -72,6 +74,7 @@ namespace DrawShape
             this.first = p1;
             this.second = p2;
         }
+
 
                  // >>>> POINT TO RECTANGLE <<<<
         public int sizeWidth;

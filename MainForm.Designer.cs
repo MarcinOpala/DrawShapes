@@ -37,6 +37,9 @@ namespace DrawShape
         {
             this.pnlAllForm = new System.Windows.Forms.Panel();
             this.pnlInput = new System.Windows.Forms.Panel();
+            this.lblUnitDiametr = new System.Windows.Forms.Label();
+            this.lblDiametr = new System.Windows.Forms.Label();
+            this.lblSide = new System.Windows.Forms.Label();
             this.txtDiameter = new System.Windows.Forms.TextBox();
             this.txtSlides = new System.Windows.Forms.TextBox();
             this.lblUnitVertical = new System.Windows.Forms.Label();
@@ -79,6 +82,9 @@ namespace DrawShape
             this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlInput.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlInput.Controls.Add(this.lblUnitDiametr);
+            this.pnlInput.Controls.Add(this.lblDiametr);
+            this.pnlInput.Controls.Add(this.lblSide);
             this.pnlInput.Controls.Add(this.txtDiameter);
             this.pnlInput.Controls.Add(this.txtSlides);
             this.pnlInput.Controls.Add(this.lblUnitVertical);
@@ -98,6 +104,37 @@ namespace DrawShape
             this.pnlInput.Name = "pnlInput";
             this.pnlInput.Size = new System.Drawing.Size(255, 274);
             this.pnlInput.TabIndex = 7;
+            // 
+            // lblUnitDiametr
+            // 
+            this.lblUnitDiametr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblUnitDiametr.Location = new System.Drawing.Point(181, 245);
+            this.lblUnitDiametr.Name = "lblUnitDiametr";
+            this.lblUnitDiametr.Size = new System.Drawing.Size(55, 32);
+            this.lblUnitDiametr.TabIndex = 36;
+            this.lblUnitDiametr.Text = "lblUnitDiametr";
+            // 
+            // lblDiametr
+            // 
+            this.lblDiametr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDiametr.Location = new System.Drawing.Point(16, 245);
+            this.lblDiametr.Name = "lblDiametr";
+            this.lblDiametr.Size = new System.Drawing.Size(80, 83);
+            this.lblDiametr.TabIndex = 34;
+            this.lblDiametr.Text = "lblDiametr";
+            // 
+            // lblSide
+            // 
+            this.lblSide.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblSide.Location = new System.Drawing.Point(16, 215);
+            this.lblSide.Name = "lblSide";
+            this.lblSide.Size = new System.Drawing.Size(80, 85);
+            this.lblSide.TabIndex = 33;
+            this.lblSide.Text = "lblSide";
+            this.lblSide.Click += new System.EventHandler(this.label4_Click);
             // 
             // txtDiameter
             // 
@@ -275,7 +312,7 @@ namespace DrawShape
             this.MaximumSize = new System.Drawing.Size(1000, 700);
             this.MinimumSize = new System.Drawing.Size(723, 497);
             this.Name = "MainForm";
-            this.Text = "Create Rectangle";
+            this.Text = "Draw Shapes";
             this.pnlAllForm.ResumeLayout(false);
             this.pnlInput.ResumeLayout(false);
             this.pnlInput.PerformLayout();
@@ -306,6 +343,9 @@ namespace DrawShape
         private Button btnDraw;
         private TextBox txtDiameter;
         private TextBox txtSlides;
+        private Label lblUnitDiametr;
+        private Label lblDiametr;
+        private Label lblSide;
     }
 }
 

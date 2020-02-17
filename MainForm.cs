@@ -42,13 +42,20 @@ namespace DrawShape
             this.txtWidth.Text = "0";
             this.lblHeight.Text = "Wysokość:";
             this.lblWidth.Text = "Szerokość:";
-            this.txtSlides.Text = "9";
-            this.txtDiameter.Text = "300";
+            this.txtDiameter.Text = "10";
+            this.lblDiametr.Text = "Średnica:";
+            this.lblSide.Text = "Ilość boków";
+            this.txtSlides.Text = "10";
+            this.lblUnitDiametr.Text = "mm";
+
 
             this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
             this.txtMarginH.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
             this.txtHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
             this.txtWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+            this.txtSlides.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+            this.txtDiameter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+
             this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
             this.ResizeEnd += new System.EventHandler(this.CalibrationForm_Resize);
             this.Resize += new System.EventHandler(this.CalibrationForm_Resize);
@@ -116,7 +123,9 @@ namespace DrawShape
             this.pnlCanvas.Refresh();
         }
 
+        private void label4_Click(object sender, EventArgs e)
+        {
 
-
+        }
     }
 }

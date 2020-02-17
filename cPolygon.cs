@@ -8,12 +8,16 @@ namespace DrawShape
     public class cPolygon
     {
         private double cSize;
+        public double r;
+        public double scale;
         public void drawRegularPolygon(Panel pnlCanvas, PaintEventArgs e,
                           String diametr, String slides, Point o)
         {
-            int s = int.Parse(slides);
-            double r = int.Parse(diametr) / 2;
             
+            int s = int.Parse(slides);
+            r = (int.Parse(diametr) / 2) * scale/100;
+
+            Console.WriteLine("...........r " + r);
             Point circleCenter = o;
             circleCenter.x = (pnlCanvas.Width / 2);
             circleCenter.y = (pnlCanvas.Height / 2);
@@ -102,6 +106,7 @@ namespace DrawShape
             }
         }
 
+
         public void drawRectangle(Panel pnlCanvas, PaintEventArgs e,
                               String txtWidth, String txtHeight, String txtMarginV, String txtMarginH)
         {
@@ -121,28 +126,42 @@ namespace DrawShape
                 {
                     int wid = pnlCanvas.Height - marginH;
                     height = (height * wid) / width;
+                    scale = (100 * wid) / width;
+                    Console.WriteLine("1...........r " + scale + " " + wid + " " + width);
                     width = wid;
+                    
+                    
                 }
                 else if (width >= height && pnlCanvas.Width < pnlCanvas.Height)
                 {
                     int wid = pnlCanvas.Width - marginV;
                     height = (height * wid) / width;
+                    scale = (100 * wid) / width;
                     width = wid;
+                    
+                    Console.WriteLine("2...........r " + scale);
                 }
                 // Rozszerzanie góra - dół
                 else if (width < height && pnlCanvas.Width >= pnlCanvas.Height)
                 {
                     int hei = pnlCanvas.Height - marginH;
                     width = (width * hei) / height;
+                    scale = (100 * hei) / height;
                     height = hei;
+                    
+                    Console.WriteLine("3...........r " + scale);
                 }
                 else if (width < height && pnlCanvas.Width < pnlCanvas.Height)
                 {
                     int hei = pnlCanvas.Width - marginV;
                     width = (width * hei) / height;
+                    scale = (100 * hei) / height;
                     height = hei;
+                    
+                    Console.WriteLine("4...........r " + scale);
                 }
             }
+            Console.WriteLine("sfddsfsf..........r " + scale);
 
             int startPointX = ((pnlCanvas.Width - width) / 2);
             int startPointY = ((pnlCanvas.Height - height) / 2);
