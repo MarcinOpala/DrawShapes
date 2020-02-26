@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Drawing;
 
 namespace DrawShape
 {
-    public class Point
+    public class cPoint
     {
-        public int x;
-        public int y;
+        public float x;
+        public float y;
 
 
 
-        public Point(int x1, int y1)
+        public cPoint(PointF point)
         {
-            this.x = x1;
-            this.y = y1;
+            this.x = point.X;
+            this.y = point.Y;
         }
 
         public void PrintPoint (int x1, int y1)

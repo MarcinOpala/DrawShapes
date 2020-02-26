@@ -1,195 +1,212 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DrawShape
 {
-    public class cPolygon
-    {
-        private double cSize;
-        public double r;
-        public double scale;
-        public void drawRegularPolygon(Panel pnlCanvas, PaintEventArgs e,
-                          String diametr, String slides, Point o)
-        {
-            
-            int s = int.Parse(slides);
-            r = (int.Parse(diametr) / 2) * scale/100;
+  
+  public class cPolygon
 
-            Console.WriteLine("...........r " + r);
-            Point circleCenter = o;
-            circleCenter.x = (pnlCanvas.Width / 2);
-            circleCenter.y = (pnlCanvas.Height / 2);
+  {
+    public PointF[] pSegmentPoints = new PointF[2];
 
-            // BASIS OF THE FIGURE  // POINT LIST // FIST SEGMENT
-            cSegment firstSegment = new cSegment(circleCenter, r, s);
-            firstSegment.GetPointList();
-            cSize = firstSegment.c;
+   public int pIsSelected = new int ();        //1, 2, 3, 4
+   public int pNumberOfSide = new int();
+    public int pCheckCirclePoint = new int();   // nr ćwiartki S point
 
-            int point1X = firstSegment.GetPointList().ElementAt(0).x;
-            int point1Y = firstSegment.GetPointList().ElementAt(0).y;
-            int point2X = firstSegment.GetPointList().ElementAt(1).x;
-            int point2Y = firstSegment.GetPointList().ElementAt(1).y;
+    public  double pVectorXNormalToStart_End = new double();
+  public  double pVectorYNormalToStart_End = new double();
 
-            Pen bluePen = new Pen(Color.Blue, 3);
-            PointF point1 = new PointF(point1X, point1Y);
-            PointF point2 = new PointF(point2X, point2Y);
-            PointF[] firstSlide =
-             {
-                point1,
-                point2,
-             };
-            e.Graphics.DrawPolygon(bluePen, firstSlide);
-            
-            int pointNextX;
-            int pointNextY;
-            double setAngle;
-            PointF point = new PointF(0, 0);
-            Pen blackPen = new Pen(Color.Black, 2);
-
-            for (int i = 0; i <= s-2; i++)
-            {
-                setAngle = i+1;                                                             // SETTING ANGLE BY ADDING THIS ANGLE EVERY SIDE
-                if (i == 0)                 // SECOND SEGMENT
-                {
-                    cSegment nextSegment = new cSegment(point2, s, cSize, setAngle);        //POINT BEFORE; SIDE; SIZE OF SIDE; TOTAL ANGLE
-                    pointNextX = nextSegment.GetPointList().ElementAt(0).x;
-                    pointNextY = nextSegment.GetPointList().ElementAt(0).y;
-                    nextSegment.GetPointList();
-                    nextSegment.ShowPointList();
-
-                    point.X = pointNextX;
-                    point.Y = pointNextY;
-                    PointF[] nextSlide =
-                    {
-                        point2,
-                        point,
-                     };
-                    e.Graphics.DrawPolygon(blackPen, nextSlide);
-                }
-                else if (i == s-2)          // THE LAST SEGMENT
-                {
-                    cSegment nextSegment = new cSegment(point, s, cSize, setAngle);
-                    pointNextX = nextSegment.GetPointList().ElementAt(0).x;
-                    pointNextY = nextSegment.GetPointList().ElementAt(0).y;
-                    nextSegment.GetPointList();
-                    nextSegment.ShowPointList();
-
-                    PointF[] nextSlide =
-{
-                        point,
-                        point1,
-                     };
-                    e.Graphics.DrawPolygon(blackPen, nextSlide);
-                    point.X = pointNextX;
-                    point.Y = pointNextY;
-                }
-                else                         // NEXT SEGMENT
-                {
-                    cSegment nextSegment = new cSegment(point, s, cSize, setAngle);
-                    pointNextX = nextSegment.GetPointList().ElementAt(0).x;
-                    pointNextY = nextSegment.GetPointList().ElementAt(0).y;
-                    nextSegment.GetPointList();
-                    nextSegment.ShowPointList();
-
-                    PointF pointNext = new PointF(pointNextX, pointNextY);
-                    PointF[] nextSlide =
-                     {
-                        point,
-                        pointNext,
-                     };
-                    e.Graphics.DrawPolygon(blackPen, nextSlide);
-                    point.X = pointNextX;
-                    point.Y = pointNextY;
-                }
-            }
-        }
+  public  float Sx = new float();
+    public float Sy = new float();
+    public Pen pBluePen = new Pen(Color.Blue, 3);
 
 
-        public void drawRectangle(Panel pnlCanvas, PaintEventArgs e,
-                              String txtWidth, String txtHeight, String txtMarginV, String txtMarginH)
-        {
+    public void DrawRectangle(PaintEventArgs e) {
+      //funkcja rysująca prostokąt z listy punktów w klasnie cSegment
+      //
 
-            int width = int.Parse(txtWidth);
-            int height = int.Parse(txtHeight);
-            int marginV = int.Parse(txtMarginV);
-            int marginH = int.Parse(txtMarginH);
+      pIsSelected = 3;        //1, 2, 3, 4
+      pNumberOfSide = 4;
+      pCheckCirclePoint = 3;      // nr ćwiartki S point
 
-            if (width == 0 || height == 0)  //Blokada Dzielenia przez 0
-            {
-            }
-            else
-            {
-                // Rozszerzanie na boki
-                if (width >= height && pnlCanvas.Width >= pnlCanvas.Height)
-                {
-                    int wid = pnlCanvas.Height - marginH;
-                    height = (height * wid) / width;
-                    scale = (100 * wid) / width;
-                    Console.WriteLine("1...........r " + scale + " " + wid + " " + width);
-                    width = wid;
-                    
-                    
-                }
-                else if (width >= height && pnlCanvas.Width < pnlCanvas.Height)
-                {
-                    int wid = pnlCanvas.Width - marginV;
-                    height = (height * wid) / width;
-                    scale = (100 * wid) / width;
-                    width = wid;
-                    
-                    Console.WriteLine("2...........r " + scale);
-                }
-                // Rozszerzanie góra - dół
-                else if (width < height && pnlCanvas.Width >= pnlCanvas.Height)
-                {
-                    int hei = pnlCanvas.Height - marginH;
-                    width = (width * hei) / height;
-                    scale = (100 * hei) / height;
-                    height = hei;
-                    
-                    Console.WriteLine("3...........r " + scale);
-                }
-                else if (width < height && pnlCanvas.Width < pnlCanvas.Height)
-                {
-                    int hei = pnlCanvas.Width - marginV;
-                    width = (width * hei) / height;
-                    scale = (100 * hei) / height;
-                    height = hei;
-                    
-                    Console.WriteLine("4...........r " + scale);
-                }
-            }
-            Console.WriteLine("sfddsfsf..........r " + scale);
+      cPolygonFactory.GetNewSegmentList(cPolygonFactory.pRectangleSegmentList);
+      cPolygonFactory.ShowNewSegmentList(cPolygonFactory.pRectangleSegmentList);
+      DrawWithOutSelected(e, pSegmentPoints, cPolygonFactory.pRectangleSegmentList);
+      DrawBezierPointF(e, pSegmentPoints);
 
-            int startPointX = ((pnlCanvas.Width - width) / 2);
-            int startPointY = ((pnlCanvas.Height - height) / 2);
-            Point startPoint = new Point(startPointX, startPointY);
-            cSegment newFigure = new cSegment(startPoint, width, height);
-            newFigure.GetPointList();
-          
-            int point1X = newFigure.GetPointList().ElementAt(0).x;
-            int point1Y = newFigure.GetPointList().ElementAt(0).y;
-            int point2X = newFigure.GetPointList().ElementAt(2).x;
-            int point2Y = newFigure.GetPointList().ElementAt(2).y;
 
-            Pen blackPen = new Pen(Color.Black, 2);
-            PointF point1 = new PointF(point1X, point1Y);
-            PointF point2 = new PointF(point2X, point1Y);
-            PointF point3 = new PointF(point2X, point2Y);
-            PointF point4 = new PointF(point1X, point2Y);
 
-            PointF[] curvePoints =
-             {
-                point1,
-                point2,
-                point3,
-                point4,
-             };
-            e.Graphics.DrawPolygon(blackPen, curvePoints);
-        }
+      pIsSelected = 10;        //1, 2, 3, 4
+      pNumberOfSide = 10;
+      pCheckCirclePoint = 3;      // nr ćwiartki S point
+      cPolygonFactory.GetNewSegmentList(cPolygonFactory.pRegularPolygonCSegmentList);
+      cPolygonFactory.ShowNewSegmentList(cPolygonFactory.pRegularPolygonCSegmentList);
+      DrawWithOutSelected(e, pSegmentPoints, cPolygonFactory.pRegularPolygonCSegmentList);
+      DrawBezierPointF(e, pSegmentPoints);
+
+      /*      for (int i = 0; i <= 10- 1; i++) {
+              if (i == 9)
+              {
+                pSegmentPoints[0] = new PointF(cPolygonFactory.pRegularPolygonCSegmentList[i].pPointOfSegment.x,
+                                                cPolygonFactory.pRegularPolygonCSegmentList[i].pPointOfSegment.y);
+                pSegmentPoints[1] = new PointF(cPolygonFactory.pRegularPolygonCSegmentList[0].pPointOfSegment.x,
+                                                cPolygonFactory.pRegularPolygonCSegmentList[0].pPointOfSegment.y);
+                pCheckCirclePoint = 3;
+                DrawBezierPointF(e, pSegmentPoints);
+              }
+              else
+              {
+                pSegmentPoints[0] = new PointF(cPolygonFactory.pRegularPolygonCSegmentList[i].pPointOfSegment.x,
+                                                cPolygonFactory.pRegularPolygonCSegmentList[i].pPointOfSegment.y);
+                pSegmentPoints[1] = new PointF(cPolygonFactory.pRegularPolygonCSegmentList[i + 1].pPointOfSegment.x,
+                                                cPolygonFactory.pRegularPolygonCSegmentList[i + 1].pPointOfSegment.y);
+                e.Graphics.DrawPolygon(pBluePen, pSegmentPoints);
+              }
+            }*/
+
 
 
     }
+
+    private void DrawBezierPointF(PaintEventArgs e, PointF[] pSegmentPoints) //Rebuild!!!!
+    {
+
+      if ((pSegmentPoints[0].X - pSegmentPoints[1].X) == 0)
+      {
+        pVectorXNormalToStart_End = Math.Abs((pSegmentPoints[1].Y - pSegmentPoints[0].Y) / 4);
+        pVectorYNormalToStart_End = 0;
+        Console.WriteLine("|||||||");
+      }
+      else if ((pSegmentPoints[0].Y - pSegmentPoints[1].Y) == 0)
+      {
+        pVectorXNormalToStart_End = 0;
+        pVectorYNormalToStart_End = Math.Abs((pSegmentPoints[1].X - pSegmentPoints[0].X) / 4);
+        Console.WriteLine("_______");
+      }
+      else
+      {
+        pVectorXNormalToStart_End = Math.Abs((pSegmentPoints[0].Y - pSegmentPoints[1].Y) / (pSegmentPoints[0].X - pSegmentPoints[1].X))*100;
+        pVectorYNormalToStart_End = 1;
+
+        Console.WriteLine(pVectorXNormalToStart_End + " ///// ///// \\\\\\\\ " + (pSegmentPoints[0].Y - pSegmentPoints[1].Y) + " "
+          + (pSegmentPoints[0].X - pSegmentPoints[1].X));
+      }
+
+
+
+      Sx = (pSegmentPoints[0].X + pSegmentPoints[1].X) / 2;
+      Sy = (pSegmentPoints[0].Y + pSegmentPoints[1].Y) / 2;
+
+      if (pCheckCirclePoint == 1)
+      {
+        Sx = Sx + (float)pVectorXNormalToStart_End;
+        Sy = Sy + (float)pVectorYNormalToStart_End;
+      }
+      else if (pCheckCirclePoint == 2)
+      {
+        Sx = Sx - (float)pVectorXNormalToStart_End;
+        Sy = Sy + (float)pVectorYNormalToStart_End;
+      }
+      else if (pCheckCirclePoint == 3)
+      {
+        Sx = Sx - (float)pVectorXNormalToStart_End;
+        Sy = Sy - (float)pVectorYNormalToStart_End;
+      }
+      else
+      {
+        Sx = Sx + (float)pVectorXNormalToStart_End;
+        Sy = Sy - (float)pVectorYNormalToStart_End;
+      }
+
+      float S1x = (pSegmentPoints[0].X + Sx) / 2;
+      float S1y = (pSegmentPoints[0].Y + Sy) / 2;
+
+      float S2x = (Sx + pSegmentPoints[1].X) / 2;
+      float S2y = (Sy + pSegmentPoints[1].Y) / 2;
+
+      Console.WriteLine(" S: (" + Sx + " ; " + Sy + ") " +
+                       " S1: (" + S1x + " ; " + S1y + ") " +
+                       " S2: (" + S2x + " ; " + S2y + ") ");
+      Console.WriteLine();
+      Console.WriteLine(pVectorXNormalToStart_End + "  <<vektor x \n" +
+                        pVectorYNormalToStart_End + "  <<vektor y \n" +
+                       "P1(" + pSegmentPoints[0].X + " ; " + pSegmentPoints[0].Y + ") \n" +
+                       "P2(" + pSegmentPoints[1].X + " ; " + pSegmentPoints[1].Y + ") \n");
+
+      PointF start = new PointF(pSegmentPoints[0].X, pSegmentPoints[0].Y);
+      PointF control1 = new PointF(S1x, S1y);
+      PointF control2 = new PointF(S2x, S2y);
+      PointF end = new PointF(pSegmentPoints[1].X, pSegmentPoints[1].Y);
+      e.Graphics.DrawBezier(pBluePen, start, control1, control2, end);
+    }
+
+    public void DrawWithOutSelected(PaintEventArgs e, PointF[] xSegmentPoints, List<cSegment> xSegmentList)
+    {
+
+
+      //opis to add !!!!
+      for (int i = 0; i <= pIsSelected - 2; i++)
+      {
+        if (i == (pNumberOfSide - 1))
+        {
+          xSegmentPoints[0] = new PointF(xSegmentList[i].pPointOfSegment.x,
+                                         xSegmentList[i].pPointOfSegment.y);
+          xSegmentPoints[1] = new PointF(xSegmentList[0].pPointOfSegment.x,
+                                         xSegmentList[0].pPointOfSegment.y);
+        }
+        else
+        {
+          xSegmentPoints[0] = new PointF(xSegmentList[i].pPointOfSegment.x,
+                                         xSegmentList[i].pPointOfSegment.y);
+          xSegmentPoints[1] = new PointF(xSegmentList[i + 1].pPointOfSegment.x,
+                                         xSegmentList[i + 1].pPointOfSegment.y);
+        }
+        e.Graphics.DrawPolygon(pBluePen, xSegmentPoints);
+      }
+
+      //opis to add!!!
+      for (int i = pIsSelected; i <= pNumberOfSide - 1; i++)
+      {
+        if (i == (pNumberOfSide - 1))
+        {
+          xSegmentPoints[0] = new PointF(xSegmentList[i].pPointOfSegment.x,
+                                         xSegmentList[i].pPointOfSegment.y);
+          xSegmentPoints[1] = new PointF(xSegmentList[0].pPointOfSegment.x,
+                                         xSegmentList[0].pPointOfSegment.y);
+        }
+        else
+        {
+          xSegmentPoints[0] = new PointF(xSegmentList[i].pPointOfSegment.x,
+                                         xSegmentList[i].pPointOfSegment.y);
+          xSegmentPoints[1] = new PointF(xSegmentList[i + 1].pPointOfSegment.x,
+                                         xSegmentList[i + 1].pPointOfSegment.y);
+        }
+        e.Graphics.DrawPolygon(pBluePen, xSegmentPoints);
+      }
+
+      xSegmentPoints[0] = new PointF(xSegmentList[pIsSelected - 1].pPointOfSegment.x,
+                                     xSegmentList[pIsSelected - 1].pPointOfSegment.y);
+
+      if (pIsSelected == pNumberOfSide) pIsSelected = 0;
+      xSegmentPoints[1] = new PointF(xSegmentList[pIsSelected].pPointOfSegment.x,
+                                     xSegmentList[pIsSelected].pPointOfSegment.y);
+
+
+
+
+    }
+
+
+    public void DrawRegularPolygon() {
+      //funkcja rysująca wielokąt foremny z listy punktów w klasnie cSegment
+      //
+
+
+    }
+  }
 }

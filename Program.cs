@@ -18,10 +18,10 @@ namespace DrawShape
        
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(new cPolygon()));
+            Application.Run(new MainForm(new cPolygonFactory(), new cPolygon()));
+          
 
 
-
-        }
+    }
     }
 }
