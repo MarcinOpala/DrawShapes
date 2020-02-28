@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="cDrawingAdapter.cs" />
     <Compile Include="cPolygonFactory.cs" />
     <Compile Include="cPolygon.cs" />
     <Compile Include="cSegment.cs" />

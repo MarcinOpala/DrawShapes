@@ -9,15 +9,18 @@ namespace DrawShape
 {
   public class cSegment {
 
-    public cPoint pPointOfSegment { get; set; }                          //punkt początkowy danego cSegmentu
-    public int pNumberOfSegment { get; set; }                            //numer danego cSegmentu
+    private cPoint mPointOfSegment;                          //punkt początkowy danego cSegmentu
+    private int mNumberOfSegment;                        //numer danego cSegmentu
+
+    internal cPoint PointOfSegment { get { return mPointOfSegment; } set { mPointOfSegment = value; } }
+    internal int NumberOfSegment { get { return mNumberOfSegment; } set { mNumberOfSegment = value; } }
 
     public cSegment(cPoint xPointOfSegment, int xNumberOfSegment) {
       //xPointOfSegment - pierwszy punkt danego cSegmentu
       //xNumberOfSegment - numer danego cSegmentu
 
-      this.pPointOfSegment = xPointOfSegment;
-      this.pNumberOfSegment = xNumberOfSegment;
+      this.mPointOfSegment = xPointOfSegment;
+      this.mNumberOfSegment = xNumberOfSegment;
     }
 
   }

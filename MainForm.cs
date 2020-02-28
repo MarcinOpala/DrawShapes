@@ -8,27 +8,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DrawShape
-{
+namespace DrawShape {
+
   public partial class MainForm : Form{
 
-    cPolygon pPolygon;
-    cPolygonFactory pFactory;
-    public static PointF pPoint = new PointF();               //inicjacja zmiennej pomocniczej
-    public int pMaxValue;                                     //maksymalna wartość w tablicy
-    public int pIndexOfMaxItem;                               //indeks maksymalnej wartości w tablicy
-    public int[] pArrayOfInput = { };                         //tablica wsystkich INPUT do liczenia skali
-    public double pScale;                                     //przeliczona skala całego rysunku
-    public double pWidth;                                     //przeskalowana szerokość prostokąta
-    public double pHeight;                                    //przeskalowana wysokość prostokąta
-    public double pRadius;                                    //przeskalowany promień koła
-    public double pAngle;                                     //kąt pomiędzy: punkt1 segmentu - środek koła - punkt2 segmentu
-
+    private int[] mArrayOfInput = { };                       //tablica wsystkich INPUT do liczenia skali
+    private double mBaseAngle;                                   //kąt pomiędzy: punkt1 segmentu - środek koła - punkt2 segmentu
+    private cPolygonFactory mFactory;
+    private double mHeightOfRectangle;                                  //przeskalowana wysokość prostokąta
+    private int mIndexOfMaxItem;                             //indeks maksymalnej wartości w tablicy
+    private int mMaxValue;                                   //maksymalna wartość w tablicy
+    private static PointF mPoint;                            //inicjacja zmiennej pomocniczej
+    private cPolygon mPolygon;
+    private double mRadiusOfCircle;                                  //przeskalowany promień koła
+    private double mScale;                                   //przeliczona skala całego rysunku
+    private double mWidthOfRectangle;                                   //przeskalowana szerokość prostokąta
+      
     public MainForm(cPolygonFactory xFactory, cPolygon xPolygon) {
       //
 
-      this.pPolygon = xPolygon;
-      this.pFactory = xFactory;
+      this.mFactory = xFactory;
+      this.mPolygon = xPolygon;
       InitializeComponent();
           
       //przypisanie konkretnych tekstów do okna programu głównego
@@ -55,15 +55,14 @@ namespace DrawShape
       this.btnDrawArc.Text = "Rysuj Łuk";
       this.btnDrawRegularPolygon.Text = "Rysuj Wielokąt";
       
-
       //włączenie funkcji blokującej wpisanie liter i znaków szczególnych w wybranych polach
-      this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
-      this.txtMarginH.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
-      this.txtHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
-      this.txtWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
-      this.txtSlides.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
-      this.txtDiameter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
-      this.txtSelectSide.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyNumberKeyPress);
+      this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
+      this.txtMarginH.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
+      this.txtHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
+      this.txtWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
+      this.txtSlides.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
+      this.txtDiameter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
+      this.txtSelectSide.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyNumberKeyPress);
 
       this.btnDrawRectangle.Click += new System.EventHandler(this.btnDrawRectangle_Click);                //uruchomienie funkcji rysuj prostokąt
       this.btnDrawArc.Click += new System.EventHandler(this.btnDrawArc_Click);                            //uruchomienie funkcji rysuj prostokąt
@@ -75,26 +74,26 @@ namespace DrawShape
     public void pnlCanvas_PaintRectangle(object sender, PaintEventArgs e) {
       //funkcja rysująca prostokąt 
 
-      pPolygon.DrawRectangle(e);
+      mPolygon.DrawRectangle(e);
     }
 
     public void pnlCanvas_PaintRegularPolygon(object sender, PaintEventArgs e)  {
       //funkcja rysująca wielokąt formeny
          
-      pPolygon.DrawRegularPolygon(e);
+      mPolygon.DrawRegularPolygon(e);
     }
 
     private void btnDrawRectangle_Click(object sender, EventArgs e) {
       //funkca wywołująca narysowanie prostokąta w obszarze canvas
 
       CalculateScale();
-      cPoint pStartPoint = new cPoint(pPoint);
-      pWidth = double.Parse(txtWidth.Text) * (pScale);
-      pHeight = double.Parse(txtHeight.Text) * (pScale);
-      pStartPoint.x = (pnlCanvas.Width - (int)pWidth) / 2;
-      pStartPoint.y = (pnlCanvas.Height - (int)pHeight) / 2 + (int)pHeight;
-      pPolygon.pIsSelected = int.Parse(txtSelectSide.Text);
-      pFactory.CreateRectangle(pStartPoint, (int)pWidth, (int)pHeight);                                    // (cPoint xPoint, int xWidth, int xHeight)
+      cPoint pStartPoint = new cPoint(mPoint);
+      mWidthOfRectangle = double.Parse(txtWidth.Text) * (mScale);
+      mHeightOfRectangle = double.Parse(txtHeight.Text) * (mScale);
+      pStartPoint.X = (pnlCanvas.Width - (int)mWidthOfRectangle) / 2;
+      pStartPoint.Y = (pnlCanvas.Height - (int)mHeightOfRectangle) / 2 + (int)mHeightOfRectangle;
+      cDrawingAdapter.IsSelected = int.Parse(txtSelectSide.Text);
+      mFactory.CreateRectangle(pStartPoint, (int)mWidthOfRectangle, (int)mHeightOfRectangle);                                    // (cPoint xPoint, int xWidth, int xHeight)
 
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_PaintRectangle);
       this.pnlCanvas.Refresh();
@@ -104,13 +103,15 @@ namespace DrawShape
       //funkca wywołująca narysowanie wielokąta foremnego w obszarze canvas
 
       CalculateScale();
-      cPoint pCircleCenter = new cPoint(pPoint);
-      pCircleCenter.x = pnlCanvas.Width / 2;
-      pCircleCenter.y = pnlCanvas.Height / 2;
-      pRadius = double.Parse(txtDiameter.Text) / 2 * (pScale);
-      pAngle = 360 / int.Parse(txtSlides.Text);
-      pPolygon.pIsSelected = int.Parse(txtSelectSide.Text);
-      pFactory.CreateRegularPolygon(pCircleCenter, (int)pRadius, -pAngle);
+      cPoint pCircleCenter = new cPoint(mPoint);
+      pCircleCenter.X = pnlCanvas.Width / 2;
+      pCircleCenter.Y = pnlCanvas.Height / 2;
+      mRadiusOfCircle = double.Parse(txtDiameter.Text) / 2 * (mScale);
+      mBaseAngle = 360 / int.Parse(txtSlides.Text);
+      cDrawingAdapter.IsSelected = int.Parse(txtSelectSide.Text);
+
+      cDrawingAdapter.HelperPoint = pCircleCenter;
+      mFactory.CreateRegularPolygon(pCircleCenter, (int)mRadiusOfCircle, -mBaseAngle);
 
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_PaintRegularPolygon);
       this.pnlCanvas.Refresh();
@@ -129,7 +130,8 @@ namespace DrawShape
       btnDrawRectangle_Click(sender, e);
       btnDrawRegularPolygon_Click(sender, e);
     }
-    private void onlyNumberKeyPress(object sender, KeyPressEventArgs e) {
+
+    private void OnlyNumberKeyPress(object sender, KeyPressEventArgs e) {
       //funkcja blokująca wpisanie liter i znaków specjalnych do pól z "menu" programu głównego
 
       //58 to 127 is alphabets that will be blocked
@@ -146,53 +148,55 @@ namespace DrawShape
         }
       }
     }
+
     public int TakeMaxValueOfArrey(int [] xArray) {
       //funkcja zwracająca index maxymalnej wartość z wybranej tablicy
       //xArray - tablica zawierająca dane do porównania
 
-      pMaxValue = xArray.Max();
-      pIndexOfMaxItem = xArray.ToList().IndexOf(pMaxValue);
-      return pIndexOfMaxItem;
+      mMaxValue = xArray.Max();
+      mIndexOfMaxItem = xArray.ToList().IndexOf(mMaxValue);
+      return mIndexOfMaxItem;
     }
 
     public double CalculateScale() {
       //funkcja obliczająca skale według największej wartości INPUT
       
-      pArrayOfInput = pArrayOfInput.Concat(new int[] { int.Parse(txtWidth.Text) }).ToArray();
-      pArrayOfInput = pArrayOfInput.Concat(new int[] { int.Parse(txtHeight.Text) }).ToArray();
-      pArrayOfInput = pArrayOfInput.Concat(new int[] { int.Parse(txtDiameter.Text) }).ToArray();
-      TakeMaxValueOfArrey(pArrayOfInput);
+      mArrayOfInput = mArrayOfInput.Concat(new int[] { int.Parse(txtWidth.Text) }).ToArray();
+      mArrayOfInput = mArrayOfInput.Concat(new int[] { int.Parse(txtHeight.Text) }).ToArray();
+      mArrayOfInput = mArrayOfInput.Concat(new int[] { int.Parse(txtDiameter.Text) }).ToArray();
+      TakeMaxValueOfArrey(mArrayOfInput);
 
       //ustawiam pScale według rozmiaru pola pnlCanvas
-      if (pIndexOfMaxItem == 0 && txtMarginH.Text == txtMarginV.Text) {                               //txtWidth jest największe
+      if (mIndexOfMaxItem == 0 && txtMarginH.Text == txtMarginV.Text) {                               //txtWidth jest największe
         if (pnlCanvas.Height >= pnlCanvas.Width) {
-          pScale = ((double)pnlCanvas.Width - int.Parse(txtMarginH.Text) * 2) / pMaxValue;
+          mScale = ((double)pnlCanvas.Width - int.Parse(txtMarginH.Text) * 2) / mMaxValue;
         }
         else if (pnlCanvas.Height <= pnlCanvas.Width) {
-          pScale = ((double)pnlCanvas.Height - int.Parse(txtMarginV.Text) * 2) / pMaxValue;
+          mScale = ((double)pnlCanvas.Height - int.Parse(txtMarginV.Text) * 2) / mMaxValue;
         }
       }
 
-      else if (pIndexOfMaxItem == 0 && txtMarginH.Text != txtMarginV.Text) {                          //txtWidth jest największe
-        pScale = ((double)pnlCanvas.Width - int.Parse(txtMarginH.Text) * 2) / pMaxValue;
+      else if (mIndexOfMaxItem == 0 && txtMarginH.Text != txtMarginV.Text) {                          //txtWidth jest największe
+        mScale = ((double)pnlCanvas.Width - int.Parse(txtMarginH.Text) * 2) / mMaxValue;
       }
-      else if (pIndexOfMaxItem == 1) {                                                                //txtHeight jest największe
-        pScale = ((double)pnlCanvas.Height - int.Parse(txtMarginV.Text)*2)/ pMaxValue;
+      else if (mIndexOfMaxItem == 1) {                                                                //txtHeight jest największe
+        mScale = ((double)pnlCanvas.Height - int.Parse(txtMarginV.Text)*2)/ mMaxValue;
       }
-      else if (pIndexOfMaxItem == 2) {                                                                //txtDiameter jest największe
+      else if (mIndexOfMaxItem == 2) {                                                                //txtDiameter jest największe
         if (pnlCanvas.Height >= pnlCanvas.Width) {        
-          pScale = ((double)pnlCanvas.Width - int.Parse(txtMarginH.Text)*2)/ pMaxValue;
+          mScale = ((double)pnlCanvas.Width - int.Parse(txtMarginH.Text)*2)/ mMaxValue;
         }
         else if (pnlCanvas.Height <= pnlCanvas.Width) {
-          pScale =  ((double)pnlCanvas.Height - int.Parse(txtMarginV.Text)*2) / pMaxValue;
+          mScale =  ((double)pnlCanvas.Height - int.Parse(txtMarginV.Text)*2) / mMaxValue;
         }
       }
       else {                                                                                          //kontrola skalowania
         Console.WriteLine("Error in Calculate Scale. Check it!!!");
       }
-      pArrayOfInput = new int[pArrayOfInput.Length - 3];                                              //czyszczę tablicę
+      mArrayOfInput = new int[mArrayOfInput.Length - 3];                                              //czyszczę tablicę
 
-      return pScale;
+      return mScale;
     }
+
   }
 }
