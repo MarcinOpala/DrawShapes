@@ -58,7 +58,7 @@ namespace DrawShape {
       }
 
     }
-    //[MO 10.03.2020] funkcja chwilowo wyłączona do poprawnej kompilacji
+    //[MO 10.03.2020] funkcja chwilowo wyłączona do poprawnej kompilacji .
     /*internal static void DrawBezierCurve(cSegment xSegment, cSegment xSegment_Next, PaintEventArgs e) {
       //funkcja rysująca łuk po wybraniu boku
       //xNumber - numer segmentu
