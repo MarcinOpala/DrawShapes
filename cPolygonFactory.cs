@@ -2,162 +2,99 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace DrawShape
-{
+namespace DrawShape {
+
   public class cPolygonFactory {
-    //klasa tworząca Listy (punktów początkowych oraz ich numery), do rysowania figur geometrycznych.
-    // 1.Prostokąt - CreateRectangle
-    // 2.Wielokąt Foremny - CreateRegularPolygon
+    //klasa tworząca listy segmentów, do rysowania figur geometrycznych.
+    // 1.Prostokąt - GetPolygon_Rect
+    // 2.Wielokąt Foremny - GetPolygon_Regular
 
-    private double mAngleTemp;                //wartość kąta pomiędzy punktem pierwszego segmentu - środkiem koła - punktem kolejnego segmentu
-    private double mAngleTotal;               //kąt pAngleTemp przedstawiony w radianach
-    private double mCosinusOfAngleTotal;       //cosunus kąta pAngleTemp
-    private static List<cSegment> mRectangleSegmentList = new List<cSegment>();            //inicjacja listy cSegmentu - figura prostokąt
-    private static List<cSegment> mRegularPolygonCSegmentList = new List<cSegment>();     //inicjacja listy cSegmentu - figura wielokąt formeny
-    private int mNumberOfSegment;                 //numer danego segmentu
-    private double mSinusOfAngleTotal;       //sinus kąta pAngleTemp
-    private static double mTotalSegment;                     //liczba wszystkich boków figury
+    
 
-    internal static List<cSegment> RectangleSegmentList { get { return mRectangleSegmentList; } set { mRectangleSegmentList = value; } }
-    internal static List<cSegment> RegularPolygonCSegmentList { get { return mRegularPolygonCSegmentList; } set { mRegularPolygonCSegmentList = value; } }
-
-
-
-
-    public void CreateRectangle(cPoint xPoint, int xWidth, int xHeight) {
+    public static cPolygon GetPolygon_Rect(cPoint xPoint, int xWidth, int xHeight) {
       //funkcja dodająca 4 cSegmenty do listy, z której powstaje prostokąt
       //xPoint - współrzędne punktu bazowego
       //xWidth - szerokość prostokąta
       //xHeight - wysokość prostokąta
-      
-      if (mRectangleSegmentList.Capacity == 0) {
-        AddSegment(0, 0, xPoint, 1 , mRectangleSegmentList); 
-        AddSegment(xWidth, 0, xPoint, 2, mRectangleSegmentList);
-        AddSegment(xWidth, -xHeight, xPoint, 3, mRectangleSegmentList);
-        AddSegment(0, -xHeight, xPoint, 4, mRectangleSegmentList);
-        GetSegmentsList(mRectangleSegmentList);            
-        ShowSegmentsList(mRectangleSegmentList);           
-      }
-      else {          // to edit - do same as ^^
-        mRectangleSegmentList[0].PointOfSegment.X = xPoint.X;
-        mRectangleSegmentList[0].PointOfSegment.Y = xPoint.Y;
 
-        mRectangleSegmentList[1].PointOfSegment.X = xPoint.X + xWidth;
-        mRectangleSegmentList[1].PointOfSegment.Y = xPoint.Y;
+      cPolygon pPolygon_Rect;
+      cSegment pSegment;
 
-        mRectangleSegmentList[2].PointOfSegment.X = xPoint.X + xWidth;
-        mRectangleSegmentList[2].PointOfSegment.Y = xPoint.Y - xHeight;
+      pPolygon_Rect = new cPolygon();
 
-        mRectangleSegmentList[3].PointOfSegment.X = xPoint.X;
-        mRectangleSegmentList[3].PointOfSegment.Y = xPoint.Y - xHeight;
-      }
+      pSegment = GetSegment(0, 0, xPoint, 1);
+      pPolygon_Rect.AddSegment(pSegment, 0);
+
+      pSegment = GetSegment(xWidth, 0, xPoint, 2);
+      pPolygon_Rect.AddSegment(pSegment, 1);
+
+      pSegment = GetSegment(xWidth, -xHeight, xPoint, 3);
+      pPolygon_Rect.AddSegment(pSegment, 2);
+
+      pSegment = GetSegment(0, -xHeight, xPoint, 4);
+      pPolygon_Rect.AddSegment(pSegment, 3);
+
+      pPolygon_Rect.ShowSegmentsList();
+
+      return pPolygon_Rect;
+
     }
     
-    public void CreateRegularPolygon(cPoint xCircleCenter, int xRadius, double xAngle) {
-      //funkcja dodająca poszczególne segmenty do listy, z której powstaje wielokąt foremny
+    public static cPolygon GetPolygon_Regular(cPoint xCircleCenter, int xRadius, double xAngle) {
+      //funkcja dodająca segmenty do listy, z której powstaje wielokąt foremny
       //xCircleCenter - środek koła, na którym wpisana jest figura
       //xRadius - promień koła w który jest wpisana figura
       //xAngle - kąt pomiędzy [punktem pPoint - środkiem koła xCircleCenter - punktem pPoint(z kolejnego segmentu)]
 
-      mNumberOfSegment = 0;                             //inicjacja numer segmentu
-      mTotalSegment = 360 / Math.Abs(xAngle);
-            
-      //CREATE - liczymy kąt do punktu początkowego, dodajemy kąt przy każdym kolejnym segmencie
-      if (mRegularPolygonCSegmentList.Capacity == 0) {   
-        for (double pAngleIncremental = 0; pAngleIncremental <= 360 - Math.Abs(xAngle); pAngleIncremental += Math.Abs(xAngle)) {
-          mAngleTemp = xAngle / 2 + (Math.Abs(xAngle)) * mNumberOfSegment;                     
-          mAngleTotal = (mAngleTemp * (Math.PI)) / 180;                                        
-          mCosinusOfAngleTotal = Math.Cos(mAngleTotal);
-          mSinusOfAngleTotal = Math.Sin(mAngleTotal);
-          mNumberOfSegment++;
-          AddSegment((int)(xRadius * mSinusOfAngleTotal), (int)(xRadius * mCosinusOfAngleTotal),
-                     xCircleCenter, mNumberOfSegment, mRegularPolygonCSegmentList);
-        }
-      }
-      else {
-        mNumberOfSegment = 0;
-        //DELETE - zmniejszamy liczbę boków
-        if (mRegularPolygonCSegmentList.Count > (int)mTotalSegment) {
-          for (int i = 0; i <= mRegularPolygonCSegmentList.Count - mTotalSegment; i++) {
-            RemoveSegment(mRegularPolygonCSegmentList, mRegularPolygonCSegmentList.Count-1);
-            Console.WriteLine("Segment: " + (mRegularPolygonCSegmentList.Count - 1) + " removed sucessfull ");
-          }
-        }
-        //ADD - zwiększamy liczbę boków
-        else if (mRegularPolygonCSegmentList.Count < (int)mTotalSegment) {
-          for (int i = 0; i <= mTotalSegment - mRegularPolygonCSegmentList.Count; i++) {
-            mAngleTemp = xAngle / 2 + (Math.Abs(xAngle)) * mNumberOfSegment;                     
-            mAngleTotal = (mAngleTemp * (Math.PI)) / 180;                                       
-            mCosinusOfAngleTotal = Math.Cos(mAngleTotal);
-            mSinusOfAngleTotal = Math.Sin(mAngleTotal);
-            mNumberOfSegment++;
-            AddSegment((int)(xRadius * mSinusOfAngleTotal), (int)(xRadius * mCosinusOfAngleTotal),
-                       xCircleCenter, mNumberOfSegment, mRegularPolygonCSegmentList);
-            Console.WriteLine("New segment added");
-          }
-          ShowSegmentsList(mRegularPolygonCSegmentList);
-        }
-        //SET - liczba boków zostaje, robimy tylko REBUILD
-        else {
-          for (double pAngleIncremental = 0; pAngleIncremental <= 360 - Math.Abs(xAngle); pAngleIncremental += Math.Abs(xAngle))  {
-            mAngleTemp = xAngle / 2 + (Math.Abs(xAngle)) * mNumberOfSegment;                     
-            mAngleTotal = (mAngleTemp * (Math.PI)) / 180;                                       
-            mCosinusOfAngleTotal = Math.Cos(mAngleTotal);
-            mSinusOfAngleTotal = Math.Sin(mAngleTotal);
+      double pAngleTemp;                                    //wartość kąta pomiędzy punktem pierwszego segmentu - środkiem koła - punktem kolejnego segmentu
+      double pAngleTotal;                                   //kąt pAngleTemp przedstawiony w radianach
+      double pCosinusOfAngleTotal;                          //cosunus kąta pAngleTemp
+      int pNumber;                                          //numer danego segmentu
+      cPolygon pPolygon_Regular;
+      cSegment pSegment;
+      double pSinusOfAngleTotal;                            //sinus kąta pAngleTemp
+      double pTotalSegments;                                //liczba wszystkich boków figury
+      double pAngleIncremental;
 
-            mRegularPolygonCSegmentList[mNumberOfSegment].PointOfSegment.X = xCircleCenter.X + (int)(xRadius * mSinusOfAngleTotal);
-            mRegularPolygonCSegmentList[mNumberOfSegment].PointOfSegment.Y = xCircleCenter.Y + (int)(xRadius * mCosinusOfAngleTotal);
-            mNumberOfSegment++;
-          }
-        }
+      pNumber = 0;                                          
+      pTotalSegments = 360 / Math.Abs(xAngle);
+      pPolygon_Regular = new cPolygon();
+
+      for (pAngleIncremental = 0; pAngleIncremental <= 360 - Math.Abs(xAngle); pAngleIncremental += Math.Abs(xAngle)) {
+        pAngleTemp = xAngle / 2 + (Math.Abs(xAngle)) * pNumber;
+        pAngleTotal = (pAngleTemp * (Math.PI)) / 180;
+        pCosinusOfAngleTotal = Math.Cos(pAngleTotal);
+        pSinusOfAngleTotal = Math.Sin(pAngleTotal);
+        pNumber++;
+
+        pSegment = GetSegment((int)(xRadius * pSinusOfAngleTotal), (int)(xRadius * pCosinusOfAngleTotal),
+                   xCircleCenter, pNumber);
+
+        pPolygon_Regular.AddSegment(pSegment, pNumber-1);
       }
-      GetSegmentsList(mRegularPolygonCSegmentList);       
-      ShowSegmentsList(mRegularPolygonCSegmentList);      
+
+      return pPolygon_Regular;
+
     }
 
-    public void AddSegment(int xOffsetX, int xOffsetY, cPoint xPoint, int xNumberOfSegment, List<cSegment> xSegmentList) {
-      //funkcja dodająca segment, ustawia współrzędne punktu oraz nadaje numer
+    public  static cSegment GetSegment(int xOffsetX, int xOffsetY, cPoint xPoint, int xNumber) {
+      //funkcja zwracająca segment
       //xOffsetX - przesunięcie względem osi X
       //xOffsetY - przesunięcie względem osi Y
       //xPoint - współrzędne punktu bazowego
-      //xNumberOfSegment - numer segmentu
-      //xSegmentList - wybranie listy z segmentami 
+      //xNumber - numer segmentu
+      
+      cPoint pPoint;
+      PointF pPointHelper;
+      cSegment pSegment;
 
-      PointF pPoint = new PointF(xPoint.X + xOffsetX, xPoint.Y + xOffsetY);
-      cPoint pPointOfSegment = new cPoint(pPoint);
-      cSegment pNewSegment = new cSegment(pPointOfSegment, xNumberOfSegment);                
-      xSegmentList.Insert(xNumberOfSegment - 1, pNewSegment);                             
+      pPointHelper = new PointF(xPoint.X + xOffsetX, xPoint.Y + xOffsetY);
+      pPoint = new cPoint(pPointHelper);
+      pSegment = new cSegment(pPoint, xNumber);
+
+      return pSegment;
+
     }
 
-    public void RemoveSegment(List<cSegment> xSegmentList, int xNumberOfSegment) {
-      //funkcja usuwająca segment
-      //xSegmentList - wybranie listy z segmentami
-      //xNumberOfSegment - numer segmentu
-
-      xSegmentList.RemoveAt(xNumberOfSegment);                             //usunięcie segmentu z listy
-      Console.WriteLine("Segment usunięty");
-    }
-
-    //
-    // funkcje pomocnicze wykonujące operacje na listach
-    //
-    public static List<cSegment> GetSegmentsList(List<cSegment> xList) {
-      //funkcja pobierająca listę wszystkich cSegmentów z wybranej listy
-      //xList - nazwa pobranej listy
-
-      return xList;
-    }
-
-    public static List<cSegment> ShowSegmentsList(List<cSegment> xList) {
-      //funkcja wyświetlająca wszystkie cSegmenty z wybranej listy
-      //xList - nazwa listy do wyświetlenia
-
-      foreach (var i in xList) {
-        Console.WriteLine("cSegment: " + (xList.IndexOf(i) + 1) + "\n" +
-          "( " + i.PointOfSegment.X + " ; " + i.PointOfSegment.Y + " )\n" +
-          "Numer: " + i.NumberOfSegment + "\n");
-      }
-      return null;
-    }
   }
 }

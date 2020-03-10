@@ -54,6 +54,7 @@
     <Compile Include="cPolygon.cs" />
     <Compile Include="cSegment.cs" />
     <Compile Include="cPoint.cs" />
+    <Compile Include="EnumSegmentType.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

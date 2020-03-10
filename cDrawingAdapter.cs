@@ -10,206 +10,153 @@ namespace DrawShape {
 
   public class cDrawingAdapter {
 
-    private static float mCenterPointOfSegmentX;                    //X środka segmentu
-    private static float mCenterPointOfSegmentY;                    //Y środka segmentu
-    private static int mCheckCirclePoint;                           //nr ćwiartki pCenterPointOfSegment liczona według schematu: 3|4
-                                                                    //                                                           2|1 
-    private static float mControlPoint_1X;                          //X punktu kotrolnego 1 do rysowania łuku 1:4 odcinka segmentu
-    private static float mControlPoint_1Y;                          //Y punktu kotrolnego 1 do rysowania łuku
-    private static float mControlPoint_2X;                          //X punktu kotrolnego 2 do rysowania łuku 
-    private static float mControlPoint_2Y;                          //Y punktu kotrolnego 2 do rysowania łuku
-    private static cPoint mHelperPoint = new cPoint(mPoint);
-    private static int mNumberOfSides;                              //liczba boków figury
-    private static PointF mPoint = new PointF();
-    private static PointF[] mSegmentPoints = new PointF[2];         //inicjacja pomocniczej tablicy - dwa punkty każdego segmentu
-    private static int mIsSelected;                                 //nr wybranego boku do przekształcenia w łuk
-    private static double mVectorNormalX;                           //X wektora prostopadłego do segmenty, do przesunięcia punktów kontrolnych
-    private static double mVectorNormalY;                           //Y wektora prostopadłego do segmenty, do przesunięcia punktów kontrolnych
+                                                            //                                                           3|4 
+    private static int mCheckCirclePoint;                   //nr ćwiartki pCenterPointOfSegment liczona według schematu: 2|1
+    private static cPoint mCircleCenter;
+   
+    internal static cPoint CircleCenter { get { return mCircleCenter; } set { mCircleCenter = value; } }
 
-    internal static int IsSelected { get { return mIsSelected; } set { mIsSelected = value; } }
-    internal static PointF[] SegmentPoints { get { return mSegmentPoints; } set { mSegmentPoints = value; } }
-    internal static cPoint HelperPoint { get { return mHelperPoint; } set { mHelperPoint = value; } }
+    public void DrawPolygon(cPolygon xPolygon, PaintEventArgs e) {
+      //funkcja rysująca dowolny wielobok
+      //xPolygon - baza punktów
+     
+      Pen pBluePen;                                         //kolor mazaka
+      PointF[] pPointsLine;                                 //punkty tworzące linie
+      int pCount;                                           //liczba boków figury
+      int pIndexNext;                                            //następny index segmentu
+      int pIndex;
 
-    internal static void DrawWithOutSelectedSide(List<cSegment> xSegmentsList, PointF[] xSegmentPoints, int xSelected, PaintEventArgs e)
-    {
-      //funkcja rysująca figurę bez zaznaczonego boku 
-      //xSegmentsList - lista wszystkich segmentów wybranej figury
-      //xSegmentPoints - tablica 2 punktów, tworzących bok
-      //xSelected - wybranie boku do "złukowania"
+      pBluePen = new Pen(Color.Blue, 3);
+      pPointsLine = new PointF[2];
+      pCount = xPolygon.Segments.Count;
 
-      Pen pBluePen = new Pen(Color.Blue, 3);
-      mNumberOfSides = xSegmentsList.Count;
+      //pętla rysująca linię składającą się z dwóch punktów
+      for (pIndex = 0; pIndex <= (pCount - 1); pIndex++) {
 
-      //rysuję figurę do pIsSelected
-      for (int i = 0; i <= xSelected - 2; i++)
-      {
-        if (i == (mNumberOfSides - 1))
-        {
-          xSegmentPoints[0] = new PointF(xSegmentsList[i].PointOfSegment.X,
-                                         xSegmentsList[i].PointOfSegment.Y);
-          xSegmentPoints[1] = new PointF(xSegmentsList[0].PointOfSegment.X,
-                                         xSegmentsList[0].PointOfSegment.Y);
+        pIndexNext = pIndex + 1;
+
+        if (pIndex == (pCount - 1)) {                            //następcą ostatniego punktu jest punkt początkowy
+          pIndexNext = 0;
         }
-        else
-        {
-          xSegmentPoints[0] = new PointF(xSegmentsList[i].PointOfSegment.X,
-                                         xSegmentsList[i].PointOfSegment.Y);
-          xSegmentPoints[1] = new PointF(xSegmentsList[i + 1].PointOfSegment.X,
-                                         xSegmentsList[i + 1].PointOfSegment.Y);
+
+        cSegment pSegment = xPolygon.GetSegmentByNumer(pIndex);
+        cSegment pSegment_Next = xPolygon.GetSegmentByNumer(pIndexNext);
+        //wrzucić do xPolygon^^
+
+
+        if (!pSegment.IsCurve) {                        //sprawdzenie lini: prosta, czy krzywa
+          pPointsLine[0] = new PointF(pSegment.Point.X,
+                                      pSegment.Point.Y);
+          pPointsLine[1] = new PointF(pSegment_Next.Point.X,
+                                      pSegment_Next.Point.Y);
+          e.Graphics.DrawPolygon(pBluePen, pPointsLine);
+        } else {
+         // DrawBezierCurve(pSegment, pSegment_Next, e);
+         //[MO 10.03.2020] funkcja chwilowo wyłączona do poprawnej kompilacji
         }
-        e.Graphics.DrawPolygon(pBluePen, xSegmentPoints);
+
       }
 
-      //rysuję figurę od pIsSelected
-      for (int i = xSelected; i <= mNumberOfSides - 1; i++)
-      {
-        if (i == (mNumberOfSides - 1))
-        {
-          xSegmentPoints[0] = new PointF(xSegmentsList[i].PointOfSegment.X,
-                                         xSegmentsList[i].PointOfSegment.Y);
-          xSegmentPoints[1] = new PointF(xSegmentsList[0].PointOfSegment.X,
-                                         xSegmentsList[0].PointOfSegment.Y);
-        }
-        else
-        {
-          xSegmentPoints[0] = new PointF(xSegmentsList[i].PointOfSegment.X,
-                                         xSegmentsList[i].PointOfSegment.Y);
-          xSegmentPoints[1] = new PointF(xSegmentsList[i + 1].PointOfSegment.X,
-                                         xSegmentsList[i + 1].PointOfSegment.Y);
-        }
-        e.Graphics.DrawPolygon(pBluePen, xSegmentPoints);
-      }
-
-      // utworzenie dwóch dodatkowych punktów potrzebnych do narysowania łuku
-      xSegmentPoints[0] = new PointF(xSegmentsList[xSelected - 1].PointOfSegment.X,
-                                     xSegmentsList[xSelected - 1].PointOfSegment.Y);
-      if (xSelected == mNumberOfSides) xSelected = 0;
-      xSegmentPoints[1] = new PointF(xSegmentsList[xSelected].PointOfSegment.X,
-                                     xSegmentsList[xSelected].PointOfSegment.Y);
     }
-
-    internal static void DrawBezierCurve(PointF[] xSegmentPoints, PaintEventArgs e)
-    {
+    //[MO 10.03.2020] funkcja chwilowo wyłączona do poprawnej kompilacji
+    /*internal static void DrawBezierCurve(cSegment xSegment, cSegment xSegment_Next, PaintEventArgs e) {
       //funkcja rysująca łuk po wybraniu boku
-      //xSegmentPoints - lista 2 punktów do narysowania boku
+      //xNumber - numer segmentu
+      //xSegments - nazwa listy segmentów
+
+      float pCenterX;                                       //punkt X środka segmentu
+      float pCenterY;                                       //punkt Y środka segmentu
+      float pControl_1X;                                    //punkt X punktu kotrolnego 1 do rysowania łuku 1:4 odcinka segmentu
+      float pControl_1Y;                                    //punkt Y punktu kotrolnego 1 do rysowania łuku
+      float pControl_2X;                                    //punkt X punktu kotrolnego 2 do rysowania łuku 
+      float pControl_2Y;                                    //punkt Y punktu kotrolnego 2 do rysowania łuku
+      double pVectNormalX;                                  //X wektora prostopadłego do segmenty, do przesunięcia punktów kontrolnych
+      double pVectNormalY;                                  //Y wektora prostopadłego do segmenty, do przesunięcia punktów kontrolnych
 
       // f(x)=0
-      if ((xSegmentPoints[0].X - xSegmentPoints[1].X) == 0)
-      {
-        mVectorNormalX = Math.Abs((xSegmentPoints[1].Y - xSegmentPoints[0].Y) / 4);
-        mVectorNormalY = 0;
+      if ((xSegments[xNumber].Point.X - xSegments[xNumber+1].Point.X == 0)) {
+        pVectNormalX = Math.Abs((xSegments[xNumber + 1].Point.Y - xSegments[xNumber].Point.Y) / 4);
+        pVectNormalY = 0;
       }
       // f(y)=0
-      else if ((xSegmentPoints[0].Y - xSegmentPoints[1].Y) == 0)
-      {
-        mVectorNormalX = 0;
-        mVectorNormalY = Math.Abs((xSegmentPoints[1].X - xSegmentPoints[0].X) / 4);
+      else if ((xSegments[xNumber].Point.Y - xSegments[xNumber + 1].Point.Y == 0)) {
+        pVectNormalX = 0;
+        pVectNormalY = Math.Abs((xSegments[xNumber + 1].Point.X - xSegments[xNumber].Point.X) / 4);
       }
       // f(y)=ax+b
-      else
-      {
+      else {
         int pIncreaseVector = 50;
-        mVectorNormalX = Math.Abs((xSegmentPoints[0].Y - xSegmentPoints[1].Y) /
-                                  (xSegmentPoints[0].X - xSegmentPoints[1].X)) * pIncreaseVector;
-        mVectorNormalY = pIncreaseVector;
+        pVectNormalX = Math.Abs((xSegments[xNumber].Point.Y - xSegments[xNumber + 1].Point.Y) /
+                          (xSegments[xNumber].Point.X - xSegments[xNumber + 1].Point.X)) * pIncreaseVector;
+        pVectNormalY = pIncreaseVector;
       }
-      mCenterPointOfSegmentX = (xSegmentPoints[0].X + xSegmentPoints[1].X) / 2;
-      mCenterPointOfSegmentY = (xSegmentPoints[0].Y + xSegmentPoints[1].Y) / 2;
-      Console.WriteLine(" S: (" + mCenterPointOfSegmentX + " ; " + mCenterPointOfSegmentY + ") ");
-      SetCheckCirclePoint(mHelperPoint, (int)mCenterPointOfSegmentX, (int)mCenterPointOfSegmentY);
-      
+      pCenterX = (xSegments[xNumber].Point.X + xSegments[xNumber+1].Point.X) / 2;
+      pCenterY = (xSegments[xNumber].Point.Y + xSegments[xNumber+1].Point.Y) / 2;
+
+      Console.WriteLine(" S: (" + pCenterX + " ; " + pCenterY + ") ");
+      SetCheckCirclePoint(mCircleCenter, (int)pCenterX, (int)pCenterY);
+
       //przesunięcie środka segmentu o wektor 
       //w zależności od ćwiartki w której się znajduję środek koła,
       //na którym opisana jest figura
-      if (mCheckCirclePoint == 1)
-      {
-        mCenterPointOfSegmentX = mCenterPointOfSegmentX + (float)mVectorNormalX;
-        mCenterPointOfSegmentY = mCenterPointOfSegmentY + (float)mVectorNormalY;
-      }
-      else if (mCheckCirclePoint == 2)
-      {
-        mCenterPointOfSegmentX = mCenterPointOfSegmentX - (float)mVectorNormalX;
-        mCenterPointOfSegmentY = mCenterPointOfSegmentY + (float)mVectorNormalY;
-      }
-      else if (mCheckCirclePoint == 3)
-      {
-        mCenterPointOfSegmentX = mCenterPointOfSegmentX - (float)mVectorNormalX;
-        mCenterPointOfSegmentY = mCenterPointOfSegmentY - (float)mVectorNormalY;
-      }
-      else if (mCheckCirclePoint == 4)
-      {
-        mCenterPointOfSegmentX = mCenterPointOfSegmentX + (float)mVectorNormalX;
-        mCenterPointOfSegmentY = mCenterPointOfSegmentY - (float)mVectorNormalY;
-      }
-      else
-      {
-        mCenterPointOfSegmentX = mCenterPointOfSegmentX + (float)mVectorNormalX;
-        mCenterPointOfSegmentY = mCenterPointOfSegmentY - (float)mVectorNormalY;
+      if (mCheckCirclePoint == 1) {
+        pCenterX = pCenterX + (float)pVectNormalX;
+        pCenterY = pCenterY + (float)pVectNormalY;
+      } else if (mCheckCirclePoint == 2) {
+        pCenterX = pCenterX - (float)pVectNormalX;
+        pCenterY = pCenterY + (float)pVectNormalY;
+      } else if (mCheckCirclePoint == 3) {
+        pCenterX = pCenterX - (float)pVectNormalX;
+        pCenterY = pCenterY - (float)pVectNormalY;
+      } else if (mCheckCirclePoint == 4) {
+        pCenterX = pCenterX + (float)pVectNormalX;
+        pCenterY = pCenterY - (float)pVectNormalY;
+      } else {
+        pCenterX = pCenterX + (float)pVectNormalX;
+        pCenterY = pCenterY - (float)pVectNormalY;
       }
 
-      mControlPoint_1X = (xSegmentPoints[0].X + mCenterPointOfSegmentX) / 2;
-      mControlPoint_1Y = (xSegmentPoints[0].Y + mCenterPointOfSegmentY) / 2;
-      mControlPoint_2X = (mCenterPointOfSegmentX + xSegmentPoints[1].X) / 2;
-      mControlPoint_2Y = (mCenterPointOfSegmentY + xSegmentPoints[1].Y) / 2;
+      pControl_1X = (xSegments[xNumber].Point.X + pCenterX) / 2;
+      pControl_1Y = (xSegments[xNumber].Point.Y + pCenterY) / 2;
+      pControl_2X = (pCenterX + xSegments[xNumber+1].Point.X) / 2;
+      pControl_2Y = (pCenterY + xSegments[xNumber+1].Point.Y) / 2;
 
-      PointF start = new PointF(xSegmentPoints[0].X, xSegmentPoints[0].Y);
-      PointF pControlPoint1 = new PointF(mControlPoint_1X, mControlPoint_1Y);
-      PointF pControlPoint2 = new PointF(mControlPoint_2X, mControlPoint_2Y);
-      PointF end = new PointF(xSegmentPoints[1].X, xSegmentPoints[1].Y);
+      PointF start = new PointF(xSegments[xNumber].Point.X, xSegments[xNumber].Point.Y);
+      PointF pControlPoint1 = new PointF(pControl_1X, pControl_1Y);
+      PointF pControlPoint2 = new PointF(pControl_2X, pControl_2Y);
+      PointF end = new PointF(xSegments[xNumber+1].Point.X, xSegments[xNumber+1].Point.Y);
       Pen pBluePen = new Pen(Color.Blue, 3);
+
       e.Graphics.DrawBezier(pBluePen, start, pControlPoint1, pControlPoint2, end);
 
-      Console.WriteLine(" S: (" + mCenterPointOfSegmentX + " ; " + mCenterPointOfSegmentY + ") \n" +
-                       " S1: (" + mControlPoint_1X + " ; " + mControlPoint_1Y + ") \n" +
-                       " S2: (" + mControlPoint_2X + " ; " + mControlPoint_2Y + ") \n");
-      Console.WriteLine(mVectorNormalX + "  <<vektor x \n" +
-                        mVectorNormalY + "  <<vektor y \n" +
-                       "P1(" + xSegmentPoints[0].X + " ; " + xSegmentPoints[0].Y + ") \n" +
-                       "P2(" + xSegmentPoints[1].X + " ; " + xSegmentPoints[1].Y + ") \n");
-    }
+    }*/
 
-    internal static void SetCheckCirclePoint(cPoint xCircleCenter, int xSegmentPointX, int xSegmentPointY)
-    {
+    internal static void SetCheckCirclePoint(cPoint xCircleCenter, int xSegmentPointX, int xSegmentPointY) {
       //fukcja ustawiająca int pCheckCirclePoint w zależności od tego w której ćwiartce znajduje się środek segmentu
       //xCircleCenter - 
       //xSegmentPointX - 
       //xSegmentPointY - 
-      //pQuarterOfCoordinateSystem - 
+      
+      int pQuarterOfCoordinateSystem = new int();
 
-      int xQuarterOfCoordinateSystem = new int();
-
-
-      if (xCircleCenter.X <= xSegmentPointX && xCircleCenter.Y <= xSegmentPointY)
-      {
-        xQuarterOfCoordinateSystem = 1;
-      }
-      else if (xCircleCenter.X > xSegmentPointX && xCircleCenter.Y <= xSegmentPointY)
-      {
-        xQuarterOfCoordinateSystem = 2;
-      }
-      else if (xCircleCenter.X > xSegmentPointX && xCircleCenter.Y > xSegmentPointY)
-      {
-        xQuarterOfCoordinateSystem = 3;
-      }
-      else if (xCircleCenter.X <= xSegmentPointX && xCircleCenter.Y > xSegmentPointY)
-      {
-        xQuarterOfCoordinateSystem = 4;
-      }
-      else
-      {
+      if (xCircleCenter.X <= xSegmentPointX && xCircleCenter.Y <= xSegmentPointY) {
+        pQuarterOfCoordinateSystem = 1;
+      } else if (xCircleCenter.X > xSegmentPointX && xCircleCenter.Y <= xSegmentPointY) {
+        pQuarterOfCoordinateSystem = 2;
+      } else if (xCircleCenter.X > xSegmentPointX && xCircleCenter.Y > xSegmentPointY) {
+        pQuarterOfCoordinateSystem = 3;
+      } else if (xCircleCenter.X <= xSegmentPointX && xCircleCenter.Y > xSegmentPointY) {
+        pQuarterOfCoordinateSystem = 4;
+      } else {
         Console.WriteLine("Błąd liczenia ćwiartki");
       }
-      mCheckCirclePoint = xQuarterOfCoordinateSystem;
-      Console.WriteLine("xQuarterOfCoordinateSystem : " + xQuarterOfCoordinateSystem);
-      Console.WriteLine("xCircleCenter.x : " + xCircleCenter.X);
-      Console.WriteLine("xCircleCenter.y : " + xCircleCenter.Y);
-      Console.WriteLine("xSegmentPointX : " + xSegmentPointX);
-      Console.WriteLine("xSegmentPointY : " + xSegmentPointY);
-      Console.WriteLine("pCheckCirclePoint : " + mCheckCirclePoint);
+      
+      mCheckCirclePoint = pQuarterOfCoordinateSystem;
 
-      // return pQuarterOfCoordinateSystem;
     }
-
+    
   }
+          
 }
+
 

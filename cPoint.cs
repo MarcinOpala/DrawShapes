@@ -29,7 +29,7 @@ namespace DrawShape
 
         public String ToString()
         {
-            return "X: " + mX + " X: " + mY;
+            return "X: " + mX + " Y: " + mY;
         }
     }
 
