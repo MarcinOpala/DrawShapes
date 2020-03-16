@@ -3,56 +3,51 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace DrawShape
-{
-    partial class MainForm
-    {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-        
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+namespace DrawShape {
+  partial class MainForm {
+    /// <summary>
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
 
-        #region Windows Form Designer generated code
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing) {
+      if (disposing && (components != null)) {
+        components.Dispose();
+      }
+      base.Dispose(disposing);
+    }
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        /// 
+    #region Windows Form Designer generated code
 
-        private void InitializeComponent()
-        {
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
+    /// 
+
+    private void InitializeComponent() {
       this.pnlAllForm = new System.Windows.Forms.Panel();
       this.pnlInput = new System.Windows.Forms.Panel();
-      this.btnDrawArc = new System.Windows.Forms.Button();
+      this.btnSetToCurve = new System.Windows.Forms.Button();
       this.lblSelectSide = new System.Windows.Forms.Label();
       this.txtSelectSide = new System.Windows.Forms.TextBox();
-      this.btnDrawRegularPolygon = new System.Windows.Forms.Button();
+      this.btnDrawWindow = new System.Windows.Forms.Button();
       this.lblUnitDiametr = new System.Windows.Forms.Label();
       this.lblDiametr = new System.Windows.Forms.Label();
       this.lblSide = new System.Windows.Forms.Label();
       this.txtDiameter = new System.Windows.Forms.TextBox();
-      this.txtSlides = new System.Windows.Forms.TextBox();
+      this.txtSides = new System.Windows.Forms.TextBox();
       this.lblUnitVertical = new System.Windows.Forms.Label();
       this.lblUnitHorizontal = new System.Windows.Forms.Label();
       this.txtMarginV = new System.Windows.Forms.TextBox();
       this.txtMarginH = new System.Windows.Forms.TextBox();
       this.lblMarginVertical = new System.Windows.Forms.Label();
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
-      this.btnDrawRectangle = new System.Windows.Forms.Button();
+      this.btnDrawRect = new System.Windows.Forms.Button();
       this.lblUnitH = new System.Windows.Forms.Label();
       this.lblUnitW = new System.Windows.Forms.Label();
       this.txtHeight = new System.Windows.Forms.TextBox();
@@ -68,8 +63,8 @@ namespace DrawShape
       // 
       // pnlAllForm
       // 
-      this.pnlAllForm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.pnlAllForm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlAllForm.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlAllForm.Controls.Add(this.pnlInput);
@@ -81,25 +76,25 @@ namespace DrawShape
       // 
       // pnlInput
       // 
-      this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+      this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlInput.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.pnlInput.Controls.Add(this.btnDrawArc);
+      this.pnlInput.Controls.Add(this.btnSetToCurve);
       this.pnlInput.Controls.Add(this.lblSelectSide);
       this.pnlInput.Controls.Add(this.txtSelectSide);
-      this.pnlInput.Controls.Add(this.btnDrawRegularPolygon);
+      this.pnlInput.Controls.Add(this.btnDrawWindow);
       this.pnlInput.Controls.Add(this.lblUnitDiametr);
       this.pnlInput.Controls.Add(this.lblDiametr);
       this.pnlInput.Controls.Add(this.lblSide);
       this.pnlInput.Controls.Add(this.txtDiameter);
-      this.pnlInput.Controls.Add(this.txtSlides);
+      this.pnlInput.Controls.Add(this.txtSides);
       this.pnlInput.Controls.Add(this.lblUnitVertical);
       this.pnlInput.Controls.Add(this.lblUnitHorizontal);
       this.pnlInput.Controls.Add(this.txtMarginV);
       this.pnlInput.Controls.Add(this.txtMarginH);
       this.pnlInput.Controls.Add(this.lblMarginVertical);
       this.pnlInput.Controls.Add(this.lblMarginHorizontal);
-      this.pnlInput.Controls.Add(this.btnDrawRectangle);
+      this.pnlInput.Controls.Add(this.btnDrawRect);
       this.pnlInput.Controls.Add(this.lblUnitH);
       this.pnlInput.Controls.Add(this.lblUnitW);
       this.pnlInput.Controls.Add(this.txtHeight);
@@ -113,13 +108,13 @@ namespace DrawShape
       // 
       // btnDrawArc
       // 
-      this.btnDrawArc.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawArc.Location = new System.Drawing.Point(14, 329);
-      this.btnDrawArc.Name = "btnDrawArc";
-      this.btnDrawArc.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawArc.TabIndex = 41;
-      this.btnDrawArc.Text = "btnDrawArc";
-      this.btnDrawArc.UseVisualStyleBackColor = true;
+      this.btnSetToCurve.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnSetToCurve.Location = new System.Drawing.Point(14, 329);
+      this.btnSetToCurve.Name = "btnDrawArc";
+      this.btnSetToCurve.Size = new System.Drawing.Size(222, 40);
+      this.btnSetToCurve.TabIndex = 41;
+      this.btnSetToCurve.Text = "btnDrawArc";
+      this.btnSetToCurve.UseVisualStyleBackColor = true;
       // 
       // lblSelectSide
       // 
@@ -139,13 +134,13 @@ namespace DrawShape
       // 
       // btnDrawRegularPolygon
       // 
-      this.btnDrawRegularPolygon.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawRegularPolygon.Location = new System.Drawing.Point(14, 250);
-      this.btnDrawRegularPolygon.Name = "btnDrawRegularPolygon";
-      this.btnDrawRegularPolygon.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawRegularPolygon.TabIndex = 37;
-      this.btnDrawRegularPolygon.Text = "btnDrawRegularPolygon";
-      this.btnDrawRegularPolygon.UseVisualStyleBackColor = true;
+      this.btnDrawWindow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnDrawWindow.Location = new System.Drawing.Point(14, 250);
+      this.btnDrawWindow.Name = "btnDrawRegularPolygon";
+      this.btnDrawWindow.Size = new System.Drawing.Size(222, 40);
+      this.btnDrawWindow.TabIndex = 37;
+      this.btnDrawWindow.Text = "btnDrawRegularPolygon";
+      this.btnDrawWindow.UseVisualStyleBackColor = true;
       // 
       // lblUnitDiametr
       // 
@@ -181,11 +176,11 @@ namespace DrawShape
       // 
       // txtSlides
       // 
-      this.txtSlides.Location = new System.Drawing.Point(106, 189);
-      this.txtSlides.Name = "txtSlides";
-      this.txtSlides.Size = new System.Drawing.Size(70, 22);
-      this.txtSlides.TabIndex = 31;
-      this.txtSlides.Text = "txtSlides";
+      this.txtSides.Location = new System.Drawing.Point(106, 189);
+      this.txtSides.Name = "txtSlides";
+      this.txtSides.Size = new System.Drawing.Size(70, 22);
+      this.txtSides.TabIndex = 31;
+      this.txtSides.Text = "txtSlides";
       // 
       // lblUnitVertical
       // 
@@ -237,13 +232,13 @@ namespace DrawShape
       // 
       // btnDrawRectangle
       // 
-      this.btnDrawRectangle.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawRectangle.Location = new System.Drawing.Point(16, 82);
-      this.btnDrawRectangle.Name = "btnDrawRectangle";
-      this.btnDrawRectangle.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawRectangle.TabIndex = 24;
-      this.btnDrawRectangle.Text = "btnDrawRectangle";
-      this.btnDrawRectangle.UseVisualStyleBackColor = true;
+      this.btnDrawRect.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnDrawRect.Location = new System.Drawing.Point(16, 82);
+      this.btnDrawRect.Name = "btnDrawRectangle";
+      this.btnDrawRect.Size = new System.Drawing.Size(222, 40);
+      this.btnDrawRect.TabIndex = 24;
+      this.btnDrawRect.Text = "btnDrawRectangle";
+      this.btnDrawRect.UseVisualStyleBackColor = true;
       // 
       // lblUnitH
       // 
@@ -295,8 +290,8 @@ namespace DrawShape
       // 
       // pnlDraw
       // 
-      this.pnlDraw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.pnlDraw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlDraw.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlDraw.Controls.Add(this.pnlCanvas);
@@ -307,8 +302,8 @@ namespace DrawShape
       // 
       // pnlCanvas
       // 
-      this.pnlCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.pnlCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlCanvas.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlCanvas.BackColor = System.Drawing.Color.White;
@@ -332,36 +327,36 @@ namespace DrawShape
       this.pnlDraw.ResumeLayout(false);
       this.ResumeLayout(false);
 
-        }
+    }
 
-        #endregion
+    #endregion
 
-        private System.Windows.Forms.Panel pnlAllForm;
-        private System.Windows.Forms.Panel pnlDraw;
-        private System.Windows.Forms.Panel pnlCanvas;
-        private Panel pnlInput;
-        private Label lblUnitH;
-        private Label lblUnitW;
-        private TextBox txtHeight;
-        private TextBox txtWidth;
-        private Label lblHeight;
-        private Label lblWidth;
-        private Label lblUnitVertical;
-        private Label lblUnitHorizontal;
-        private TextBox txtMarginV;
-        private TextBox txtMarginH;
-        private Label lblMarginVertical;
-        private Label lblMarginHorizontal;
-        private Button btnDrawRectangle;
-        private TextBox txtDiameter;
-        private TextBox txtSlides;
-        private Label lblUnitDiametr;
-        private Label lblDiametr;
-        private Label lblSide;
-    private Button btnDrawArc;
+    private System.Windows.Forms.Panel pnlAllForm;
+    private System.Windows.Forms.Panel pnlDraw;
+    private System.Windows.Forms.Panel pnlCanvas;
+    private Panel pnlInput;
+    private Label lblUnitH;
+    private Label lblUnitW;
+    private TextBox txtHeight;
+    private TextBox txtWidth;
+    private Label lblHeight;
+    private Label lblWidth;
+    private Label lblUnitVertical;
+    private Label lblUnitHorizontal;
+    private TextBox txtMarginV;
+    private TextBox txtMarginH;
+    private Label lblMarginVertical;
+    private Label lblMarginHorizontal;
+    private Button btnDrawRect;
+    private TextBox txtDiameter;
+    private TextBox txtSides;
+    private Label lblUnitDiametr;
+    private Label lblDiametr;
+    private Label lblSide;
+    private Button btnSetToCurve;
     private Label lblSelectSide;
     private TextBox txtSelectSide;
-    private Button btnDrawRegularPolygon;
+    private Button btnDrawWindow;
   }
 }
 

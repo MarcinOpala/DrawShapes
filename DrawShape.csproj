@@ -49,7 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="cAssembly.cs" />
+    <Compile Include="cAssemblyItem.cs" />
+    <Compile Include="cDrawing.cs" />
     <Compile Include="cDrawingAdapter.cs" />
+    <Compile Include="cDrawingItem.cs" />
+    <Compile Include="cDrawingSegment.cs" />
     <Compile Include="cPolygonFactory.cs" />
     <Compile Include="cPolygon.cs" />
     <Compile Include="cSegment.cs" />
