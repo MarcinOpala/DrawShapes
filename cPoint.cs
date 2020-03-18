@@ -2,33 +2,27 @@
 using System.Drawing;
 
 namespace DrawShape {
+
   public class cPoint {
+    //
+
     private float mX;
     private float mY;
 
     internal float X { get { return mX; } set { mX = value; } }
     internal float Y { get { return mY; } set { mY = value; } }
 
-    public cPoint(PointF xPt) {
-      this.mX = xPt.X;
-      this.mY = xPt.Y;
-    }
+    public cPoint(float xPtX, float xPtY) {
 
-    public void PrintPoint(int x1, int y1) {
-      this.mX = x1;
-      this.mY = y1;
+      PointF pPt;
 
-      Console.WriteLine("X: " + mX);
-      Console.WriteLine("Y: " + mY);
+      pPt = new PointF(xPtX, xPtY);
+
+      this.mX = pPt.X;
+      this.mY = pPt.Y;
 
     }
 
-    public String ToString() {
-      return "X: " + mX + " Y: " + mY;
-    }
   }
-
-
-
-
+  
 }

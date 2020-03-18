@@ -16,9 +16,7 @@ namespace DrawShape {
     private int mIndexOfMaxItem;                            //indeks maksymalnej wartości w tablicy
     private double mMarginV, mMarginH;                      //marginesy: Vertical, Horizontal - wartości pobrane z INPUT 
     private int mMaxValue;                                  //maksymalna wartość w tablicy
-    private cPolygon mPolygon_Rect;                         //inicjacja polygonu prostokąta
     private cPolygon mPolygon_Regular;                      //inicjacja polygonu wieloboku foremnego
-    private double mRect_Height, mRect_Width;               //wymiary prostokąta: wysokość, szerokość - wartości pobrane z INPUT 
     private float mCircleRadius;                            //promień prostokąta - wartość pobrana z INPUT 
     private double mScale;                                  //przeliczona skala całego rysunku
 
@@ -34,22 +32,25 @@ namespace DrawShape {
       this.txtMarginH.Text = "40";
       this.lblMarginVertical.Text = "Margines V:";
       this.lblMarginHorizontal.Text = "Margines H:";
-      this.btnDrawRect.Text = "Rysuj Wielokąt";
+      this.btnDrawRegularPolygon.Text = "Rysuj Wielokąt";
       this.lblUnitH.Text = "mm";
       this.lblUnitW.Text = "mm";
-      this.txtHeight.Text = "50";
-      this.txtWidth.Text = "50";
+      this.txtHeight.Text = "250";
+      this.txtWidth.Text = "250";
       this.lblHeight.Text = "Wysokość:";
       this.lblWidth.Text = "Szerokość:";
-      this.txtDiameter.Text = "50";
+      this.txtDiameter.Text = "500";
       this.lblDiametr.Text = "Średnica:";
       this.lblSide.Text = "Ilość boków:";
-      this.txtSides.Text = "10";
+      this.txtSides.Text = "4";
       this.lblUnitDiametr.Text = "mm";
       this.txtSelectSide.Text = "1";
       this.lblSelectSide.Text = "Bok numer:";
       this.btnSetToCurve.Text = "Rysuj Łuk";
-      this.btnDrawWindow.Text = "Rysuj Okno";
+      this.btnDrawProfile.Text = "Rysuj Profil";
+      this.lblProfileUnit.Text = "mm";
+      this.lblProfileSize.Text = "Szerokość profilu:";
+      this.txtProfileSize.Text = "20";
 
       //włączenie funkcji blokującej wpisanie liter i znaków szczególnych w wybranych polach
       this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
@@ -59,12 +60,13 @@ namespace DrawShape {
       this.txtSides.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtDiameter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtSelectSide.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtProfileSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
 
-      this.btnDrawRect.Click += new System.EventHandler(this.btnCreateRect_Click);                     //uruchomienie funkcji rysuj prostokąt
-      this.btnSetToCurve.Click += new System.EventHandler(this.btnSetToCurve_Click);                 //uruchomienie funkcji rysuj prostokąt
-      this.btnDrawWindow.Click += new System.EventHandler(this.btnCreateRegularPolygon_Click); //uruchomienie funkcji rysuj prostokąt
-      this.Resize += new System.EventHandler(this.MainForm_Resize);                                  //odświeżanie canvas przy powiększaniu programu
-      this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);      //
+      this.btnDrawRegularPolygon.Click += new System.EventHandler(this.btnCreateRegularPolygon_Click);//uruchomienie funkcji rysuj wielobok foremny
+      this.btnSetToCurve.Click += new System.EventHandler(this.btnSetToCurve_Click);                  //uruchomienie funkcji rysuj Bezier
+      this.btnDrawProfile.Click += new System.EventHandler(this.btnDrawProfile_Click);                //uruchomienie funkcji rysuj profil
+      this.Resize += new System.EventHandler(this.MainForm_Resize);                                   //odświeżanie canvas przy powiększaniu programu
+      this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);       //rysowanie poligonu
 
       mDrawingAdapter = new cDrawingAdapter();
 
@@ -75,27 +77,15 @@ namespace DrawShape {
 
       double pTransfBasePtX, pTransfBasePtY;
 
-      mRect_Height = double.Parse(txtHeight.Text);
-      mRect_Width = double.Parse(txtWidth.Text);
+
       mCircleRadius = float.Parse(txtDiameter.Text) / 2;
       mMarginV = double.Parse(txtMarginV.Text);
       mMarginH = double.Parse(txtMarginH.Text);
-
-      /*                    if (mPolygon_Rect == null)
-                            return;
-
-
-
-                          //obliczanie współrzędnych na Canvas punktu bazowego prostokąta
-                          pTransfBasePtX = mMarginH + (pnlCanvas.Width - 2 * mMarginH - mRect_Width * mScale) / 2;
-                          pTransfBasePtY = pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - mRect_Height * mScale) / 2);
-
-                          mDrawingAdapter.DrawPolygon(mPolygon_Rect, mScale, pTransfBasePtX, pTransfBasePtY, e);*/
-
-      if (mPolygon_Regular == null)
+           
+      if (mPolygon_Regular == null)                         //jeśli nie istnieje poligon
         return;
 
-      cDrawing.CircleCenter = new cPoint(new PointF(mCircleRadius, mCircleRadius));
+      cDrawing.CircleCenter = new cPoint(mCircleRadius, mCircleRadius);
 
       //obliczanie współrzędnych na Canvas punktu bazowego wieloboku foremnego
       pTransfBasePtX = mMarginH + (pnlCanvas.Width - 2 * mMarginH - 2 * mCircleRadius * mScale) / 2;
@@ -105,19 +95,22 @@ namespace DrawShape {
 
     }
 
-    private void btnCreateRect_Click(object sender, EventArgs e) {
-      //funkca tworząca poligony
+    private void btnCreateRegularPolygon_Click(object sender, EventArgs e) {
+      //funkca tworząca poligon wieloboku foremnego
 
       CalculateScale();
 
-      CreatePolygons();
+      CreatePolygon();
 
       this.pnlCanvas.Refresh();
 
     }
 
-    private void btnCreateRegularPolygon_Click(object sender, EventArgs e) {
-      //funkca tworząca poligon wielokąta foremnego
+    private void btnDrawProfile_Click(object sender, EventArgs e) {
+      //funkca wywołująca rysowanie profila okna
+
+      if (mPolygon_Regular == null)                         //jeśli nie istnieje poligon
+        return;
 
       this.pnlCanvas.Refresh();
 
@@ -141,24 +134,22 @@ namespace DrawShape {
 
     }
 
-    private void CreatePolygons() {
-      //funkcja tworząca poligony: 
-      // 1) mPolygon_Rect - prostokąt
-      // 2) mPolygon_Regular - wielobok foremny
+    private void CreatePolygon() {
+      //funkcja tworząca poligon: 
+      // 1) mPolygon_Regular - wielobok foremny
 
       double pBaseAngle;                                    //kąt pomiędzy: punkt1 segmentu - środek koła - punkt2 segmentu
-      int mSidesNumber;                                     //liczba boków figury foremnej
-
-      mRect_Height = double.Parse(txtHeight.Text);
-      mRect_Width = double.Parse(txtWidth.Text);
+      int pSidesNumber;                                     //liczba boków figury foremnej
+      int pProfileSize;                                     //szerokość profilu
+      
+      pProfileSize = int.Parse(txtProfileSize.Text);
       mCircleRadius = float.Parse(txtDiameter.Text) / 2;
-
-      // mPolygon_Rect = cPolygonFactory.GetPolygon_Rect((int)mRect_Width, (int)mRect_Height);
-
-      mSidesNumber = int.Parse(txtSides.Text);
-      pBaseAngle = 360 / mSidesNumber;
+      pSidesNumber = int.Parse(txtSides.Text);
+      pBaseAngle = 360 / pSidesNumber;
 
       mPolygon_Regular = cPolygonFactory.GetPolygon_Regular((int)mCircleRadius, -pBaseAngle);
+
+      mPolygon_Regular.CreateAssembly(pProfileSize, mPolygon_Regular);
 
     }
 
@@ -243,3 +234,25 @@ namespace DrawShape {
 
   }
 }
+
+/*   17.03.2020 MO funkcja wylączona, żeby działało wkleić do pnlCanvas_Paint()         
+  mRect_Height = double.Parse(txtHeight.Text);
+  mRect_Width = double.Parse(txtWidth.Text);
+  if (mPolygon_Rect == null)
+    return;
+    
+  //obliczanie współrzędnych na Canvas punktu bazowego prostokąta
+  pTransfBasePtX = mMarginH + (pnlCanvas.Width - 2 * mMarginH - mRect_Width * mScale) / 2;
+  pTransfBasePtY = pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - mRect_Height * mScale) / 2);
+
+  mDrawingAdapter.DrawPolygon(mPolygon_Rect, mScale, pTransfBasePtX, pTransfBasePtY, e);
+*/
+
+/*
+  16.03.2020 MO tymczasowo wyłączone rysowanie prostokąta zeby działało wkleić do CreatePolygons()
+
+  mRect_Height = double.Parse(txtHeight.Text);
+  mRect_Width = double.Parse(txtWidth.Text);
+
+  mPolygon_Rect = cPolygonFactory.GetPolygon_Rect((int)mRect_Width, (int)mRect_Height);
+*/

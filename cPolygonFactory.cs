@@ -18,20 +18,20 @@ namespace DrawShape {
       cPolygon pPolygon_Rect;
       cSegment pSegment;
 
-      pBasePt = new cPoint(new PointF());
+      pBasePt = new cPoint(0, 0);
       pPolygon_Rect = new cPolygon();
 
       pSegment = GetSegment(0, 0, pBasePt, 1);
-      pPolygon_Rect.AddSegment(pSegment, 0);
+      pPolygon_Rect.AddSegment(pSegment);
 
       pSegment = GetSegment(xWidth, 0, pBasePt, 2);
-      pPolygon_Rect.AddSegment(pSegment, 1);
+      pPolygon_Rect.AddSegment(pSegment);
 
       pSegment = GetSegment(xWidth, xHeight, pBasePt, 3);
-      pPolygon_Rect.AddSegment(pSegment, 2);
+      pPolygon_Rect.AddSegment(pSegment);
 
       pSegment = GetSegment(0, xHeight, pBasePt, 4);
-      pPolygon_Rect.AddSegment(pSegment, 3);
+      pPolygon_Rect.AddSegment(pSegment);
 
       pPolygon_Rect.ShowSegmentsList();
 
@@ -43,11 +43,12 @@ namespace DrawShape {
       //funkcja dodająca segmenty do listy, z której powstaje wielokąt foremny
       //xRadius - promień koła w który jest wpisana figura
       //xAngle - kąt pomiędzy [punktem pPoint - środkiem koła xCircleCenter - punktem pPoint(z kolejnego segmentu)]
+      //xProfileSize - szerokość profilu
 
       cPoint pBasePt;                                       //punkt bazowy do rysowania figury
       cPoint pCircleCenter;                                 //środek koła
-      double pCosinusTotalAngle;                          //cosunus kąta pAngleTemp
-      double pSinusTotalAngle;                            //sinus kąta pAngleTemp
+      double pCosTotalAngle;                                //cosunus kąta pAngleTemp
+      double pSinTotalAngle;                                //sinus kąta pAngleTemp
       double pIdxCircleAngle;                               //indeks biegnący po okręgu
       int pNumber;                                          //numer danego segmentu
       cPolygon pPolygon_Regular;                            //polygon wieloboku
@@ -56,22 +57,27 @@ namespace DrawShape {
       double pTotalAngleInRadius;                           //kąt pAngleTemp przedstawiony w radianach
 
       pPolygon_Regular = new cPolygon();
-      pCircleCenter = new cPoint(new PointF());
-      pBasePt = new cPoint(new PointF(pCircleCenter.X + xRadius, pCircleCenter.Y + xRadius));
+      pCircleCenter = new cPoint(0, 0);
+      pBasePt = new cPoint(pCircleCenter.X + xRadius, pCircleCenter.Y + xRadius);
       pNumber = 0;
 
       //pętla dodająca kolejne segmenty
       for (pIdxCircleAngle = 0; pIdxCircleAngle <= (360 - Math.Abs(xAngle)); pIdxCircleAngle += Math.Abs(xAngle)) {
         pTotalAngle = 360 + (xAngle / 2) + (Math.Abs(xAngle)) * pNumber;
         pTotalAngleInRadius = (pTotalAngle * (Math.PI)) / 180;
-        pCosinusTotalAngle = -Math.Cos(pTotalAngleInRadius);
-        pSinusTotalAngle = Math.Sin(pTotalAngleInRadius);
+        pCosTotalAngle = -Math.Cos(pTotalAngleInRadius);
+        pSinTotalAngle = Math.Sin(pTotalAngleInRadius);
+
         pNumber++;
 
-        pSegment = GetSegment((int)(xRadius * pSinusTotalAngle), (int)(xRadius * pCosinusTotalAngle),
+        pSegment = GetSegment((int)(xRadius * pSinTotalAngle), (int)(xRadius * pCosTotalAngle),
                    pBasePt, pNumber);
 
-        pPolygon_Regular.AddSegment(pSegment, pNumber - 1);
+        pSegment.SetPolygon_Parent(pPolygon_Regular);
+
+        pPolygon_Regular.AddSegment(pSegment);
+
+       
       }
 
       pPolygon_Regular.ShowSegmentsList();                  //kontrola punktów: Consola output
@@ -88,17 +94,15 @@ namespace DrawShape {
       //xNumber - numer segmentu
 
       cPoint pPoint;
-      PointF pPointHelper;
       cSegment pSegment;
 
-      pPointHelper = new PointF(xPoint.X + xOffsetX, xPoint.Y + xOffsetY);
-      pPoint = new cPoint(pPointHelper);
-      pSegment = new cSegment(pPoint, xNumber);
+      pPoint = new cPoint(xPoint.X + xOffsetX, xPoint.Y + xOffsetY);
+      pSegment = new cSegment(pPoint, xNumber, new cPolygon());
 
       return pSegment;
 
     }
 
-
   }
+
 }

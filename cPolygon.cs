@@ -7,31 +7,43 @@ namespace DrawShape {
 
   public class cPolygon {
 
-    private List<cSegment> mSegments;
+    private Dictionary<int, cSegment> mSegments;
+    private cAssembly mAssembly;
 
-    internal List<cSegment> Segments { get { return mSegments; } set { mSegments = value; } }
-
+    internal Dictionary<int, cSegment> Segments { get { return mSegments; } set { mSegments = value; } }
+    internal cAssembly Assembly { get { return mAssembly; } }
 
     public cPolygon() {
 
-      mSegments = new List<cSegment>();
+      mSegments = new Dictionary<int, cSegment>();
+      mAssembly = new cAssembly();
 
     }
 
-    internal void AddSegment(cSegment xSegment, int xNumber) {
+    internal void AddSegment(cSegment xSegment) {
       //funkcja dodająca nowy segment do listy
       //xSegment - wybrany segment
-      //xNumber - numer segmentu
 
-      mSegments.Insert(xNumber, xSegment);
+      mSegments.Add(xSegment.Number, xSegment);
 
+    }
+       
+    internal void CreateAssembly(int xWidth, cPolygon xPolygon) {
+      //funkcja tworząca Assembly dla poligonu
+      //xWidth - szerokość profilu
+      //xPolygon - poligon do przeprowadzenia assembly
+
+      mAssembly = new cAssembly();
+
+      mAssembly.CreateMe(xWidth, xPolygon);
+            
     }
 
     internal void SetSegmentToCurve(int xNumber) {
       //funkcja zamieniająca bok w łuk
       //xSegmentNumber - numer obsługiwanego boku
 
-      mSegments[xNumber - 1].IsCurve = true;
+      mSegments[xNumber].IsCurve = true;
 
     }
 
@@ -39,33 +51,30 @@ namespace DrawShape {
       //funkcja wyświetlająca listę segmentów
 
       foreach (var i in mSegments) {
-        Console.WriteLine("cSegment: " + (mSegments.IndexOf(i) + 1) + "\n" +
-          "Punkt: (" + i.Point.X + " ; " + i.Point.Y + ")\n" +
-          "Numer: " + i.Number + "\n" +
-          "Type: " + i.IsCurve + "\n");
+        Console.WriteLine($"cSegment: {i} Punkt: ( {i.Value.Point.X} ; {i.Value.Point.Y} Numer:  {i.Value.Number} Type: {i.Value.IsCurve} \n");
 
       }
-      Console.WriteLine(" ^____________^ " + "\n");
 
     }
 
-    internal cSegment GetSegmentByNumer(int xNumber) {
+    internal cSegment GetSegmentByNumber(int xNumber) {
       //funkcja zwracająca segment
       //xSegmentNumber - numer segmentu
 
       int pSegmentNumber;
       int pCountMax;
 
-      pCountMax = mSegments.Count - 1;
+      pCountMax = mSegments.Count;
 
       pSegmentNumber = xNumber;
 
       if (xNumber > pCountMax)
-        pSegmentNumber = 0;
-
+        pSegmentNumber = 1;
 
       return mSegments[pSegmentNumber];
 
     }
+    
   }
+
 }

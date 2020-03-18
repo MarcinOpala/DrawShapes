@@ -11,15 +11,15 @@ namespace DrawShape {
 
   public class cDrawing {
 
-    private List<cDrawingItem> mDrawingItems;
+    private Dictionary<int, cDrawingItem> mDrawingItems;
     private static cPoint mCircleCenter;                    //środek figury opisanej na okręgu
 
-    internal List<cDrawingItem> DrawingItem { get { return mDrawingItems; } set { mDrawingItems = value; } }
+    internal Dictionary<int, cDrawingItem> DrawingItem { get { return mDrawingItems; } set { mDrawingItems = value; } }
     internal static cPoint CircleCenter { get { return mCircleCenter; } set { mCircleCenter = value; } }
 
     public cDrawing() {
 
-      mDrawingItems = new List<cDrawingItem>();
+      mDrawingItems = new Dictionary<int, cDrawingItem>();
 
     }
 
@@ -28,11 +28,11 @@ namespace DrawShape {
       //xDrawingItem - wybrany item
       //xNumber - numer itemu
 
-      mDrawingItems.Insert(xNumber, xDrawingItem);
+      mDrawingItems.Add(xNumber, xDrawingItem);
 
     }
 
-    public void DrawItem(int xNumber, double xScale, double xBasePtX, double xBasePtY, PaintEventArgs e) {
+    public void DrawItem(int xIndex, double xScale, double xBasePtX, double xBasePtY, PaintEventArgs e) {
       //funkcja rysująca Itemy
 
       Pen pBluePen;                                         //kolor długopisu
@@ -44,12 +44,12 @@ namespace DrawShape {
       pBluePen = new Pen(Color.Blue, 3);
       pLinePoints = new PointF[2];
 
-      Console.WriteLine(mDrawingItems[xNumber].DrawingSegments.Count);
+      
 
-      for (pIndex = 0; pIndex <= mDrawingItems[xNumber].DrawingSegments.Count; pIndex++) {
+      for (pIndex = 1; pIndex <= mDrawingItems[xIndex].DrawingSegments.Count; pIndex++) {
 
-        pSegment = mDrawingItems[xNumber].GetSegmentByNumer(pIndex).Segment;
-        pSegment_Next = mDrawingItems[xNumber].GetSegmentByNumer(pIndex + 1).Segment;
+        pSegment = mDrawingItems[xIndex].GetSegmentByNumer(pIndex).Segment;
+        pSegment_Next = mDrawingItems[xIndex].GetSegmentByNumer(pIndex + 1).Segment;
 
         //przekształcenie punktu poligonu na współrzędne do wyświetlenia na Canvas
         var pPoints = TransformPoints(pSegment, pSegment_Next, xScale, xBasePtX, xBasePtY);
@@ -82,10 +82,8 @@ namespace DrawShape {
       PointF pPt_A_;
       PointF pPt_B_;
 
-      pBasePt = new cPoint(new PointF());
-      pBasePt.X = (float)xTransfBasePtX;
-      pBasePt.Y = (float)xTransfBasePtY;
-
+      pBasePt = new cPoint((float)xTransfBasePtX, (float)xTransfBasePtY);
+ 
       pPt_A_ = new PointF();
       pPt_A_.X = (pBasePt.X + (float)(xSegment.Point.X * xScale));
       pPt_A_.Y = (pBasePt.Y - (float)(xSegment.Point.Y * xScale));
@@ -175,7 +173,6 @@ namespace DrawShape {
       pControlPt3_Bezier = new PointF(pControl_3X, pControl_3Y);
       pControlPt4_Bezier = new PointF(xPt_B.X, xPt_B.Y);
 
-
       e.Graphics.DrawBezier(pBluePen, pControlPt1_Bezier, pControlPt2_Bezier, pControlPt3_Bezier, pControlPt4_Bezier);
 
     }
@@ -221,6 +218,5 @@ namespace DrawShape {
     }
 
   }
-
 
 }

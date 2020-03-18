@@ -35,7 +35,7 @@ namespace DrawShape {
       this.btnSetToCurve = new System.Windows.Forms.Button();
       this.lblSelectSide = new System.Windows.Forms.Label();
       this.txtSelectSide = new System.Windows.Forms.TextBox();
-      this.btnDrawWindow = new System.Windows.Forms.Button();
+      this.btnDrawProfile = new System.Windows.Forms.Button();
       this.lblUnitDiametr = new System.Windows.Forms.Label();
       this.lblDiametr = new System.Windows.Forms.Label();
       this.lblSide = new System.Windows.Forms.Label();
@@ -47,7 +47,7 @@ namespace DrawShape {
       this.txtMarginH = new System.Windows.Forms.TextBox();
       this.lblMarginVertical = new System.Windows.Forms.Label();
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
-      this.btnDrawRect = new System.Windows.Forms.Button();
+      this.btnDrawRegularPolygon = new System.Windows.Forms.Button();
       this.lblUnitH = new System.Windows.Forms.Label();
       this.lblUnitW = new System.Windows.Forms.Label();
       this.txtHeight = new System.Windows.Forms.TextBox();
@@ -56,6 +56,9 @@ namespace DrawShape {
       this.lblWidth = new System.Windows.Forms.Label();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
+      this.lblProfileUnit = new System.Windows.Forms.Label();
+      this.lblProfileSize = new System.Windows.Forms.Label();
+      this.txtProfileSize = new System.Windows.Forms.TextBox();
       this.pnlAllForm.SuspendLayout();
       this.pnlInput.SuspendLayout();
       this.pnlDraw.SuspendLayout();
@@ -63,8 +66,8 @@ namespace DrawShape {
       // 
       // pnlAllForm
       // 
-      this.pnlAllForm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+      this.pnlAllForm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlAllForm.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlAllForm.Controls.Add(this.pnlInput);
@@ -76,13 +79,16 @@ namespace DrawShape {
       // 
       // pnlInput
       // 
-      this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+      this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlInput.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.pnlInput.Controls.Add(this.lblProfileUnit);
+      this.pnlInput.Controls.Add(this.lblProfileSize);
+      this.pnlInput.Controls.Add(this.txtProfileSize);
       this.pnlInput.Controls.Add(this.btnSetToCurve);
       this.pnlInput.Controls.Add(this.lblSelectSide);
       this.pnlInput.Controls.Add(this.txtSelectSide);
-      this.pnlInput.Controls.Add(this.btnDrawWindow);
+      this.pnlInput.Controls.Add(this.btnDrawProfile);
       this.pnlInput.Controls.Add(this.lblUnitDiametr);
       this.pnlInput.Controls.Add(this.lblDiametr);
       this.pnlInput.Controls.Add(this.lblSide);
@@ -94,7 +100,7 @@ namespace DrawShape {
       this.pnlInput.Controls.Add(this.txtMarginH);
       this.pnlInput.Controls.Add(this.lblMarginVertical);
       this.pnlInput.Controls.Add(this.lblMarginHorizontal);
-      this.pnlInput.Controls.Add(this.btnDrawRect);
+      this.pnlInput.Controls.Add(this.btnDrawRegularPolygon);
       this.pnlInput.Controls.Add(this.lblUnitH);
       this.pnlInput.Controls.Add(this.lblUnitW);
       this.pnlInput.Controls.Add(this.txtHeight);
@@ -106,11 +112,11 @@ namespace DrawShape {
       this.pnlInput.Size = new System.Drawing.Size(255, 400);
       this.pnlInput.TabIndex = 7;
       // 
-      // btnDrawArc
+      // btnSetToCurve
       // 
       this.btnSetToCurve.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnSetToCurve.Location = new System.Drawing.Point(14, 329);
-      this.btnSetToCurve.Name = "btnDrawArc";
+      this.btnSetToCurve.Location = new System.Drawing.Point(14, 356);
+      this.btnSetToCurve.Name = "btnSetToCurve";
       this.btnSetToCurve.Size = new System.Drawing.Size(222, 40);
       this.btnSetToCurve.TabIndex = 41;
       this.btnSetToCurve.Text = "btnDrawArc";
@@ -118,7 +124,7 @@ namespace DrawShape {
       // 
       // lblSelectSide
       // 
-      this.lblSelectSide.Location = new System.Drawing.Point(17, 302);
+      this.lblSelectSide.Location = new System.Drawing.Point(17, 329);
       this.lblSelectSide.Name = "lblSelectSide";
       this.lblSelectSide.Size = new System.Drawing.Size(80, 30);
       this.lblSelectSide.TabIndex = 40;
@@ -126,21 +132,21 @@ namespace DrawShape {
       // 
       // txtSelectSide
       // 
-      this.txtSelectSide.Location = new System.Drawing.Point(103, 301);
+      this.txtSelectSide.Location = new System.Drawing.Point(103, 328);
       this.txtSelectSide.Name = "txtSelectSide";
       this.txtSelectSide.Size = new System.Drawing.Size(70, 22);
       this.txtSelectSide.TabIndex = 38;
       this.txtSelectSide.Text = "txtSelectSide";
       // 
-      // btnDrawRegularPolygon
+      // btnDrawProfile
       // 
-      this.btnDrawWindow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawWindow.Location = new System.Drawing.Point(14, 250);
-      this.btnDrawWindow.Name = "btnDrawRegularPolygon";
-      this.btnDrawWindow.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawWindow.TabIndex = 37;
-      this.btnDrawWindow.Text = "btnDrawRegularPolygon";
-      this.btnDrawWindow.UseVisualStyleBackColor = true;
+      this.btnDrawProfile.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnDrawProfile.Location = new System.Drawing.Point(14, 277);
+      this.btnDrawProfile.Name = "btnDrawProfile";
+      this.btnDrawProfile.Size = new System.Drawing.Size(222, 40);
+      this.btnDrawProfile.TabIndex = 37;
+      this.btnDrawProfile.Text = "btnDrawProfile";
+      this.btnDrawProfile.UseVisualStyleBackColor = true;
       // 
       // lblUnitDiametr
       // 
@@ -174,10 +180,10 @@ namespace DrawShape {
       this.txtDiameter.TabIndex = 32;
       this.txtDiameter.Text = "txtDiameter";
       // 
-      // txtSlides
+      // txtSides
       // 
       this.txtSides.Location = new System.Drawing.Point(106, 189);
-      this.txtSides.Name = "txtSlides";
+      this.txtSides.Name = "txtSides";
       this.txtSides.Size = new System.Drawing.Size(70, 22);
       this.txtSides.TabIndex = 31;
       this.txtSides.Text = "txtSlides";
@@ -230,15 +236,15 @@ namespace DrawShape {
       this.lblMarginHorizontal.TabIndex = 25;
       this.lblMarginHorizontal.Text = "lblMarginHorizontal";
       // 
-      // btnDrawRectangle
+      // btnDrawRegularPolygon
       // 
-      this.btnDrawRect.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawRect.Location = new System.Drawing.Point(16, 82);
-      this.btnDrawRect.Name = "btnDrawRectangle";
-      this.btnDrawRect.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawRect.TabIndex = 24;
-      this.btnDrawRect.Text = "btnDrawRectangle";
-      this.btnDrawRect.UseVisualStyleBackColor = true;
+      this.btnDrawRegularPolygon.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnDrawRegularPolygon.Location = new System.Drawing.Point(16, 82);
+      this.btnDrawRegularPolygon.Name = "btnDrawRegularPolygon";
+      this.btnDrawRegularPolygon.Size = new System.Drawing.Size(222, 40);
+      this.btnDrawRegularPolygon.TabIndex = 24;
+      this.btnDrawRegularPolygon.Text = "btnDrawRegularPolygon";
+      this.btnDrawRegularPolygon.UseVisualStyleBackColor = true;
       // 
       // lblUnitH
       // 
@@ -290,8 +296,8 @@ namespace DrawShape {
       // 
       // pnlDraw
       // 
-      this.pnlDraw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+      this.pnlDraw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlDraw.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlDraw.Controls.Add(this.pnlCanvas);
@@ -302,8 +308,8 @@ namespace DrawShape {
       // 
       // pnlCanvas
       // 
-      this.pnlCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+      this.pnlCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlCanvas.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlCanvas.BackColor = System.Drawing.Color.White;
@@ -312,6 +318,30 @@ namespace DrawShape {
       this.pnlCanvas.Name = "pnlCanvas";
       this.pnlCanvas.Size = new System.Drawing.Size(350, 350);
       this.pnlCanvas.TabIndex = 0;
+      // 
+      // lblProfileUnit
+      // 
+      this.lblProfileUnit.Location = new System.Drawing.Point(183, 249);
+      this.lblProfileUnit.Name = "lblProfileUnit";
+      this.lblProfileUnit.Size = new System.Drawing.Size(55, 19);
+      this.lblProfileUnit.TabIndex = 44;
+      this.lblProfileUnit.Text = "lblProfileUnit";
+      // 
+      // lblProfileSize
+      // 
+      this.lblProfileSize.Location = new System.Drawing.Point(17, 252);
+      this.lblProfileSize.Name = "lblProfileSize";
+      this.lblProfileSize.Size = new System.Drawing.Size(80, 22);
+      this.lblProfileSize.TabIndex = 43;
+      this.lblProfileSize.Text = "lblProfileSize";
+      // 
+      // txtProfileSize
+      // 
+      this.txtProfileSize.Location = new System.Drawing.Point(107, 246);
+      this.txtProfileSize.Name = "txtProfileSize";
+      this.txtProfileSize.Size = new System.Drawing.Size(70, 22);
+      this.txtProfileSize.TabIndex = 42;
+      this.txtProfileSize.Text = "txtProfileSize";
       // 
       // MainForm
       // 
@@ -347,7 +377,7 @@ namespace DrawShape {
     private TextBox txtMarginH;
     private Label lblMarginVertical;
     private Label lblMarginHorizontal;
-    private Button btnDrawRect;
+    private Button btnDrawRegularPolygon;
     private TextBox txtDiameter;
     private TextBox txtSides;
     private Label lblUnitDiametr;
@@ -356,7 +386,10 @@ namespace DrawShape {
     private Button btnSetToCurve;
     private Label lblSelectSide;
     private TextBox txtSelectSide;
-    private Button btnDrawWindow;
+    private Button btnDrawProfile;
+    private Label lblProfileUnit;
+    private Label lblProfileSize;
+    private TextBox txtProfileSize;
   }
 }
 

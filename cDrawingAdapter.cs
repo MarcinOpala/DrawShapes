@@ -24,8 +24,6 @@ namespace DrawShape {
       int pCount;                                           //liczba boków figury
       int pIndex;                                           //indeks iteracji
       cSegment pSegment;
-      cSegment pSegment_Next;
-
       cDrawing pDrawing;
       cDrawingItem pDrawingItem;
 
@@ -33,81 +31,43 @@ namespace DrawShape {
 
       pDrawing = new cDrawing();
 
-      for (pIndex = 0; pIndex <= (pCount - 1); pIndex++) {  //pętla dodająca DrawingItemy
+      for (pIndex = 1; pIndex <= pCount; pIndex++) {  //pętla tworząca i dodająca DrawingItemy
 
-        pSegment = xPolygon.GetSegmentByNumer(pIndex);
-        pSegment_Next = xPolygon.GetSegmentByNumer(pIndex + 1);
-        pDrawingItem = new cDrawingItem();
+        pSegment = xPolygon.Assembly.AssemblyItems[pIndex].Polygon.Segments[1];
 
-        pDrawingItem = GetItem(pIndex, pSegment, pSegment_Next);
+        pDrawingItem = CreateDrawingItem(pSegment);
 
         pDrawing.AddItem(pDrawingItem, pIndex);
 
       }
 
-      for (pIndex = 0; pIndex <= (pCount - 1); pIndex++) {  //pętla wywołująca rysowanie DrawingItemów
+      for (pIndex = 1; pIndex <= (pCount); pIndex++) {  //pętla wywołująca rysowanie DrawingItemów
 
         pDrawing.DrawItem(pIndex, xScale, xBasePtX, xBasePtY, e);
 
       }
     }
 
-    public static cDrawingItem GetItem(int xNumber, cSegment xSegment, cSegment xSegment_Next) {
+    public static cDrawingItem CreateDrawingItem(cSegment xSegment) {
       //funkcja 
 
-      int pNumber;
       cDrawingItem pDrawingItem;
       cSegment pSegment;
 
       pDrawingItem = new cDrawingItem();
-      pNumber = xNumber + 1;
 
-      pSegment = xSegment;
-      pDrawingItem.AddSegment(new cDrawingSegment(pSegment), xNumber);
+      for (int i = 1; i <= xSegment.Polygon_Parent.Segments.Count ; i++) {
 
-      pSegment = xSegment_Next;
-      pDrawingItem.AddSegment(new cDrawingSegment(pSegment), xNumber + 1);
+        pSegment = xSegment.Polygon_Parent.Segments[i];
 
+        pDrawingItem.AddSegment(new cDrawingSegment(pSegment, i));
 
-      //  AddProfileShape(pPolygon, xSegment, xSegment_Next);
-
+      }
+     
       return pDrawingItem;
 
     }
-
-    public static void AddProfileShape(cPolygon pPolygon, cSegment xSegment, cSegment xSegment_Next) {
-      // funkcja dodająca profil okna
-
-      int pWindowFrameSize;
-      int pDirection;
-      double pAngle;
-      cSegment pSegment;
-      float pOffsetX;
-      float pOffsetY;
-      double pCosinusAngle;                          //cosunus kąta pAngleTemp
-      double pSinusAngle;                            //sinus kąta pAngleTemp
-
-      pSegment = new cSegment(new cPoint(new PointF()), new int());
-      pWindowFrameSize = 2;
-
-      pAngle = (45 * (Math.PI)) / 180;
-      pCosinusAngle = Math.Cos(pAngle);
-      pSinusAngle = Math.Sin(pAngle);
-
-
-      pOffsetX = pWindowFrameSize * (int)(pWindowFrameSize * pCosinusAngle);
-      pOffsetY = pWindowFrameSize * (int)(pWindowFrameSize * pSinusAngle);
-
-      pSegment.Point.X = xSegment_Next.Point.X - pOffsetX;
-      pSegment.Point.Y = xSegment_Next.Point.Y + pOffsetY;
-      pPolygon.AddSegment(pSegment, 2);
-
-      pSegment.Point.X = xSegment.Point.X + pOffsetX;
-      pSegment.Point.Y = xSegment.Point.Y + pOffsetY;
-      pPolygon.AddSegment(pSegment, 3);
-    }
-
-
+    
   }
 
 }

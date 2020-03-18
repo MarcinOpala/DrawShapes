@@ -9,14 +9,18 @@ namespace DrawShape {
   public class cDrawingSegment {
 
     private cSegment mSegment;
+    private int mIndex;
 
     internal cSegment Segment { get { return mSegment; } set { mSegment = value; } }
+    internal int Index { get { return mIndex; } set { mIndex = value; } }
 
-    public cDrawingSegment(cSegment xSegment) {
+    public cDrawingSegment(cSegment xSegment, int xIndex) {
 
       this.mSegment = xSegment;
+      this.mIndex = xIndex;
 
     }
+
   }
 
 }

@@ -8,22 +8,22 @@ namespace DrawShape {
 
   public class cDrawingItem {
 
-    private List<cDrawingSegment> mDrawingSegments;
+    private Dictionary<int, cDrawingSegment> mDrawingSegments;
 
-    internal List<cDrawingSegment> DrawingSegments { get { return mDrawingSegments; } set { mDrawingSegments = value; } }
+    internal Dictionary<int, cDrawingSegment> DrawingSegments { get { return mDrawingSegments; } set { mDrawingSegments = value; } }
 
     public cDrawingItem() {
 
-      mDrawingSegments = new List<cDrawingSegment>();
+      mDrawingSegments = new Dictionary<int, cDrawingSegment>();
 
     }
 
-    internal void AddSegment(cDrawingSegment xDrawingSegments, int xNumber) {
+    internal void AddSegment(cDrawingSegment xDrawingSegments) {
       //funkcja dodająca nowy segment do listy
       //xDrawingSegments - wybrany segment
       //xNumber - numer segmentu
 
-      mDrawingSegments.Insert(0, xDrawingSegments);
+      mDrawingSegments.Add(xDrawingSegments.Index, xDrawingSegments);
 
     }
 
@@ -34,17 +34,18 @@ namespace DrawShape {
       int pSegmentNumber;
       int pCountMax;
 
-      pCountMax = mDrawingSegments.Count - 1;
+      pCountMax = mDrawingSegments.Count;
 
       pSegmentNumber = xNumber;
 
       if (xNumber > pCountMax)
-        pSegmentNumber = 0;
-
+        pSegmentNumber = 1;
 
       return mDrawingSegments[pSegmentNumber];
 
     }
+
   }
+
 }
 
