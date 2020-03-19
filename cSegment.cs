@@ -24,12 +24,13 @@ namespace DrawShape {
 
     }
 
-    public cSegment(cPoint xPoint, int xNumber, cPolygon xPolygon_Parent) {
+    public cSegment(cPoint xPoint, int xNumber, bool xIsCurve, cPolygon xPolygon_Parent) {
       //xPointOfSegment - pierwszy punkt danego cSegmentu
       //xNumberOfSegment - numer danego cSegmentu
 
       mPoint = new cPoint(xPoint.X, xPoint.Y);
       mNumber = xNumber;
+      mIsCurve = xIsCurve;
       mPolygon_Parent = xPolygon_Parent;
 
     }

@@ -10,28 +10,37 @@ namespace DrawShape {
 
   public class cDrawingAdapter {
 
+    private cDrawing mDrawing;
     private static cPoint mCircleCenter;                    //środek figury opisanej na okręgu
 
     internal static cPoint CircleCenter { get { return mCircleCenter; } set { mCircleCenter = value; } }
+    internal cDrawing Drawing { get { return mDrawing; } set { mDrawing = value; } }
 
-    public void DrawPolygon(cPolygon xPolygon, double xScale, double xBasePtX, double xBasePtY, PaintEventArgs e) {
-      //funkcja rysująca wielobok
+    public cDrawingAdapter(){
+
+      cDrawing pDrawing;
+
+      pDrawing = new cDrawing();
+
+      mDrawing = pDrawing;
+
+    }
+
+    public cDrawing GetDrawing(cPolygon xPolygon) {
+      //funkcja 
       //xPolygon - poligon bazowy
-      //xScale - skala rysunku
-      //xBasePtX - współrzędne X punktu bazowego
-      //xBasePtY - współrzędne Y punktu bazowego
 
       int pCount;                                           //liczba boków figury
       int pIndex;                                           //indeks iteracji
       cSegment pSegment;
-      cDrawing pDrawing;
       cDrawingItem pDrawingItem;
-
-      pCount = xPolygon.Segments.Count;
+      cDrawing pDrawing;
 
       pDrawing = new cDrawing();
 
-      for (pIndex = 1; pIndex <= pCount; pIndex++) {  //pętla tworząca i dodająca DrawingItemy
+      pCount = xPolygon.Segments.Count;
+     
+      for (pIndex = 1; pIndex <= pCount; pIndex++) {        //pętla tworząca i dodająca DrawingItemy
 
         pSegment = xPolygon.Assembly.AssemblyItems[pIndex].Polygon.Segments[1];
 
@@ -41,15 +50,13 @@ namespace DrawShape {
 
       }
 
-      for (pIndex = 1; pIndex <= (pCount); pIndex++) {  //pętla wywołująca rysowanie DrawingItemów
+      return pDrawing;
 
-        pDrawing.DrawItem(pIndex, xScale, xBasePtX, xBasePtY, e);
-
-      }
     }
 
-    public static cDrawingItem CreateDrawingItem(cSegment xSegment) {
-      //funkcja 
+    public cDrawingItem CreateDrawingItem(cSegment xSegment) {
+      //funkcja tworząca DrawingItemy
+      //xSegment - segment oryginalny
 
       cDrawingItem pDrawingItem;
       cSegment pSegment;

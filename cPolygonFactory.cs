@@ -43,7 +43,6 @@ namespace DrawShape {
       //funkcja dodająca segmenty do listy, z której powstaje wielokąt foremny
       //xRadius - promień koła w który jest wpisana figura
       //xAngle - kąt pomiędzy [punktem pPoint - środkiem koła xCircleCenter - punktem pPoint(z kolejnego segmentu)]
-      //xProfileSize - szerokość profilu
 
       cPoint pBasePt;                                       //punkt bazowy do rysowania figury
       cPoint pCircleCenter;                                 //środek koła
@@ -76,7 +75,6 @@ namespace DrawShape {
         pSegment.SetPolygon_Parent(pPolygon_Regular);
 
         pPolygon_Regular.AddSegment(pSegment);
-
        
       }
 
@@ -95,9 +93,9 @@ namespace DrawShape {
 
       cPoint pPoint;
       cSegment pSegment;
-
+     
       pPoint = new cPoint(xPoint.X + xOffsetX, xPoint.Y + xOffsetY);
-      pSegment = new cSegment(pPoint, xNumber, new cPolygon());
+      pSegment = new cSegment(pPoint, xNumber, false, new cPolygon());
 
       return pSegment;
 

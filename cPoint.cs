@@ -12,16 +12,27 @@ namespace DrawShape {
     internal float X { get { return mX; } set { mX = value; } }
     internal float Y { get { return mY; } set { mY = value; } }
 
+    public cPoint() {
+
+    }
+
     public cPoint(float xPtX, float xPtY) {
 
       PointF pPt;
 
       pPt = new PointF(xPtX, xPtY);
 
-      this.mX = pPt.X;
-      this.mY = pPt.Y;
+      mX = pPt.X;
+      mY = pPt.Y;
 
     }
+
+    public string GetString() {
+
+      return $"X:{mX}, Y:{mY}";
+
+    }
+
 
   }
   

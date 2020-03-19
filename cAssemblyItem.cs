@@ -23,19 +23,19 @@ namespace DrawShape {
       float pOffset_X, pOffset_Y;
 
       //Bok 1 punkt z oryginału
-      pSegment = new cSegment(xSegment.Point, 1, mPolygon);
+      pSegment = new cSegment(xSegment.Point, 1, xSegment.IsCurve, mPolygon);
       mPolygon.AddSegment(pSegment);
 
 
 
       //Bok 2 punkt z oryginał_next
-      pSegment = new cSegment(xSegment.Segment_Next.Point, 2, mPolygon);
+      pSegment = new cSegment(xSegment.Segment_Next.Point, 2, false, mPolygon);
       mPolygon.AddSegment(pSegment);
 
 
 
       //Bok 3 przypisujemy wartość segmentu, z którego robimy przesunięcie
-      pSegment = new cSegment(xSegment.Segment_Next.Point, 3, mPolygon);
+      pSegment = new cSegment(xSegment.Segment_Next.Point, 3, xSegment.Segment_Next.IsCurve , mPolygon);
 
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 3
       CalculatePointOffset(xSegment.Segment_Next, xWidth, out pOffset_X, out pOffset_Y);
@@ -48,7 +48,7 @@ namespace DrawShape {
 
 
       //Bok 4 przypisujemy wartość segmentu, z którego robimy przesunięcie
-      pSegment = new cSegment(xSegment.Point, 4, mPolygon);
+      pSegment = new cSegment(xSegment.Point, 4, false, mPolygon);
 
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 4
       CalculatePointOffset(xSegment, xWidth, out pOffset_X, out pOffset_Y);
@@ -68,52 +68,53 @@ namespace DrawShape {
       //xPtX_Offset - końcowe przesunięcie X
       //xPtY_Offset - końcowe przesunięcie Y
 
-      double pAlfa, pCosAlfa, pSinAlfa;                              //kąt pomiędzy Vector_Helper, a Vektor_Segments
-      double pBeta, pSinBeta, pCosBeta, pBetaInRadius;               //kąt przy podstawie profilu == połowa kąta wieloboku foremnego
-      double pDiagonalSize;                                          //długość przekątnej przy łączeniu profili
-      double pVectorX_SegNext, pVectorY_SegNext;                     //vektor pokrywający się z Segment_Next
-      double pVectorX_Helper, pVectorY_Helper;                       //vektor pomocniczy równoległy do osi OX zaczepiony w punkcie segment.point
-      double pLenghtVector_Segments, pLenghtVector_Helper;           //długości wektorów
-      double pPt_X, pPt_Y;                                           //pośrednie wartości przesunięcia
+      double pAlfa, pCosAlfa, pSinAlfa, pAlfaInRadius;               
+      double pBeta, pSinBeta, pCosBeta, pBetaInRadius;               
+      double pDiagonalSize;                                          
+      double pPt_X, pPt_Y;                                           
+      cVector pVector_SegNext, pVector_OX;
+     
+      //nowy wektor pokrywający się z następnym bokiem
+      pVector_SegNext = new cVector(xSegment, xSegment.Segment_Next);
 
-      xSegment.Segment_Next.SetPolygon_Parent(xSegment.Polygon_Parent);
+      //nowy wektor pomocniczy pokrywający się z osią OX
+      pVector_OX = new cVector(100, 0);
 
-      pVectorX_SegNext = xSegment.Segment_Next.Point.X - xSegment.Point.X;
-      pVectorY_SegNext = xSegment.Segment_Next.Point.Y - xSegment.Point.Y;
-
-      pVectorX_Helper = 100;
-      pVectorY_Helper = 0;
-
-      pLenghtVector_Segments = Math.Sqrt(pVectorX_SegNext * pVectorX_SegNext + pVectorY_SegNext * pVectorY_SegNext);
-      pLenghtVector_Helper = Math.Sqrt(pVectorX_Helper * pVectorX_Helper + pVectorY_Helper * pVectorY_Helper);
-
-      pCosAlfa = (pVectorX_Helper * pVectorX_SegNext + pVectorY_Helper * pVectorY_SegNext) /
-                 (pLenghtVector_Segments * pLenghtVector_Helper);
+      //kąt pomiędzy wektorami
+      pCosAlfa = cVector.CosAlfa(pVector_OX, pVector_SegNext);
 
       //ustawienie kąta Alfa
-      if (pCosAlfa == 0 && pVectorY_SegNext > 0) {
-        pAlfa = 90;
+      if (pCosAlfa >= 0 && pVector_SegNext.Vector.Y >= 0) {
+        pAlfa = (Math.Acos(pCosAlfa)) * 180 / Math.PI;
 
-      } else if (pCosAlfa == 0 && pVectorY_SegNext < 0) {
-        pAlfa = 270;
-
-      } else 
-        pAlfa = (Math.Acos(pCosAlfa));
-
-      pSinAlfa = Math.Sin((pAlfa * (Math.PI)) / 180);
+      } else if (pCosAlfa < 0 && pVector_SegNext.Vector.Y > 0) {
+        pAlfa = (Math.Acos(pCosAlfa)) * 180 / Math.PI;
       
-      pBeta = 360 / xSegment.Polygon_Parent.Segments.Count / 2;
-      pBetaInRadius = (pBeta * (Math.PI)) / 180;
+      } else if (pCosAlfa <= 0 && pVector_SegNext.Vector.Y <= 0) {
+        pAlfa = 180 + (Math.Acos(pCosAlfa)) * 180 / Math.PI;
 
+      } else if (pCosAlfa >= 0 && pVector_SegNext.Vector.Y < 0) {
+        pAlfa = 180 + (Math.Acos(pCosAlfa)) * 180 / Math.PI;
+
+      } else {
+        pAlfa = (Math.Acos(pCosAlfa)) * 180 / Math.PI;
+
+      } 
+      
+      //obliczanie sin, cos 
+      pAlfaInRadius = (pAlfa * (Math.PI)) / 180;
+      pSinAlfa = Math.Sin(pAlfaInRadius);
+      pBeta = (180 - (360 / xSegment.Polygon_Parent.Segments.Count))/2;
+      pBetaInRadius = (pBeta * (Math.PI)) / 180;
       pSinBeta = Math.Sin(pBetaInRadius);
       pCosBeta = Math.Cos(pBetaInRadius);
 
-      pDiagonalSize = xWidth / Math.Sin(pBetaInRadius);
-
-      pPt_X = (pDiagonalSize * pCosAlfa);
+      pDiagonalSize = xWidth / Math.Sin(pBetaInRadius);            //długość przekątnej profilu
+      
+      pPt_X = (pDiagonalSize * pCosAlfa);                          //pośrednie wartości przesunięcia
       pPt_Y = (pDiagonalSize * pSinAlfa);
 
-      xPtX_Offset = (float)(pPt_X * pCosBeta - pPt_Y * pSinBeta);
+      xPtX_Offset = (float)(pPt_X * pCosBeta - pPt_Y * pSinBeta);  //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu
       xPtY_Offset = (float)(pPt_X * pSinBeta + pPt_Y * pCosBeta);
 
     }

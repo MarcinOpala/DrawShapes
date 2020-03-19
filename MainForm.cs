@@ -12,12 +12,10 @@ namespace DrawShape {
 
   public partial class MainForm : Form {
 
-    private cDrawingAdapter mDrawingAdapter;
     private int mIndexOfMaxItem;                            //indeks maksymalnej wartości w tablicy
     private double mMarginV, mMarginH;                      //marginesy: Vertical, Horizontal - wartości pobrane z INPUT 
     private int mMaxValue;                                  //maksymalna wartość w tablicy
     private cPolygon mPolygon_Regular;                      //inicjacja polygonu wieloboku foremnego
-    private float mCircleRadius;                            //promień prostokąta - wartość pobrana z INPUT 
     private double mScale;                                  //przeliczona skala całego rysunku
 
     public MainForm() {
@@ -50,7 +48,7 @@ namespace DrawShape {
       this.btnDrawProfile.Text = "Rysuj Profil";
       this.lblProfileUnit.Text = "mm";
       this.lblProfileSize.Text = "Szerokość profilu:";
-      this.txtProfileSize.Text = "20";
+      this.txtProfileSize.Text = "50";
 
       //włączenie funkcji blokującej wpisanie liter i znaków szczególnych w wybranych polach
       this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
@@ -68,30 +66,34 @@ namespace DrawShape {
       this.Resize += new System.EventHandler(this.MainForm_Resize);                                   //odświeżanie canvas przy powiększaniu programu
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);       //rysowanie poligonu
 
-      mDrawingAdapter = new cDrawingAdapter();
+
 
     }
 
     public void pnlCanvas_Paint(object sender, PaintEventArgs e) {
       //funkcja rysująca polygon 
 
-      double pTransfBasePtX, pTransfBasePtY;
+      cDrawingAdapter pDrawingAdapter;
+      cDrawing pDrawing;
+      cPoint pPt_Base;
+      float pRadius;
 
+      if (mPolygon_Regular == null)                         //jeśli nie istnieje poligon -> koniec
+        return;
 
-      mCircleRadius = float.Parse(txtDiameter.Text) / 2;
+      pRadius = float.Parse(txtDiameter.Text) / 2;
       mMarginV = double.Parse(txtMarginV.Text);
       mMarginH = double.Parse(txtMarginH.Text);
            
-      if (mPolygon_Regular == null)                         //jeśli nie istnieje poligon
-        return;
+      //obliczanie współrzędnych punktu bazowego wieloboku foremnego do wyświetlania na Canvas
+      pPt_Base = new cPoint();
+      pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - 2 * pRadius * mScale) / 2);
+      pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - 2 * pRadius * mScale) / 2));
 
-      cDrawing.CircleCenter = new cPoint(mCircleRadius, mCircleRadius);
+      pDrawingAdapter = new cDrawingAdapter();
+      pDrawing = pDrawingAdapter.GetDrawing(mPolygon_Regular);
 
-      //obliczanie współrzędnych na Canvas punktu bazowego wieloboku foremnego
-      pTransfBasePtX = mMarginH + (pnlCanvas.Width - 2 * mMarginH - 2 * mCircleRadius * mScale) / 2;
-      pTransfBasePtY = pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - 2 * mCircleRadius * mScale) / 2);
-
-      mDrawingAdapter.DrawPolygon(mPolygon_Regular, mScale, pTransfBasePtX, pTransfBasePtY, e);
+      pDrawing.Draw(mPolygon_Regular, mScale, pPt_Base, e);
 
     }
 
@@ -119,7 +121,12 @@ namespace DrawShape {
     private void btnSetToCurve_Click(object sender, EventArgs e) {
       //funkcja zmieniająca segment w łuk
 
-      mPolygon_Regular.SetSegmentToCurve(int.Parse(txtSelectSide.Text));
+      int pSelect;
+
+      pSelect = int.Parse(txtSelectSide.Text);
+
+      mPolygon_Regular.Assembly.AssemblyItems[pSelect].Polygon.SetSegmentToCurve(1);
+      mPolygon_Regular.Assembly.AssemblyItems[pSelect].Polygon.SetSegmentToCurve(3);
 
       this.pnlCanvas.Refresh();
 
@@ -141,13 +148,14 @@ namespace DrawShape {
       double pBaseAngle;                                    //kąt pomiędzy: punkt1 segmentu - środek koła - punkt2 segmentu
       int pSidesNumber;                                     //liczba boków figury foremnej
       int pProfileSize;                                     //szerokość profilu
+      int pRadius;
       
       pProfileSize = int.Parse(txtProfileSize.Text);
-      mCircleRadius = float.Parse(txtDiameter.Text) / 2;
+      pRadius = int.Parse(txtDiameter.Text) / 2;
       pSidesNumber = int.Parse(txtSides.Text);
       pBaseAngle = 360 / pSidesNumber;
 
-      mPolygon_Regular = cPolygonFactory.GetPolygon_Regular((int)mCircleRadius, -pBaseAngle);
+      mPolygon_Regular = cPolygonFactory.GetPolygon_Regular(pRadius, -pBaseAngle);
 
       mPolygon_Regular.CreateAssembly(pProfileSize, mPolygon_Regular);
 

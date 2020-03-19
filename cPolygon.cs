@@ -12,6 +12,7 @@ namespace DrawShape {
 
     internal Dictionary<int, cSegment> Segments { get { return mSegments; } set { mSegments = value; } }
     internal cAssembly Assembly { get { return mAssembly; } }
+    internal string SegmentsList { get { return GetSegmentsList(); } }
 
     public cPolygon() {
 
@@ -47,13 +48,25 @@ namespace DrawShape {
 
     }
 
+    public string GetSegmentsList() {
+      //funkcja zwracająca listę segmentów
+
+      string pStr = string.Empty;
+
+      foreach (var i in mSegments) {
+        pStr += $"cSegment: {i} Punkt: ( {i.Value.Point.X} ; {i.Value.Point.Y} Numer:  {i.Value.Number} Type: {i.Value.IsCurve} \n";
+      }
+
+      Console.WriteLine(pStr);
+
+      return pStr;
+
+    }
+
     public void ShowSegmentsList() {
       //funkcja wyświetlająca listę segmentów
 
-      foreach (var i in mSegments) {
-        Console.WriteLine($"cSegment: {i} Punkt: ( {i.Value.Point.X} ; {i.Value.Point.Y} Numer:  {i.Value.Number} Type: {i.Value.IsCurve} \n");
-
-      }
+      Console.WriteLine(GetSegmentsList());
 
     }
 

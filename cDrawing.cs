@@ -12,10 +12,8 @@ namespace DrawShape {
   public class cDrawing {
 
     private Dictionary<int, cDrawingItem> mDrawingItems;
-    private static cPoint mCircleCenter;                    //środek figury opisanej na okręgu
 
     internal Dictionary<int, cDrawingItem> DrawingItem { get { return mDrawingItems; } set { mDrawingItems = value; } }
-    internal static cPoint CircleCenter { get { return mCircleCenter; } set { mCircleCenter = value; } }
 
     public cDrawing() {
 
@@ -32,7 +30,27 @@ namespace DrawShape {
 
     }
 
-    public void DrawItem(int xIndex, double xScale, double xBasePtX, double xBasePtY, PaintEventArgs e) {
+    public void Draw(cPolygon xPolygon, double xScale, cPoint xPt_Base, PaintEventArgs e) {
+      //funkcja rysująca wielobok
+      //xPolygon - poligon bazowy
+      //xScale - skala rysunku
+      //xBasePtX - współrzędne X punktu bazowego
+      //xBasePtY - współrzędne Y punktu bazowego
+
+      int pCount;
+      int pIndex;
+      pCount = xPolygon.Segments.Count;
+
+      //pętla wywołująca rysowanie DrawingItemów
+      for (pIndex = 1; pIndex <= (pCount); pIndex++) {  
+
+        DrawItem(pIndex, xScale, xPt_Base, e);
+
+      }
+
+    }
+
+    public void DrawItem(int xIndex, double xScale, cPoint xPt_Base, PaintEventArgs e) {
       //funkcja rysująca Itemy
 
       Pen pBluePen;                                         //kolor długopisu
@@ -40,19 +58,32 @@ namespace DrawShape {
       cSegment pSegment;
       cSegment pSegment_Next;
       int pIndex;
+      cDrawingItem pDrawingItem;
 
       pBluePen = new Pen(Color.Blue, 3);
       pLinePoints = new PointF[2];
 
-      
+      pDrawingItem = mDrawingItems[xIndex];
 
-      for (pIndex = 1; pIndex <= mDrawingItems[xIndex].DrawingSegments.Count; pIndex++) {
+      Console.WriteLine("Punkty wielokąta");
 
-        pSegment = mDrawingItems[xIndex].GetSegmentByNumer(pIndex).Segment;
-        pSegment_Next = mDrawingItems[xIndex].GetSegmentByNumer(pIndex + 1).Segment;
+      for (pIndex = 1; pIndex <= pDrawingItem.DrawingSegments.Count; pIndex++) {
+
+        
+        pSegment = pDrawingItem.GetSegmentByNumer(pIndex).Segment;
+        pSegment_Next = pDrawingItem.GetSegmentByNumer(pIndex + 1).Segment;
 
         //przekształcenie punktu poligonu na współrzędne do wyświetlenia na Canvas
-        var pPoints = TransformPoints(pSegment, pSegment_Next, xScale, xBasePtX, xBasePtY);
+        var pPoints = TransformPoints(pSegment, pSegment_Next, xScale, xPt_Base);
+
+
+
+        //szukanie błędu przy ośmiokącie bok 6
+/*        Console.WriteLine(">>> <<<<  " + xScale);
+        Console.WriteLine($"PtA:{pPoints.Pt_A.X - pPoints.Pt_B.X}");  //, {pPoints.Pt_A.Y}    PtB:{pPoints.Pt_B.X}, {pPoints.Pt_B.Y}");
+*/
+
+
 
         if (!pSegment.IsCurve) {                            //jeśli segment jest prosty
           pLinePoints[0] = new PointF(pPoints.Pt_A.X, pPoints.Pt_A.Y);
@@ -61,42 +92,38 @@ namespace DrawShape {
           e.Graphics.DrawPolygon(pBluePen, pLinePoints);
 
         } else {                                            //jeśli segment jest krzywywą
-          DrawBezierCurve(pSegment, pPoints.Pt_A, pPoints.Pt_B, e);
+          DrawBezierCurve(pSegment, pPoints.Pt_A, pPoints.Pt_B, xIndex, e);
 
         }
       }
     }
 
     private (PointF Pt_A, PointF Pt_B) TransformPoints(cSegment xSegment, cSegment xSegment_Next,
-                                    double xScale, double xTransfBasePtX, double xTransfBasePtY) {
+                                    double xScale, cPoint xPt_Base) {
       //funkcja przekształcenie punktu poligonu na współrzędne do wyświetlenia na Canvas
       //xSegment - segment figury
       //xSegment_Next - następny segment figury
       //xScale - skala figury
-      //xTransfBasePtX - przesunięcie punktu bazowego względem oX
-      //xTransfBasePtY - przesuniecie punktu bazowego względem oY
+      //xPt_Base - przesuniecie punktu bazowego
       //xPt_A - współrzędne punktów przeskalowanych
       //xPt_B - współrzędne punktów przeskalowanych
 
-      cPoint pBasePt;
       PointF pPt_A_;
       PointF pPt_B_;
-
-      pBasePt = new cPoint((float)xTransfBasePtX, (float)xTransfBasePtY);
  
       pPt_A_ = new PointF();
-      pPt_A_.X = (pBasePt.X + (float)(xSegment.Point.X * xScale));
-      pPt_A_.Y = (pBasePt.Y - (float)(xSegment.Point.Y * xScale));
+      pPt_A_.X = (xPt_Base.X + (float)(xSegment.Point.X * xScale));
+      pPt_A_.Y = (xPt_Base.Y - (float)(xSegment.Point.Y * xScale));
 
       pPt_B_ = new PointF();
-      pPt_B_.X = (pBasePt.X + (float)(xSegment_Next.Point.X * xScale));
-      pPt_B_.Y = (pBasePt.Y - (float)(xSegment_Next.Point.Y * xScale));
+      pPt_B_.X = (xPt_Base.X + (float)(xSegment_Next.Point.X * xScale));
+      pPt_B_.Y = (xPt_Base.Y - (float)(xSegment_Next.Point.Y * xScale));
 
       return (Pt_A: pPt_A_, Pt_B: pPt_B_);
 
     }
 
-    internal static void DrawBezierCurve(cSegment xSegment, PointF xPt_A, PointF xPt_B, PaintEventArgs e) {
+    internal void DrawBezierCurve(cSegment xSegment, PointF xPt_A, PointF xPt_B, int xIndex, PaintEventArgs e) {
       //funkcja rysująca łuk po wybraniu boku
       //xSegment - segmentu pierwszy
       //xPt_A - współrzędne punktów przeskalowanych
@@ -124,7 +151,7 @@ namespace DrawShape {
       pBluePen = new Pen(Color.Blue, 3);
 
       //przeliczanie wektorów w zależności od położenia segmentu wzgledem środka koła
-      if ((xPt_A.X - xPt_B.X == 0)) {                       // f(x)=0
+      if (((int)(xPt_A.X) - (int)(xPt_B.X)) == 0) {                       // f(x)=0
         pVectNormalX = Math.Abs((xPt_B.Y - xPt_A.Y) / 4);
         pVectNormalY = 0;
 
@@ -139,7 +166,7 @@ namespace DrawShape {
       }
 
       //ustawienie nr cwiartki w której jest segment
-      SetQuarterNumber(xSegment, out pQuarterNumber);
+      SetQuarterNumber(xSegment, xIndex, out pQuarterNumber);
 
       //przesunięcie środka segmentu o wektor 
       //w zależności od ćwiartki w której się znajduję środek koła,
@@ -177,22 +204,40 @@ namespace DrawShape {
 
     }
 
-    internal static void SetQuarterNumber(cSegment xSegment, out int xQuarterNumber) {
+    internal void SetQuarterNumber(cSegment xSegment, int xIndex, out int xQuarterNumber) {
       //fukcja ustawiająca wartość xQuarterNumber w zależności od tego w której ćwiartce znajduje się środek segmentu
       //xSegment - segment
       //xQuarterNumber - nr ćwiartki liczona według schematu:      3|4 
       //                                                           2|1
+      
+      cPoint pPt_Base_ItemNext;
+      cPoint pPt_Base_Item;
+
+      //punkt bazowy DrawingItemu
+      pPt_Base_Item = new cPoint();
+      pPt_Base_Item.X = GetDrawingItemByNumber(xIndex).DrawingSegments[1].Segment.Point.X;
+      pPt_Base_Item.Y = GetDrawingItemByNumber(xIndex).DrawingSegments[1].Segment.Point.Y;
+
+      //punkt bazowy nastepnego DrawingItemu
+      pPt_Base_ItemNext = new cPoint();
+      pPt_Base_ItemNext.X = GetDrawingItemByNumber(xIndex + 1).DrawingSegments[1].Segment.Point.X;
+      pPt_Base_ItemNext.Y = GetDrawingItemByNumber(xIndex + 1).DrawingSegments[1].Segment.Point.Y;
+
 
       xQuarterNumber = new int();
 
-      if (mCircleCenter.X <= xSegment.Point.X && mCircleCenter.Y > xSegment.Point.Y) {
-        xQuarterNumber = 1;
-      } else if (mCircleCenter.X > xSegment.Point.X && mCircleCenter.Y >= xSegment.Point.Y) {
-        xQuarterNumber = 2;
-      } else if (mCircleCenter.X > xSegment.Point.X && mCircleCenter.Y < xSegment.Point.Y) {
+      if (pPt_Base_ItemNext.X <= pPt_Base_Item.X && pPt_Base_ItemNext.Y < pPt_Base_Item.Y) {
         xQuarterNumber = 3;
-      } else if (mCircleCenter.X <= xSegment.Point.X && mCircleCenter.Y >= xSegment.Point.Y) {
+
+      } else if (pPt_Base_ItemNext.X > pPt_Base_Item.X && pPt_Base_ItemNext.Y >= pPt_Base_Item.Y) {
+        xQuarterNumber = 1;      
+
+      } else if (pPt_Base_ItemNext.X > pPt_Base_Item.X && pPt_Base_ItemNext.Y < pPt_Base_Item.Y) {
+        xQuarterNumber = 2;
+
+      } else if (pPt_Base_ItemNext.X <= pPt_Base_Item.X && pPt_Base_ItemNext.Y >= pPt_Base_Item.Y) {
         xQuarterNumber = 4;
+
       } else {
         Console.WriteLine("Błąd liczenia ćwiartki");
       }
@@ -206,12 +251,12 @@ namespace DrawShape {
       int pItemNumber;
       int pCountMax;
 
-      pCountMax = mDrawingItems.Count - 1;
+      pCountMax = mDrawingItems.Count;
 
       pItemNumber = xNumber;
 
       if (xNumber > pCountMax)
-        pItemNumber = 0;
+        pItemNumber = 1;
 
       return mDrawingItems[pItemNumber];
 
