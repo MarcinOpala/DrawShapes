@@ -31,39 +31,42 @@ namespace DrawShape {
       //tworzenie AssemblyItemu dla każdego segmentu
       foreach (cSegment pSegment in xPolygon_Parent.Segments.Values) {
 
-        pAssemblyItem = new cAssemblyItem();
+        int pIndex;
+        pIndex = pSegment.Index + xPolygon_Parent.Index;
+
+        pAssemblyItem = new cAssemblyItem(pIndex);
         pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth);
 
-        AddAssemblyItem(pSegment.Number, pAssemblyItem);
+        AddAssemblyItem(pIndex, pAssemblyItem);
 
       }
       
     }
     
-    internal void AddAssemblyItem(int xNumber, cAssemblyItem xAssemblyItem) {
+    internal void AddAssemblyItem(int xIndex, cAssemblyItem xAssemblyItem) {
       //funkcja dodająca AssemblyItem do listy
-      //xNumber - numer na liście
+      //xIndex - numer na liście
       //xAssemblyItem - AssemblyItem
 
-      mAssemblyItems.Add(xNumber, xAssemblyItem);
+      mAssemblyItems.Add(xIndex, xAssemblyItem);
 
     }
 
-    internal cAssemblyItem GetAssemblyItemByNumer(int xNumber) {
+    internal cAssemblyItem GetAssemblyItemByIndex(int xIndex) {
       //funkcja zwracająca AssemblyItem po numerze
-      //xNumber - numer AssemblyItemu
+      //xIndex - numer AssemblyItemu
 
-      int pAssemblyItemNumber;
+      int pAssemblyItemIndex;
       int pCountMax;
 
       pCountMax = mAssemblyItems.Count;
 
-      pAssemblyItemNumber = xNumber;
+      pAssemblyItemIndex = xIndex;
 
-      if (xNumber > pCountMax)
-        pAssemblyItemNumber = 1;
+      if (xIndex > pCountMax)
+        pAssemblyItemIndex = 1;
       
-      return mAssemblyItems[pAssemblyItemNumber];
+      return mAssemblyItems[pAssemblyItemIndex];
 
     }
 

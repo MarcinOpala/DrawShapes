@@ -9,12 +9,23 @@ namespace DrawShape {
   public class cDrawingItem {
 
     private Dictionary<int, cDrawingSegment> mDrawingSegments;
+    private int mIndex;
 
     internal Dictionary<int, cDrawingSegment> DrawingSegments { get { return mDrawingSegments; } set { mDrawingSegments = value; } }
+    internal int Index { get { return mIndex; } set { mIndex = value; } }
+
 
     public cDrawingItem() {
 
       mDrawingSegments = new Dictionary<int, cDrawingSegment>();
+     
+
+    }
+
+    public cDrawingItem(int xIndex) {
+
+      mDrawingSegments = new Dictionary<int, cDrawingSegment>();
+      mIndex = xIndex;
 
     }
 

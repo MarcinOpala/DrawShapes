@@ -5,19 +5,39 @@ using System.Windows.Forms;
 
 namespace DrawShape {
 
+  public enum PolygonFunctionalityEnum {                                       //numerator funkcjonalności wielokąta
+    Undefined = 0,
+    FrameOutline = 1,  
+  }
+
   public class cPolygon {
 
-    private Dictionary<int, cSegment> mSegments;
     private cAssembly mAssembly;
+    private PolygonFunctionalityEnum mCntPF;
+    private int mIndex;
+    private Dictionary<int, cSegment> mSegments;
 
-    internal Dictionary<int, cSegment> Segments { get { return mSegments; } set { mSegments = value; } }
     internal cAssembly Assembly { get { return mAssembly; } }
+    internal PolygonFunctionalityEnum CntPF { get { return mCntPF; } set { mCntPF = value; } } 
+    internal int Index { get { return mIndex; } set { mIndex = value; } }
+    internal Dictionary<int, cSegment> Segments { get { return mSegments; } set { mSegments = value; } }
     internal string SegmentsList { get { return GetSegmentsList(); } }
+
 
     public cPolygon() {
 
       mSegments = new Dictionary<int, cSegment>();
-      mAssembly = new cAssembly();
+      //mAssembly = new cAssembly();
+      mCntPF = PolygonFunctionalityEnum.Undefined;     
+      
+    }
+
+    public cPolygon(int xIndex) {
+
+      mSegments = new Dictionary<int, cSegment>();
+     // mAssembly = new cAssembly();
+      mIndex = xIndex;
+      mCntPF = PolygonFunctionalityEnum.Undefined;
 
     }
 
@@ -25,7 +45,7 @@ namespace DrawShape {
       //funkcja dodająca nowy segment do listy
       //xSegment - wybrany segment
 
-      mSegments.Add(xSegment.Number, xSegment);
+      mSegments.Add(xSegment.Index, xSegment);
 
     }
        
@@ -37,14 +57,16 @@ namespace DrawShape {
       mAssembly = new cAssembly();
 
       mAssembly.CreateMe(xWidth, xPolygon);
-            
+
+      xPolygon.mCntPF = PolygonFunctionalityEnum.FrameOutline;
+
     }
 
-    internal void SetSegmentToCurve(int xNumber) {
+    internal void SetSegmentToCurve(int xIndex) {
       //funkcja zamieniająca bok w łuk
-      //xSegmentNumber - numer obsługiwanego boku
+      //xIndex - numer obsługiwanego boku
 
-      mSegments[xNumber].IsCurve = true;
+      mSegments[xIndex].IsCurve = true;
 
     }
 
@@ -54,7 +76,7 @@ namespace DrawShape {
       string pStr = string.Empty;
 
       foreach (var i in mSegments) {
-        pStr += $"cSegment: {i} Punkt: ( {i.Value.Point.X} ; {i.Value.Point.Y} Numer:  {i.Value.Number} Type: {i.Value.IsCurve} \n";
+        pStr += $"cSegment: {i} Punkt: ( {i.Value.Point.X} ; {i.Value.Point.Y} Numer:  {i.Value.Index} Type: {i.Value.IsCurve} \n";
       }
 
       Console.WriteLine(pStr);
@@ -70,24 +92,24 @@ namespace DrawShape {
 
     }
 
-    internal cSegment GetSegmentByNumber(int xNumber) {
+    internal cSegment GetSegmentByIndex(int xIndex) {
       //funkcja zwracająca segment
-      //xSegmentNumber - numer segmentu
+      //xIndex - numer segmentu
 
-      int pSegmentNumber;
+      int pSegmentIndex;
       int pCountMax;
 
       pCountMax = mSegments.Count;
 
-      pSegmentNumber = xNumber;
+      pSegmentIndex = xIndex;
 
-      if (xNumber > pCountMax)
-        pSegmentNumber = 1;
+      if (xIndex > pCountMax)
+        pSegmentIndex = 1;
 
-      return mSegments[pSegmentNumber];
+      return mSegments[pSegmentIndex];
 
     }
-    
+
   }
 
 }

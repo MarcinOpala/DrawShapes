@@ -10,12 +10,12 @@ namespace DrawShape {
   public class cSegment {
 
     private cPoint mPoint;                                  //punkt początkowy danego cSegmentu
-    private int mNumber;                                    //numer danego cSegmentu
+    private int mIndex;                                    //numer danego cSegmentu
     private bool mIsCurve;                                  //czy jest łuk
     private cPolygon mPolygon_Parent;                       //poligon rodzica
 
     internal cPoint Point { get { return mPoint; } set { mPoint = value; } }
-    internal int Number { get { return mNumber; } set { mNumber = value; } }
+    internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal cSegment Segment_Next { get { return GetSegment_Next(); } }
     internal cPolygon Polygon_Parent { get { return mPolygon_Parent; } }
     internal bool IsCurve { get { return mIsCurve; } set { mIsCurve = value; } }
@@ -24,12 +24,12 @@ namespace DrawShape {
 
     }
 
-    public cSegment(cPoint xPoint, int xNumber, bool xIsCurve, cPolygon xPolygon_Parent) {
+    public cSegment(cPoint xPoint, int xIndex, bool xIsCurve, cPolygon xPolygon_Parent) {
       //xPointOfSegment - pierwszy punkt danego cSegmentu
       //xNumberOfSegment - numer danego cSegmentu
 
       mPoint = new cPoint(xPoint.X, xPoint.Y);
-      mNumber = xNumber;
+      mIndex = xIndex;
       mIsCurve = xIsCurve;
       mPolygon_Parent = xPolygon_Parent;
 
@@ -46,17 +46,17 @@ namespace DrawShape {
     private cSegment GetSegment_Next() {
       //funkja zwracjąca następny bok
 
-      int pNumber_Next;
+      int pIndex_Next;
       int pCountMax;
 
       pCountMax = mPolygon_Parent.Segments.Count;
 
-      pNumber_Next = mNumber + 1;
+      pIndex_Next = mIndex + 1;
 
-      if (mNumber > pCountMax)
-        pNumber_Next = 1;
+      if (mIndex > pCountMax)
+        pIndex_Next = 1;
 
-      return mPolygon_Parent.GetSegmentByNumber(pNumber_Next);
+      return mPolygon_Parent.GetSegmentByIndex(pIndex_Next);
 
     }
 
@@ -65,7 +65,7 @@ namespace DrawShape {
       //xSegment - bok bazowy
 
       mPoint = new cPoint(xSegment.Point.X, xSegment.Point.Y);
-      mNumber = xSegment.Number;
+      mIndex = xSegment.Index;
       mIsCurve = xSegment.IsCurve;
       
       //zabraniamy kopiowania takich obiektów, trzeba przypisać je osobno
@@ -76,7 +76,9 @@ namespace DrawShape {
     internal cSegment Clone() {
       //funkcja zwracająca kopie boku (wypełnionionia tylko podstawowe pola)
 
-      cSegment pSegment = new cSegment();
+      cSegment pSegment;
+
+      pSegment = new cSegment();
 
       pSegment.FillMeByObject(this);
 

@@ -9,7 +9,7 @@ namespace DrawShape {
     // 1.Prostokąt - GetPolygon_Rect
     // 2.Wielokąt Foremny - GetPolygon_Regular
 
-    public static cPolygon GetPolygon_Rect(int xWidth, int xHeight) {
+    public static cPolygon GetPolygon_Rect(int xWidth, int xHeight, int xIndex) {
       //funkcja dodająca 4 cSegmenty do listy, z której powstaje prostokąt
       //xWidth - szerokość prostokąta
       //xHeight - wysokość prostokąta
@@ -17,20 +17,20 @@ namespace DrawShape {
       cPoint pBasePt;
       cPolygon pPolygon_Rect;
       cSegment pSegment;
-
+      
       pBasePt = new cPoint(0, 0);
-      pPolygon_Rect = new cPolygon();
+      pPolygon_Rect = new cPolygon(xIndex);
 
-      pSegment = GetSegment(0, 0, pBasePt, 1);
+      pSegment = GetSegment(0, 0, pBasePt, 1, xIndex);
       pPolygon_Rect.AddSegment(pSegment);
 
-      pSegment = GetSegment(xWidth, 0, pBasePt, 2);
+      pSegment = GetSegment(xWidth, 0, pBasePt, 2, xIndex);
       pPolygon_Rect.AddSegment(pSegment);
 
-      pSegment = GetSegment(xWidth, xHeight, pBasePt, 3);
+      pSegment = GetSegment(xWidth, xHeight, pBasePt, 3, xIndex);
       pPolygon_Rect.AddSegment(pSegment);
 
-      pSegment = GetSegment(0, xHeight, pBasePt, 4);
+      pSegment = GetSegment(0, xHeight, pBasePt, 4, xIndex);
       pPolygon_Rect.AddSegment(pSegment);
 
       pPolygon_Rect.ShowSegmentsList();
@@ -39,38 +39,44 @@ namespace DrawShape {
 
     }
 
-    public static cPolygon GetPolygon_Regular(int xRadius, double xAngle) {
+    public static cPolygon GetPolygon_Regular(int xDiameter, int xSegementsQuantity, int xIndex) {
       //funkcja dodająca segmenty do listy, z której powstaje wielokąt foremny
-      //xRadius - promień koła w który jest wpisana figura
-      //xAngle - kąt pomiędzy [punktem pPoint - środkiem koła xCircleCenter - punktem pPoint(z kolejnego segmentu)]
+      //xDiameter - średnica okręgu w który jest wielokąt
+      //xSegementsQuantity - liczba boków wielokąta
+      //xIndex - numer wielokąta
 
       cPoint pBasePt;                                       //punkt bazowy do rysowania figury
       cPoint pCircleCenter;                                 //środek koła
-      double pCosTotalAngle;                                //cosunus kąta pAngleTemp
-      double pSinTotalAngle;                                //sinus kąta pAngleTemp
+      double pCosTotalAngle, pSinTotalAngle;                //Cos, Sin kąta pAngleTemp
       double pIdxCircleAngle;                               //indeks biegnący po okręgu
-      int pNumber;                                          //numer danego segmentu
-      cPolygon pPolygon_Regular;                            //polygon wieloboku
-      cSegment pSegment;                                    //segment wieloboku
+      int pIndex_segm;                                      //numer danego boku
+      cPolygon pPolygon_Regular;                            //wielokąt
+      cSegment pSegment;                                    //bok wielokąta
       double pTotalAngle;                                   //wartość kąta pomiędzy punktem pierwszego segmentu - środkiem koła - punktem kolejnego segmentu
       double pTotalAngleInRadius;                           //kąt pAngleTemp przedstawiony w radianach
 
-      pPolygon_Regular = new cPolygon();
+      double pBaseAngle;
+      int pRadius;
+
+      pBaseAngle = 360 / xSegementsQuantity;            //kąt pomiędzy: punktem boku 1 - środekiem okręgu - punktem boku 2
+      pRadius = xDiameter / 2;
+
+      pPolygon_Regular = new cPolygon(xIndex);
       pCircleCenter = new cPoint(0, 0);
-      pBasePt = new cPoint(pCircleCenter.X + xRadius, pCircleCenter.Y + xRadius);
-      pNumber = 0;
+      pBasePt = new cPoint(pCircleCenter.X + pRadius, pCircleCenter.Y + pRadius);
+      pIndex_segm = 0;
 
       //pętla dodająca kolejne segmenty
-      for (pIdxCircleAngle = 0; pIdxCircleAngle <= (360 - Math.Abs(xAngle)); pIdxCircleAngle += Math.Abs(xAngle)) {
-        pTotalAngle = 360 + (xAngle / 2) + (Math.Abs(xAngle)) * pNumber;
+      for (pIdxCircleAngle = 0; pIdxCircleAngle <= (360 - pBaseAngle); pIdxCircleAngle += pBaseAngle) {
+        pTotalAngle = 360 + (- pBaseAngle / 2) + pBaseAngle * pIndex_segm;
         pTotalAngleInRadius = (pTotalAngle * (Math.PI)) / 180;
         pCosTotalAngle = -Math.Cos(pTotalAngleInRadius);
         pSinTotalAngle = Math.Sin(pTotalAngleInRadius);
 
-        pNumber++;
+        pIndex_segm++;
 
-        pSegment = GetSegment((int)(xRadius * pSinTotalAngle), (int)(xRadius * pCosTotalAngle),
-                   pBasePt, pNumber);
+        pSegment = GetSegment((int)(pRadius * pSinTotalAngle), (int)(pRadius * pCosTotalAngle),
+                   pBasePt, pIndex_segm, xIndex);
 
         pSegment.SetPolygon_Parent(pPolygon_Regular);
 
@@ -84,8 +90,8 @@ namespace DrawShape {
 
     }
 
-    public static cSegment GetSegment(int xOffsetX, int xOffsetY, cPoint xPoint, int xNumber) {
-      //funkcja zwracająca segment
+    public static cSegment GetSegment(int xOffsetX, int xOffsetY, cPoint xPoint, int xIndex_Segm, int xIndex_Poly) {
+      //funkcja zwracająca nowy bok
       //xOffsetX - przesunięcie względem osi X
       //xOffsetY - przesunięcie względem osi Y
       //xPoint - współrzędne punktu bazowego
@@ -95,7 +101,7 @@ namespace DrawShape {
       cSegment pSegment;
      
       pPoint = new cPoint(xPoint.X + xOffsetX, xPoint.Y + xOffsetY);
-      pSegment = new cSegment(pPoint, xNumber, false, new cPolygon());
+      pSegment = new cSegment(pPoint, xIndex_Segm, false, new cPolygon(xIndex_Poly));
 
       return pSegment;
 

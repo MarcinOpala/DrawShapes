@@ -5,40 +5,43 @@ namespace DrawShape {
   public class cAssemblyItem {
 
     private cPolygon mPolygon;
+    private int mWidth_Profile;
+    private int mIndex;
 
     internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
 
-    public cAssemblyItem() {
+    public cAssemblyItem(int xIndex) {
 
-      mPolygon = new cPolygon();
+      mPolygon = new cPolygon(xIndex);
+     
 
     }
 
-    public void CreateAssemblyItem_Profile(cSegment xSegment, int xWidth)  {
+    public void CreateAssemblyItem_Profile(cSegment xSegment, int xWidth_Profile)  {
       //funkcja tworząca AssemblyItem na podstawie boku wielokąta
       //xSegment - oryginalny bok wielokąta
-      //xWidth - szerokość profilu
-      
+      //xWidth_Profile - szerokość profilu
+
       cSegment pSegment;
       float pOffset_X, pOffset_Y;
+
+      mWidth_Profile = xWidth_Profile;
+
+     // mPolygon.AddPolygon_Parent(xSegment.Polygon_Parent);
 
       //Bok 1 punkt z oryginału
       pSegment = new cSegment(xSegment.Point, 1, xSegment.IsCurve, mPolygon);
       mPolygon.AddSegment(pSegment);
 
-
-
       //Bok 2 punkt z oryginał_next
       pSegment = new cSegment(xSegment.Segment_Next.Point, 2, false, mPolygon);
       mPolygon.AddSegment(pSegment);
-
-
 
       //Bok 3 przypisujemy wartość segmentu, z którego robimy przesunięcie
       pSegment = new cSegment(xSegment.Segment_Next.Point, 3, xSegment.Segment_Next.IsCurve , mPolygon);
 
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 3
-      CalculatePointOffset(xSegment.Segment_Next, xWidth, out pOffset_X, out pOffset_Y);
+      CalculatePointOffset(xSegment.Segment_Next, xWidth_Profile, out pOffset_X, out pOffset_Y);
 
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
@@ -51,7 +54,7 @@ namespace DrawShape {
       pSegment = new cSegment(xSegment.Point, 4, false, mPolygon);
 
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 4
-      CalculatePointOffset(xSegment, xWidth, out pOffset_X, out pOffset_Y);
+      CalculatePointOffset(xSegment, xWidth_Profile, out pOffset_X, out pOffset_Y);
      
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
@@ -60,11 +63,11 @@ namespace DrawShape {
      
     }
 
-    private static void CalculatePointOffset(cSegment xSegment, int xWidth, out float xPtX_Offset, out float xPtY_Offset) {
+    private static void CalculatePointOffset(cSegment xSegment, int xWidth_Profile, out float xPtX_Offset, out float xPtY_Offset) {
       //funkcja zwracająca wartość przesunięcia punktów. 
       //działanie: pokrywający się z segment_next vektor (o długości przekątnej profilu) obracamy o kąt przy podstawie profilu
       //xSegment - bazowy segment
-      //xWidth - szerokość profilu
+      //xWidth_Profile - szerokość profilu
       //xPtX_Offset - końcowe przesunięcie X
       //xPtY_Offset - końcowe przesunięcie Y
 
@@ -109,7 +112,7 @@ namespace DrawShape {
       pSinBeta = Math.Sin(pBetaInRadius);
       pCosBeta = Math.Cos(pBetaInRadius);
 
-      pDiagonalSize = xWidth / Math.Sin(pBetaInRadius);            //długość przekątnej profilu
+      pDiagonalSize = xWidth_Profile / Math.Sin(pBetaInRadius);            //długość przekątnej profilu
       
       pPt_X = (pDiagonalSize * pCosAlfa);                          //pośrednie wartości przesunięcia
       pPt_Y = (pDiagonalSize * pSinAlfa);

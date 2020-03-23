@@ -32,10 +32,19 @@ namespace DrawShape {
     private void InitializeComponent() {
       this.pnlAllForm = new System.Windows.Forms.Panel();
       this.pnlInput = new System.Windows.Forms.Panel();
+      this.tabControl1 = new System.Windows.Forms.TabControl();
+      this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.txtProjectName = new System.Windows.Forms.TextBox();
+      this.lblProjectName = new System.Windows.Forms.Label();
       this.btnSetToCurve = new System.Windows.Forms.Button();
+      this.btnDrawAssembly = new System.Windows.Forms.Button();
+      this.btnCreateProject = new System.Windows.Forms.Button();
+      this.tabPage2 = new System.Windows.Forms.TabPage();
       this.lblSelectSide = new System.Windows.Forms.Label();
       this.txtSelectSide = new System.Windows.Forms.TextBox();
-      this.btnDrawProfile = new System.Windows.Forms.Button();
+      this.lblProfileUnit = new System.Windows.Forms.Label();
+      this.lblProfileSize = new System.Windows.Forms.Label();
+      this.txtProfileSize = new System.Windows.Forms.TextBox();
       this.lblUnitDiametr = new System.Windows.Forms.Label();
       this.lblDiametr = new System.Windows.Forms.Label();
       this.lblSide = new System.Windows.Forms.Label();
@@ -47,20 +56,13 @@ namespace DrawShape {
       this.txtMarginH = new System.Windows.Forms.TextBox();
       this.lblMarginVertical = new System.Windows.Forms.Label();
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
-      this.btnDrawRegularPolygon = new System.Windows.Forms.Button();
-      this.lblUnitH = new System.Windows.Forms.Label();
-      this.lblUnitW = new System.Windows.Forms.Label();
-      this.txtHeight = new System.Windows.Forms.TextBox();
-      this.txtWidth = new System.Windows.Forms.TextBox();
-      this.lblHeight = new System.Windows.Forms.Label();
-      this.lblWidth = new System.Windows.Forms.Label();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
-      this.lblProfileUnit = new System.Windows.Forms.Label();
-      this.lblProfileSize = new System.Windows.Forms.Label();
-      this.txtProfileSize = new System.Windows.Forms.TextBox();
       this.pnlAllForm.SuspendLayout();
       this.pnlInput.SuspendLayout();
+      this.tabControl1.SuspendLayout();
+      this.tabPage1.SuspendLayout();
+      this.tabPage2.SuspendLayout();
       this.pnlDraw.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -74,7 +76,7 @@ namespace DrawShape {
       this.pnlAllForm.Controls.Add(this.pnlDraw);
       this.pnlAllForm.Location = new System.Drawing.Point(0, 0);
       this.pnlAllForm.Name = "pnlAllForm";
-      this.pnlAllForm.Size = new System.Drawing.Size(705, 450);
+      this.pnlAllForm.Size = new System.Drawing.Size(1205, 753);
       this.pnlAllForm.TabIndex = 0;
       // 
       // pnlInput
@@ -82,217 +84,248 @@ namespace DrawShape {
       this.pnlInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlInput.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.pnlInput.Controls.Add(this.lblProfileUnit);
-      this.pnlInput.Controls.Add(this.lblProfileSize);
-      this.pnlInput.Controls.Add(this.txtProfileSize);
-      this.pnlInput.Controls.Add(this.btnSetToCurve);
-      this.pnlInput.Controls.Add(this.lblSelectSide);
-      this.pnlInput.Controls.Add(this.txtSelectSide);
-      this.pnlInput.Controls.Add(this.btnDrawProfile);
-      this.pnlInput.Controls.Add(this.lblUnitDiametr);
-      this.pnlInput.Controls.Add(this.lblDiametr);
-      this.pnlInput.Controls.Add(this.lblSide);
-      this.pnlInput.Controls.Add(this.txtDiameter);
-      this.pnlInput.Controls.Add(this.txtSides);
-      this.pnlInput.Controls.Add(this.lblUnitVertical);
-      this.pnlInput.Controls.Add(this.lblUnitHorizontal);
-      this.pnlInput.Controls.Add(this.txtMarginV);
-      this.pnlInput.Controls.Add(this.txtMarginH);
-      this.pnlInput.Controls.Add(this.lblMarginVertical);
-      this.pnlInput.Controls.Add(this.lblMarginHorizontal);
-      this.pnlInput.Controls.Add(this.btnDrawRegularPolygon);
-      this.pnlInput.Controls.Add(this.lblUnitH);
-      this.pnlInput.Controls.Add(this.lblUnitW);
-      this.pnlInput.Controls.Add(this.txtHeight);
-      this.pnlInput.Controls.Add(this.txtWidth);
-      this.pnlInput.Controls.Add(this.lblHeight);
-      this.pnlInput.Controls.Add(this.lblWidth);
-      this.pnlInput.Location = new System.Drawing.Point(425, 25);
+      this.pnlInput.Controls.Add(this.tabControl1);
+      this.pnlInput.Location = new System.Drawing.Point(731, 12);
       this.pnlInput.Name = "pnlInput";
-      this.pnlInput.Size = new System.Drawing.Size(255, 400);
+      this.pnlInput.Size = new System.Drawing.Size(449, 716);
       this.pnlInput.TabIndex = 7;
+      // 
+      // tabControl1
+      // 
+      this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.tabControl1.Controls.Add(this.tabPage1);
+      this.tabControl1.Controls.Add(this.tabPage2);
+      this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.tabControl1.ItemSize = new System.Drawing.Size(200, 35);
+      this.tabControl1.Location = new System.Drawing.Point(1, 3);
+      this.tabControl1.Name = "tabControl1";
+      this.tabControl1.SelectedIndex = 0;
+      this.tabControl1.Size = new System.Drawing.Size(446, 688);
+      this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+      this.tabControl1.TabIndex = 46;
+      // 
+      // tabPage1
+      // 
+      this.tabPage1.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage1.Controls.Add(this.txtProjectName);
+      this.tabPage1.Controls.Add(this.lblProjectName);
+      this.tabPage1.Controls.Add(this.btnSetToCurve);
+      this.tabPage1.Controls.Add(this.btnDrawAssembly);
+      this.tabPage1.Controls.Add(this.btnCreateProject);
+      this.tabPage1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.tabPage1.Location = new System.Drawing.Point(4, 39);
+      this.tabPage1.Name = "tabPage1";
+      this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage1.Size = new System.Drawing.Size(438, 645);
+      this.tabPage1.TabIndex = 0;
+      this.tabPage1.Text = "tabPage1";
+      // 
+      // txtProjectName
+      // 
+      this.txtProjectName.BackColor = System.Drawing.SystemColors.ControlLight;
+      this.txtProjectName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.txtProjectName.ForeColor = System.Drawing.SystemColors.ControlDark;
+      this.txtProjectName.Location = new System.Drawing.Point(188, 24);
+      this.txtProjectName.Name = "txtProjectName";
+      this.txtProjectName.Size = new System.Drawing.Size(229, 30);
+      this.txtProjectName.TabIndex = 49;
+      this.txtProjectName.Text = "txtProjectName";
+      this.txtProjectName.Click += new System.EventHandler(this.txtProjectName_Click);
+      // 
+      // lblProjectName
+      // 
+      this.lblProjectName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblProjectName.ForeColor = System.Drawing.SystemColors.WindowText;
+      this.lblProjectName.Location = new System.Drawing.Point(54, 27);
+      this.lblProjectName.Name = "lblProjectName";
+      this.lblProjectName.Size = new System.Drawing.Size(136, 28);
+      this.lblProjectName.TabIndex = 48;
+      this.lblProjectName.Text = "lblProjectName";
       // 
       // btnSetToCurve
       // 
       this.btnSetToCurve.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnSetToCurve.Location = new System.Drawing.Point(14, 356);
+      this.btnSetToCurve.Location = new System.Drawing.Point(32, 197);
       this.btnSetToCurve.Name = "btnSetToCurve";
-      this.btnSetToCurve.Size = new System.Drawing.Size(222, 40);
-      this.btnSetToCurve.TabIndex = 41;
+      this.btnSetToCurve.Size = new System.Drawing.Size(158, 40);
+      this.btnSetToCurve.TabIndex = 43;
       this.btnSetToCurve.Text = "btnDrawArc";
       this.btnSetToCurve.UseVisualStyleBackColor = true;
       // 
+      // btnDrawAssembly
+      // 
+      this.btnDrawAssembly.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnDrawAssembly.Location = new System.Drawing.Point(32, 139);
+      this.btnDrawAssembly.Name = "btnDrawAssembly";
+      this.btnDrawAssembly.Size = new System.Drawing.Size(158, 40);
+      this.btnDrawAssembly.TabIndex = 42;
+      this.btnDrawAssembly.Text = "btnDrawAssembly";
+      this.btnDrawAssembly.UseVisualStyleBackColor = true;
+      // 
+      // btnCreateProject
+      // 
+      this.btnCreateProject.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnCreateProject.Location = new System.Drawing.Point(32, 83);
+      this.btnCreateProject.Name = "btnCreateProject";
+      this.btnCreateProject.Size = new System.Drawing.Size(158, 40);
+      this.btnCreateProject.TabIndex = 25;
+      this.btnCreateProject.Text = "btnCreateProject";
+      this.btnCreateProject.UseVisualStyleBackColor = true;
+      // 
+      // tabPage2
+      // 
+      this.tabPage2.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage2.Controls.Add(this.lblSelectSide);
+      this.tabPage2.Controls.Add(this.txtSelectSide);
+      this.tabPage2.Controls.Add(this.lblProfileUnit);
+      this.tabPage2.Controls.Add(this.lblProfileSize);
+      this.tabPage2.Controls.Add(this.txtProfileSize);
+      this.tabPage2.Controls.Add(this.lblUnitDiametr);
+      this.tabPage2.Controls.Add(this.lblDiametr);
+      this.tabPage2.Controls.Add(this.lblSide);
+      this.tabPage2.Controls.Add(this.txtDiameter);
+      this.tabPage2.Controls.Add(this.txtSides);
+      this.tabPage2.Controls.Add(this.lblUnitVertical);
+      this.tabPage2.Controls.Add(this.lblUnitHorizontal);
+      this.tabPage2.Controls.Add(this.txtMarginV);
+      this.tabPage2.Controls.Add(this.txtMarginH);
+      this.tabPage2.Controls.Add(this.lblMarginVertical);
+      this.tabPage2.Controls.Add(this.lblMarginHorizontal);
+      this.tabPage2.Location = new System.Drawing.Point(4, 39);
+      this.tabPage2.Name = "tabPage2";
+      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage2.Size = new System.Drawing.Size(438, 645);
+      this.tabPage2.TabIndex = 1;
+      this.tabPage2.Text = "tabPage2";
+      // 
       // lblSelectSide
       // 
-      this.lblSelectSide.Location = new System.Drawing.Point(17, 329);
+      this.lblSelectSide.Location = new System.Drawing.Point(43, 234);
       this.lblSelectSide.Name = "lblSelectSide";
-      this.lblSelectSide.Size = new System.Drawing.Size(80, 30);
-      this.lblSelectSide.TabIndex = 40;
+      this.lblSelectSide.Size = new System.Drawing.Size(94, 30);
+      this.lblSelectSide.TabIndex = 60;
       this.lblSelectSide.Text = "lblSelectSide";
       // 
       // txtSelectSide
       // 
-      this.txtSelectSide.Location = new System.Drawing.Point(103, 328);
+      this.txtSelectSide.Location = new System.Drawing.Point(153, 234);
       this.txtSelectSide.Name = "txtSelectSide";
-      this.txtSelectSide.Size = new System.Drawing.Size(70, 22);
-      this.txtSelectSide.TabIndex = 38;
+      this.txtSelectSide.Size = new System.Drawing.Size(84, 30);
+      this.txtSelectSide.TabIndex = 59;
       this.txtSelectSide.Text = "txtSelectSide";
       // 
-      // btnDrawProfile
+      // lblProfileUnit
       // 
-      this.btnDrawProfile.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawProfile.Location = new System.Drawing.Point(14, 277);
-      this.btnDrawProfile.Name = "btnDrawProfile";
-      this.btnDrawProfile.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawProfile.TabIndex = 37;
-      this.btnDrawProfile.Text = "btnDrawProfile";
-      this.btnDrawProfile.UseVisualStyleBackColor = true;
+      this.lblProfileUnit.Location = new System.Drawing.Point(246, 207);
+      this.lblProfileUnit.Name = "lblProfileUnit";
+      this.lblProfileUnit.Size = new System.Drawing.Size(69, 30);
+      this.lblProfileUnit.TabIndex = 58;
+      this.lblProfileUnit.Text = "lblProfileUnit";
+      // 
+      // lblProfileSize
+      // 
+      this.lblProfileSize.Location = new System.Drawing.Point(43, 204);
+      this.lblProfileSize.Name = "lblProfileSize";
+      this.lblProfileSize.Size = new System.Drawing.Size(94, 30);
+      this.lblProfileSize.TabIndex = 57;
+      this.lblProfileSize.Text = "lblProfileSize";
+      // 
+      // txtProfileSize
+      // 
+      this.txtProfileSize.Location = new System.Drawing.Point(153, 204);
+      this.txtProfileSize.Name = "txtProfileSize";
+      this.txtProfileSize.Size = new System.Drawing.Size(84, 30);
+      this.txtProfileSize.TabIndex = 56;
+      this.txtProfileSize.Text = "txtProfileSize";
       // 
       // lblUnitDiametr
       // 
-      this.lblUnitDiametr.Location = new System.Drawing.Point(182, 219);
+      this.lblUnitDiametr.Location = new System.Drawing.Point(246, 174);
       this.lblUnitDiametr.Name = "lblUnitDiametr";
-      this.lblUnitDiametr.Size = new System.Drawing.Size(55, 30);
-      this.lblUnitDiametr.TabIndex = 36;
+      this.lblUnitDiametr.Size = new System.Drawing.Size(69, 30);
+      this.lblUnitDiametr.TabIndex = 55;
       this.lblUnitDiametr.Text = "lblUnitDiametr";
       // 
       // lblDiametr
       // 
-      this.lblDiametr.Location = new System.Drawing.Point(16, 222);
+      this.lblDiametr.Location = new System.Drawing.Point(43, 174);
       this.lblDiametr.Name = "lblDiametr";
-      this.lblDiametr.Size = new System.Drawing.Size(80, 30);
-      this.lblDiametr.TabIndex = 34;
+      this.lblDiametr.Size = new System.Drawing.Size(94, 30);
+      this.lblDiametr.TabIndex = 54;
       this.lblDiametr.Text = "lblDiametr";
       // 
       // lblSide
       // 
-      this.lblSide.Location = new System.Drawing.Point(16, 192);
+      this.lblSide.Location = new System.Drawing.Point(43, 144);
       this.lblSide.Name = "lblSide";
-      this.lblSide.Size = new System.Drawing.Size(80, 30);
-      this.lblSide.TabIndex = 33;
+      this.lblSide.Size = new System.Drawing.Size(108, 30);
+      this.lblSide.TabIndex = 53;
       this.lblSide.Text = "lblSide";
       // 
       // txtDiameter
       // 
-      this.txtDiameter.Location = new System.Drawing.Point(106, 216);
+      this.txtDiameter.Location = new System.Drawing.Point(153, 174);
       this.txtDiameter.Name = "txtDiameter";
-      this.txtDiameter.Size = new System.Drawing.Size(70, 22);
-      this.txtDiameter.TabIndex = 32;
+      this.txtDiameter.Size = new System.Drawing.Size(84, 30);
+      this.txtDiameter.TabIndex = 52;
       this.txtDiameter.Text = "txtDiameter";
       // 
       // txtSides
       // 
-      this.txtSides.Location = new System.Drawing.Point(106, 189);
+      this.txtSides.Location = new System.Drawing.Point(153, 144);
       this.txtSides.Name = "txtSides";
-      this.txtSides.Size = new System.Drawing.Size(70, 22);
-      this.txtSides.TabIndex = 31;
+      this.txtSides.Size = new System.Drawing.Size(84, 30);
+      this.txtSides.TabIndex = 51;
       this.txtSides.Text = "txtSlides";
       // 
       // lblUnitVertical
       // 
-      this.lblUnitVertical.Location = new System.Drawing.Point(181, 164);
+      this.lblUnitVertical.Location = new System.Drawing.Point(246, 114);
       this.lblUnitVertical.Name = "lblUnitVertical";
-      this.lblUnitVertical.Size = new System.Drawing.Size(35, 20);
-      this.lblUnitVertical.TabIndex = 30;
+      this.lblUnitVertical.Size = new System.Drawing.Size(49, 30);
+      this.lblUnitVertical.TabIndex = 50;
       this.lblUnitVertical.Text = "lblUnitVertical";
       // 
       // lblUnitHorizontal
       // 
-      this.lblUnitHorizontal.Location = new System.Drawing.Point(181, 134);
+      this.lblUnitHorizontal.Location = new System.Drawing.Point(246, 84);
       this.lblUnitHorizontal.Name = "lblUnitHorizontal";
-      this.lblUnitHorizontal.Size = new System.Drawing.Size(35, 20);
-      this.lblUnitHorizontal.TabIndex = 29;
+      this.lblUnitHorizontal.Size = new System.Drawing.Size(49, 30);
+      this.lblUnitHorizontal.TabIndex = 49;
       this.lblUnitHorizontal.Text = "lblUnitHorizontal";
       // 
       // txtMarginV
       // 
-      this.txtMarginV.Location = new System.Drawing.Point(106, 161);
+      this.txtMarginV.Location = new System.Drawing.Point(153, 114);
       this.txtMarginV.Name = "txtMarginV";
-      this.txtMarginV.Size = new System.Drawing.Size(70, 22);
-      this.txtMarginV.TabIndex = 28;
+      this.txtMarginV.Size = new System.Drawing.Size(84, 30);
+      this.txtMarginV.TabIndex = 48;
       this.txtMarginV.Text = "txtMarginV";
       // 
       // txtMarginH
       // 
-      this.txtMarginH.Location = new System.Drawing.Point(106, 134);
+      this.txtMarginH.Location = new System.Drawing.Point(153, 84);
       this.txtMarginH.Name = "txtMarginH";
-      this.txtMarginH.Size = new System.Drawing.Size(70, 22);
-      this.txtMarginH.TabIndex = 27;
+      this.txtMarginH.Size = new System.Drawing.Size(84, 30);
+      this.txtMarginH.TabIndex = 47;
       this.txtMarginH.Text = "txtMarginH";
       // 
       // lblMarginVertical
       // 
-      this.lblMarginVertical.Location = new System.Drawing.Point(16, 164);
+      this.lblMarginVertical.Location = new System.Drawing.Point(43, 114);
       this.lblMarginVertical.Name = "lblMarginVertical";
-      this.lblMarginVertical.Size = new System.Drawing.Size(90, 20);
-      this.lblMarginVertical.TabIndex = 26;
+      this.lblMarginVertical.Size = new System.Drawing.Size(104, 30);
+      this.lblMarginVertical.TabIndex = 46;
       this.lblMarginVertical.Text = "lblMarginVertical";
       // 
       // lblMarginHorizontal
       // 
-      this.lblMarginHorizontal.Location = new System.Drawing.Point(16, 134);
+      this.lblMarginHorizontal.Location = new System.Drawing.Point(43, 87);
       this.lblMarginHorizontal.Name = "lblMarginHorizontal";
-      this.lblMarginHorizontal.Size = new System.Drawing.Size(90, 20);
-      this.lblMarginHorizontal.TabIndex = 25;
+      this.lblMarginHorizontal.Size = new System.Drawing.Size(104, 30);
+      this.lblMarginHorizontal.TabIndex = 45;
       this.lblMarginHorizontal.Text = "lblMarginHorizontal";
-      // 
-      // btnDrawRegularPolygon
-      // 
-      this.btnDrawRegularPolygon.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawRegularPolygon.Location = new System.Drawing.Point(16, 82);
-      this.btnDrawRegularPolygon.Name = "btnDrawRegularPolygon";
-      this.btnDrawRegularPolygon.Size = new System.Drawing.Size(222, 40);
-      this.btnDrawRegularPolygon.TabIndex = 24;
-      this.btnDrawRegularPolygon.Text = "btnDrawRegularPolygon";
-      this.btnDrawRegularPolygon.UseVisualStyleBackColor = true;
-      // 
-      // lblUnitH
-      // 
-      this.lblUnitH.Location = new System.Drawing.Point(178, 55);
-      this.lblUnitH.Name = "lblUnitH";
-      this.lblUnitH.Size = new System.Drawing.Size(70, 39);
-      this.lblUnitH.TabIndex = 23;
-      this.lblUnitH.Text = "lblUnitH";
-      // 
-      // lblUnitW
-      // 
-      this.lblUnitW.Location = new System.Drawing.Point(178, 25);
-      this.lblUnitW.Name = "lblUnitW";
-      this.lblUnitW.Size = new System.Drawing.Size(70, 22);
-      this.lblUnitW.TabIndex = 22;
-      this.lblUnitW.Text = "lblUnitW";
-      // 
-      // txtHeight
-      // 
-      this.txtHeight.Location = new System.Drawing.Point(103, 52);
-      this.txtHeight.Name = "txtHeight";
-      this.txtHeight.Size = new System.Drawing.Size(70, 22);
-      this.txtHeight.TabIndex = 21;
-      this.txtHeight.Text = "txtHeight";
-      // 
-      // txtWidth
-      // 
-      this.txtWidth.Location = new System.Drawing.Point(103, 25);
-      this.txtWidth.Name = "txtWidth";
-      this.txtWidth.Size = new System.Drawing.Size(70, 22);
-      this.txtWidth.TabIndex = 20;
-      this.txtWidth.Text = "txtWidth";
-      // 
-      // lblHeight
-      // 
-      this.lblHeight.Location = new System.Drawing.Point(13, 55);
-      this.lblHeight.Name = "lblHeight";
-      this.lblHeight.Size = new System.Drawing.Size(80, 30);
-      this.lblHeight.TabIndex = 19;
-      this.lblHeight.Text = "lblHeight";
-      // 
-      // lblWidth
-      // 
-      this.lblWidth.Location = new System.Drawing.Point(13, 25);
-      this.lblWidth.Name = "lblWidth";
-      this.lblWidth.Size = new System.Drawing.Size(80, 30);
-      this.lblWidth.TabIndex = 18;
-      this.lblWidth.Text = "lblWidth";
       // 
       // pnlDraw
       // 
@@ -301,9 +334,9 @@ namespace DrawShape {
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnlDraw.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlDraw.Controls.Add(this.pnlCanvas);
-      this.pnlDraw.Location = new System.Drawing.Point(25, 25);
+      this.pnlDraw.Location = new System.Drawing.Point(25, 12);
       this.pnlDraw.Name = "pnlDraw";
-      this.pnlDraw.Size = new System.Drawing.Size(400, 400);
+      this.pnlDraw.Size = new System.Drawing.Size(700, 716);
       this.pnlDraw.TabIndex = 0;
       // 
       // pnlCanvas
@@ -314,46 +347,28 @@ namespace DrawShape {
       this.pnlCanvas.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.pnlCanvas.BackColor = System.Drawing.Color.White;
       this.pnlCanvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.pnlCanvas.Location = new System.Drawing.Point(25, 25);
+      this.pnlCanvas.Cursor = System.Windows.Forms.Cursors.Cross;
+      this.pnlCanvas.Location = new System.Drawing.Point(25, 42);
       this.pnlCanvas.Name = "pnlCanvas";
-      this.pnlCanvas.Size = new System.Drawing.Size(350, 350);
+      this.pnlCanvas.Size = new System.Drawing.Size(650, 649);
       this.pnlCanvas.TabIndex = 0;
-      // 
-      // lblProfileUnit
-      // 
-      this.lblProfileUnit.Location = new System.Drawing.Point(183, 249);
-      this.lblProfileUnit.Name = "lblProfileUnit";
-      this.lblProfileUnit.Size = new System.Drawing.Size(55, 19);
-      this.lblProfileUnit.TabIndex = 44;
-      this.lblProfileUnit.Text = "lblProfileUnit";
-      // 
-      // lblProfileSize
-      // 
-      this.lblProfileSize.Location = new System.Drawing.Point(17, 252);
-      this.lblProfileSize.Name = "lblProfileSize";
-      this.lblProfileSize.Size = new System.Drawing.Size(80, 22);
-      this.lblProfileSize.TabIndex = 43;
-      this.lblProfileSize.Text = "lblProfileSize";
-      // 
-      // txtProfileSize
-      // 
-      this.txtProfileSize.Location = new System.Drawing.Point(107, 246);
-      this.txtProfileSize.Name = "txtProfileSize";
-      this.txtProfileSize.Size = new System.Drawing.Size(70, 22);
-      this.txtProfileSize.TabIndex = 42;
-      this.txtProfileSize.Text = "txtProfileSize";
       // 
       // MainForm
       // 
-      this.ClientSize = new System.Drawing.Size(705, 450);
+      this.ClientSize = new System.Drawing.Size(1205, 750);
       this.Controls.Add(this.pnlAllForm);
-      this.MaximumSize = new System.Drawing.Size(1000, 700);
-      this.MinimumSize = new System.Drawing.Size(723, 497);
+      this.MaximumSize = new System.Drawing.Size(1300, 1201);
+      this.MinimumSize = new System.Drawing.Size(923, 597);
       this.Name = "MainForm";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Draw Shapes";
       this.pnlAllForm.ResumeLayout(false);
       this.pnlInput.ResumeLayout(false);
-      this.pnlInput.PerformLayout();
+      this.tabControl1.ResumeLayout(false);
+      this.tabPage1.ResumeLayout(false);
+      this.tabPage1.PerformLayout();
+      this.tabPage2.ResumeLayout(false);
+      this.tabPage2.PerformLayout();
       this.pnlDraw.ResumeLayout(false);
       this.ResumeLayout(false);
 
@@ -365,31 +380,30 @@ namespace DrawShape {
     private System.Windows.Forms.Panel pnlDraw;
     private System.Windows.Forms.Panel pnlCanvas;
     private Panel pnlInput;
-    private Label lblUnitH;
-    private Label lblUnitW;
-    private TextBox txtHeight;
-    private TextBox txtWidth;
-    private Label lblHeight;
-    private Label lblWidth;
+    private TabControl tabControl1;
+    private TabPage tabPage1;
+    private Button btnSetToCurve;
+    private Button btnDrawAssembly;
+    private Button btnCreateProject;
+    private TabPage tabPage2;
+    private Label lblSelectSide;
+    private TextBox txtSelectSide;
+    private Label lblProfileUnit;
+    private Label lblProfileSize;
+    private TextBox txtProfileSize;
+    private Label lblUnitDiametr;
+    private Label lblDiametr;
+    private Label lblSide;
+    private TextBox txtDiameter;
+    private TextBox txtSides;
     private Label lblUnitVertical;
     private Label lblUnitHorizontal;
     private TextBox txtMarginV;
     private TextBox txtMarginH;
     private Label lblMarginVertical;
     private Label lblMarginHorizontal;
-    private Button btnDrawRegularPolygon;
-    private TextBox txtDiameter;
-    private TextBox txtSides;
-    private Label lblUnitDiametr;
-    private Label lblDiametr;
-    private Label lblSide;
-    private Button btnSetToCurve;
-    private Label lblSelectSide;
-    private TextBox txtSelectSide;
-    private Button btnDrawProfile;
-    private Label lblProfileUnit;
-    private Label lblProfileSize;
-    private TextBox txtProfileSize;
+    private Label lblProjectName;
+    private TextBox txtProjectName;
   }
 }
 

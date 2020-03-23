@@ -1,80 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace DrawShape {
 
   public class cDrawingAdapter {
 
-    private cDrawing mDrawing;
-    private static cPoint mCircleCenter;                    //środek figury opisanej na okręgu
+    public cDrawingAdapter() { }
 
-    internal static cPoint CircleCenter { get { return mCircleCenter; } set { mCircleCenter = value; } }
-    internal cDrawing Drawing { get { return mDrawing; } set { mDrawing = value; } }
 
-    public cDrawingAdapter(){
+    public cDrawing GetDrawing(cProject xProject) {
+      //funkcja zwracająca Drawing_Project
+      //xProject - projekt wielokąta oryginalny
 
       cDrawing pDrawing;
+      cPolygon pPolygon;
 
+      pPolygon = xProject.PolygonsEnv.Polygons[1];          //wielokąt obrysu ramy
+      
       pDrawing = new cDrawing();
 
-      mDrawing = pDrawing;
+      /*      if (pPolygon.Assembly == null) {
 
-    }
+              ProcessPolygon(pDrawing, pPolygon);
 
-    public cDrawing GetDrawing(cPolygon xPolygon) {
-      //funkcja 
-      //xPolygon - poligon bazowy
+            } else {
 
-      int pCount;                                           //liczba boków figury
-      int pIndex;                                           //indeks iteracji
-      cSegment pSegment;
-      cDrawingItem pDrawingItem;
-      cDrawing pDrawing;
+              ProcessAssmbly(pDrawing, pPolygon.Assembly);
 
-      pDrawing = new cDrawing();
+            }*/
 
-      pCount = xPolygon.Segments.Count;
-     
-      for (pIndex = 1; pIndex <= pCount; pIndex++) {        //pętla tworząca i dodająca DrawingItemy
+      ProcessPolygon(pDrawing, pPolygon);
 
-        pSegment = xPolygon.Assembly.AssemblyItems[pIndex].Polygon.Segments[1];
+      if (pPolygon.Assembly == null)
+        return pDrawing;
 
-        pDrawingItem = CreateDrawingItem(pSegment);
 
-        pDrawing.AddItem(pDrawingItem, pIndex);
 
-      }
+
+      ProcessAssembly(pDrawing, pPolygon.Assembly);
+
+    
+
 
       return pDrawing;
 
     }
 
-    public cDrawingItem CreateDrawingItem(cSegment xSegment) {
-      //funkcja tworząca DrawingItemy
-      //xSegment - segment oryginalny
+    private void ProcessPolygon(cDrawing xDrawing, cPolygon xPolygon) {
+      //funkcja przetwarzająca wielokąt obrysu ramy
+      //xDrawing - 
+      //xPolygon - 
 
       cDrawingItem pDrawingItem;
-      cSegment pSegment;
+      cDrawingSegment pDrawingSegment;
 
       pDrawingItem = new cDrawingItem();
 
-      for (int i = 1; i <= xSegment.Polygon_Parent.Segments.Count ; i++) {
+      foreach (cSegment pSegment in xPolygon.Segments.Values) {
 
-        pSegment = xSegment.Polygon_Parent.Segments[i];
+        pDrawingSegment = new cDrawingSegment(pSegment);
 
-        pDrawingItem.AddSegment(new cDrawingSegment(pSegment, i));
-
+        pDrawingItem.AddSegment(pDrawingSegment);
+       
       }
-     
-      return pDrawingItem;
+
+      xDrawing.AddItem(pDrawingItem, xPolygon.Index);
 
     }
-    
+
+    private void ProcessAssembly(cDrawing xDrawing, cAssembly xAssembly) {
+      //funkcja przetwarzająca Assembly
+      //xDrawing - 
+      //xAssembly - 
+
+      cPolygon pPolygon;
+
+      foreach (cAssemblyItem pAssemblyItem in xAssembly.AssemblyItems.Values) {
+
+        pPolygon = pAssemblyItem.Polygon;
+
+        ProcessPolygon(xDrawing, pPolygon); 
+        
+      }
+
+    }
+
   }
 
 }
