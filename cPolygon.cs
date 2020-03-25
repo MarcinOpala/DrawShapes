@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace DrawShape {
 
-  public enum PolygonFunctionalityEnum {                                       //numerator funkcjonalności wielokąta
-    Undefined = 0,
-    FrameOutline = 1,  
+  public enum PolygonFunctionalityEnum {                    //numerator funkcjonalności wielokąta
+    Undefined = 0,                                          //nieokreślony
+    FrameOutline = 1,                                       //poligon posiada assembly
+    FrameVirtual = 2,                                       //wirualny kształt ramy
+    Mullion = 3,                                            //słupek
   }
 
   public class cPolygon {
 
-    private cAssembly mAssembly;
-    private PolygonFunctionalityEnum mCntPF;
-    private int mIndex;
-    private Dictionary<int, cSegment> mSegments;
+    private cAssembly mAssembly;                            //
+    private cAssemblyItem mAssemblyItem;                    //
+    private PolygonFunctionalityEnum mCntPF;                //typ funkcji
+    private int mIndex;                                     //numer wielokąta
+    private cPolygon mParent;                               //rodzic wielokąta
+    private Dictionary<int, cSegment> mSegments;            //lista boków
 
     internal cAssembly Assembly { get { return mAssembly; } }
+    internal cAssemblyItem AssemblyItem { get { return mAssemblyItem; } }
     internal PolygonFunctionalityEnum CntPF { get { return mCntPF; } set { mCntPF = value; } } 
     internal int Index { get { return mIndex; } set { mIndex = value; } }
+    internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
     internal Dictionary<int, cSegment> Segments { get { return mSegments; } set { mSegments = value; } }
     internal string SegmentsList { get { return GetSegmentsList(); } }
-
 
     public cPolygon() {
 
       mSegments = new Dictionary<int, cSegment>();
-      //mAssembly = new cAssembly();
       mCntPF = PolygonFunctionalityEnum.Undefined;     
       
     }
@@ -35,7 +40,6 @@ namespace DrawShape {
     public cPolygon(int xIndex) {
 
       mSegments = new Dictionary<int, cSegment>();
-     // mAssembly = new cAssembly();
       mIndex = xIndex;
       mCntPF = PolygonFunctionalityEnum.Undefined;
 
@@ -107,6 +111,111 @@ namespace DrawShape {
         pSegmentIndex = 1;
 
       return mSegments[pSegmentIndex];
+
+    }
+
+    internal void FillMeByObject(cPolygon xPolygon) {
+      //funkcja wypełniająca podstawowe dane według wybranego boku
+      //xPolygon - wielokąt bazowy
+
+      cSegment pSegment;
+
+      //składniki, których nie ustawiamy, ani nie kopiujemy - powinny być ustawione w innym miejscu - na zewnątrz
+      //mIndex;
+      //mAssembly = null;                                           //do rozbudowy
+      //mParent;                                                    //rodzic wielokąta
+
+      mCntPF = xPolygon.CntPF; 
+
+      mSegments = new Dictionary<int, cSegment>();
+
+      foreach (cSegment pSegment_Oryginal in xPolygon.Segments.Values) {
+
+        pSegment = pSegment_Oryginal.Clone();
+        pSegment.SetPolygon_Parent(this);
+        
+        mSegments.Add(pSegment.Index, pSegment);
+
+      }
+
+    }
+
+    internal cPolygon Clone() {
+      //funkcja zwracająca kopie boku (wypełnionionia tylko podstawowe pola)
+
+      cPolygon pPolygon;
+
+      pPolygon = new cPolygon();
+
+      pPolygon.FillMeByObject(this);
+
+      return pPolygon;
+
+    }
+
+    public Dictionary <int, cPolygon> Split_PolygonByWidth(int xWidth) {
+      //funkcja zwracająca kolekcję podzielonych prostokątów
+      //xWidth - szerokości względem której dzielimy prostokąt
+
+      Dictionary<int, cPolygon> pCln;
+      cPolygon pPolygon;
+
+      pCln = new Dictionary<int, cPolygon> ();
+
+      pPolygon = Clone();
+
+      pPolygon.Index = mIndex;
+      pPolygon.Segments[2].Point.X = xWidth;
+      pPolygon.Segments[3].Point.X = xWidth;
+
+      pCln.Add(1, pPolygon);
+
+
+      pPolygon = Clone();
+
+      pPolygon.Index = mIndex + 1;
+      pPolygon.Segments[1].Point.X -= xWidth;
+      pPolygon.Segments[4].Point.X -= xWidth;
+
+      pCln.Add(2, pPolygon);
+
+      return pCln;
+
+    }
+
+    internal void AddAssemblyItem(cAssemblyItem xAssemblyItem) {
+      //funkcja dodająca AssemblyItem
+
+      mAssemblyItem = xAssemblyItem;
+      
+    }
+
+    internal void Resize(int xMullionPosition_X, int xMullionWidth) {
+
+
+      mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
+      mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
+      mSegments[3].Point.X = xMullionPosition_X + xMullionWidth / 2;
+      mSegments[4].Point.X = xMullionPosition_X - xMullionWidth / 2; 
+
+    }
+
+    internal void SetPolygonToMullion(cPolygon xPolygon, int xMullionPosition_X, int xMullionWidth, float xWidth_Profile) {
+      //
+
+      cAssemblyItem pAssemblyItem;
+
+      mCntPF = PolygonFunctionalityEnum.Mullion;
+
+      mParent = xPolygon;                             
+
+      Resize(xMullionPosition_X, xMullionWidth);
+
+      pAssemblyItem = new cAssemblyItem(mIndex);
+
+      pAssemblyItem.CreateAssemblyItem_Mullion(this, xWidth_Profile);
+
+      AddAssemblyItem(pAssemblyItem);
 
     }
 

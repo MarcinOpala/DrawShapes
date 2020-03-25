@@ -22,15 +22,19 @@ namespace DrawShape {
       pPolygon_Rect = new cPolygon(xIndex);
 
       pSegment = GetSegment(0, 0, pBasePt, 1, xIndex);
+      pSegment.SetPolygon_Parent(pPolygon_Rect);
       pPolygon_Rect.AddSegment(pSegment);
 
       pSegment = GetSegment(xWidth, 0, pBasePt, 2, xIndex);
+      pSegment.SetPolygon_Parent(pPolygon_Rect);
       pPolygon_Rect.AddSegment(pSegment);
 
       pSegment = GetSegment(xWidth, xHeight, pBasePt, 3, xIndex);
+      pSegment.SetPolygon_Parent(pPolygon_Rect);
       pPolygon_Rect.AddSegment(pSegment);
 
       pSegment = GetSegment(0, xHeight, pBasePt, 4, xIndex);
+      pSegment.SetPolygon_Parent(pPolygon_Rect);
       pPolygon_Rect.AddSegment(pSegment);
 
       pPolygon_Rect.ShowSegmentsList();

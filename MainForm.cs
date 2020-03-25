@@ -31,17 +31,29 @@ namespace DrawShape {
       this.lblSide.Text = "Ilość boków:";
       this.txtSides.Text = "4";
       this.lblUnitDiametr.Text = "mm";
-      this.txtSelectSide.Text = "1";
+      this.txtSelectSide.Text = "3";
       this.lblSelectSide.Text = "Bok numer:";
       this.btnSetToCurve.Text = "Rysuj Łuk";
       this.btnDrawAssembly.Text = "Wstaw Ramę";
       this.lblProfileUnit.Text = "mm";
-      this.lblProfileSize.Text = "Szerokość profilu:";
-      this.txtProfileSize.Text = "50";
+      this.lblProfileSize.Text = "Profil:";
+      this.txtProfileSize.Text = "25";
       this.tabPage1.Text = "Operacje";
       this.tabPage2.Text = "Ustawienia";
       this.lblProjectName.Text = "Nazwa Projektu";
       this.txtProjectName.Text = "Wprowadź nazwę projektu";
+      this.txtHeight.Text = "300";
+      this.txtWidth.Text = "500";
+      this.lblHeight.Text = "Wysokość:";
+      this.lblWidth.Text = "Szerokość:";
+      this.lblUnitWidth.Text = "mm";
+      this.lblUnitHeight.Text = "mm";
+      this.btnAddColumn.Text = "Wstaw słupek";
+      this.txtMullionLocation.Text = "150";
+      this.lblMullionLocation.Text = "Pozycja słupeka:";
+      this.txtMullionWidth.Text = "20";
+      this.lblMullionWidth.Text = "Szerokość słupka:";
+
 
       //włączenie funkcji blokującej wpisanie liter i znaków szczególnych w wybranych polach
       this.txtMarginV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
@@ -50,6 +62,10 @@ namespace DrawShape {
       this.txtDiameter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtSelectSide.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtProfileSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtMullionLocation.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtMullionWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
 
       //funkcje CLICK
       this.btnCreateProject.Click += new System.EventHandler(this.CreateProject_Click);            
@@ -68,18 +84,25 @@ namespace DrawShape {
       cDrawing pDrawing;
       cPoint pPt_Base;
       float pRadius;
-
+      int pHeight, pWidth;
+    
       if (mProject == null)                         //jeśli nie istnieje projekt
         return;
 
+      pHeight = int.Parse(txtHeight.Text);
+      pWidth = int.Parse(txtWidth.Text);
+           
       pRadius = float.Parse(txtDiameter.Text) / 2;
+
       mMarginV = double.Parse(txtMarginV.Text);
       mMarginH = double.Parse(txtMarginH.Text);
 
       //obliczanie współrzędnych punktu bazowego wieloboku foremnego do wyświetlania na Canvas
       pPt_Base = new cPoint();
-      pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - 2 * pRadius * mScale) / 2);
-      pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - 2 * pRadius * mScale) / 2));
+      pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - pWidth * mScale) / 2);
+      pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - pHeight * mScale) / 2));
+
+      Console.WriteLine(">>>> X: " + pPt_Base.X + " Y: " + pPt_Base.Y);
 
       mDrawingAdapter = new cDrawingAdapter();
 
@@ -92,18 +115,17 @@ namespace DrawShape {
     private void CreateProject_Click(object sender, EventArgs e) {
       //funkca tworząca projekt
 
-      int pDiameter;
+      int pHeight, pWidth;
       string pNe;
-      int pSegementsQuantity;                               //liczba boków figury foremnej
 
-      pDiameter = int.Parse(txtDiameter.Text);
+      pHeight = int.Parse(txtHeight.Text);
+      pWidth = int.Parse(txtWidth.Text);
       pNe = "nowy projekt";
-      pSegementsQuantity = int.Parse(txtSides.Text);
-
+      
       CalculateScale();
 
       mProject = new cProject();
-      mProject.CreateMe(pDiameter, pSegementsQuantity, pNe);
+      mProject.CreateMe(pWidth, pHeight, pNe);
 
       DrawProjectShape();
 
@@ -113,12 +135,16 @@ namespace DrawShape {
       //funkca wywołująca rysowanie Assembly
 
       cPolygon pPolygon;
-      int pWidth_Profile;                                   //szerokość profilu
+      int pWidth_Profile;                                   
 
       pPolygon = mProject.PolygonsEnv.Polygons[1];
-      pWidth_Profile = int.Parse(txtProfileSize.Text);
+
+      pWidth_Profile = int.Parse(txtProfileSize.Text);      //szerokość profilu z Input
 
       mProject.PolygonsEnv.Polygons[1].CreateAssembly(pWidth_Profile, pPolygon);
+
+      mProject.PolygonsEnv.CreatePolygon_Virtual(pPolygon);
+
 
       this.pnlCanvas.Refresh();
 
@@ -127,7 +153,39 @@ namespace DrawShape {
     private void DrawProjectShape() {
       //funkjca rysująca kształt projektu
 
+
+      this.pnlCanvas.Refresh();
+
+    }
+
+    private void InsertMullion(object sender, EventArgs e) {
+      //funkcja wstawiająca słupek 
       
+      int pMullionPosition_X; 
+      cPolygon pPolygon;
+      int pWidth_Frame;
+      int pWidth_Mullion;
+      float pWidth_Profile;
+
+      if (mProject.PolygonsEnv.GetPolygonMullion() != null) return;
+
+      pMullionPosition_X = int.Parse(txtMullionLocation.Text);
+      pWidth_Mullion = int.Parse(txtMullionWidth.Text);
+      pWidth_Frame = int.Parse(txtWidth.Text);
+      pWidth_Profile = float.Parse(txtProfileSize.Text);
+
+      if (pMullionPosition_X + pWidth_Mullion / 2 > pWidth_Frame - pWidth_Profile) return;   //ograniczenie z prawej
+      if (pMullionPosition_X - pWidth_Mullion / 2 < pWidth_Profile) return;                  //ograniczenie z lewej
+
+      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual();
+
+      //dzielenie Polygon_Virtual w miejscu pozycji kolumny
+      mProject.PolygonsEnv.Split_Polygon(pMullionPosition_X, pPolygon);      
+
+      pPolygon = mProject.PolygonsEnv.GetPolygonOutline();
+
+      //utworzenie słupka na bazie Polygon_Outline
+      mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, pMullionPosition_X, pWidth_Mullion, pWidth_Profile);
 
       this.pnlCanvas.Refresh();
 
@@ -142,11 +200,19 @@ namespace DrawShape {
       if (mProject == null)                         //jeśli nie istnieje projekt
         return;
 
-      pAssembly = mProject.PolygonsEnv.Polygons[1].Assembly;
-      pSelect = int.Parse(txtSelectSide.Text);
+     
+      pSelect = int.Parse(txtSelectSide.Text)+1;
 
-      pAssembly.AssemblyItems[pSelect].Polygon.SetSegmentToCurve(1);
-      pAssembly.AssemblyItems[pSelect].Polygon.SetSegmentToCurve(3);
+      pAssembly = mProject.PolygonsEnv.Polygons[1].Assembly;
+
+      if (pAssembly != null) {
+
+        pAssembly.AssemblyItems[pSelect].Polygon.SetSegmentToCurve(1);
+        pAssembly.AssemblyItems[pSelect].Polygon.SetSegmentToCurve(3);
+
+      }
+
+      mProject.PolygonsEnv.Polygons[1].SetSegmentToCurve(pSelect - 1);
 
       this.pnlCanvas.Refresh();
 
@@ -201,13 +267,22 @@ namespace DrawShape {
       this.txtProjectName.ForeColor = System.Drawing.SystemColors.WindowText;
       this.txtProjectName.Text = "";
     }
-
+    
     public double CalculateScale() {
       //funkcja obliczająca skale według największej wartości INPUT
 
       int[] mArrayOfInput = { };                            //tablica wsystkich INPUT do liczenia skali
+      int pDiameter;
+      int pHeight, pWidth;
 
-      mArrayOfInput = mArrayOfInput.Concat(new int[] { int.Parse(txtDiameter.Text) }).ToArray();
+      //24.03.2020 MO tymczasowo wyłączone - potrzebne do rysowania wielokąta foremnego 
+      //pDiameter = int.Parse(txtDiameter.Text);
+
+      pDiameter = 0;
+      pHeight = int.Parse(txtHeight.Text);
+      pWidth = int.Parse(txtWidth.Text);
+
+      mArrayOfInput = mArrayOfInput.Concat(new int[] { pWidth, pHeight, pDiameter }).ToArray();
 
       TakeMaxValueOfArrey(mArrayOfInput);
 
@@ -239,7 +314,7 @@ namespace DrawShape {
 
       }
 
-      mArrayOfInput = new int[mArrayOfInput.Length - 1];                                              //czyszczę tablicę
+      mArrayOfInput = new int[mArrayOfInput.Length - 3];                                              //czyszczę tablicę
 
       return mScale;
 

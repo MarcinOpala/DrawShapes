@@ -10,7 +10,7 @@ namespace DrawShape {
   public class cSegment {
 
     private cPoint mPoint;                                  //punkt początkowy danego cSegmentu
-    private int mIndex;                                    //numer danego cSegmentu
+    private int mIndex;                                     //numer danego cSegmentu
     private bool mIsCurve;                                  //czy jest łuk
     private cPolygon mPolygon_Parent;                       //poligon rodzica
 
@@ -25,8 +25,10 @@ namespace DrawShape {
     }
 
     public cSegment(cPoint xPoint, int xIndex, bool xIsCurve, cPolygon xPolygon_Parent) {
-      //xPointOfSegment - pierwszy punkt danego cSegmentu
-      //xNumberOfSegment - numer danego cSegmentu
+      //xPoint - pierwszy punkt danego cSegmentu
+      //xIndex - numer danego cSegmentu
+      //xIsCurve - ustawienie rodzaju krzywej
+      //xPolygon_Parent - ustawienie rodzica
 
       mPoint = new cPoint(xPoint.X, xPoint.Y);
       mIndex = xIndex;

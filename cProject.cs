@@ -20,11 +20,10 @@ namespace DrawShape {
 
     }
 
-    internal void CreateMe(int xDiameter, int xSegementsQuantity, string xNe) {
+    internal void CreateMe(int xWidth, int xHeight, string xNe) {
       //funkcja tworząca projekt
-      //xWidth_Profile - szerokość profilu
-      //xDiametr - średnica okręgu, w który wpisany jest wielobok
-      //xSegementsQuantity - liczba boków wielokąta
+      //xWidth - szerokość prostokąta
+      //xHeight - wysokość prostokąta
       //xNe - nazwa projektu
 
       int pIndex;
@@ -34,12 +33,16 @@ namespace DrawShape {
 
       pIndex = 1;
       
-      pPolygon = cPolygonFactory.GetPolygon_Regular(xDiameter, xSegementsQuantity, pIndex);
-     // pPolygon.CreateAssembly(xWidth_Profile, pPolygon);
+      pPolygon = cPolygonFactory.GetPolygon_Rect(xWidth, xHeight, pIndex);
+
+      //24.03.2020 MO tymczasowo wyłączone - rysowanie wielokąta foremnego
+      //pPolygon = cPolygonFactory.GetPolygon_Regular(xDiameter, xSegementsQuantity, pIndex);
 
       mPolygonsEnv.AddPolygon(pPolygon);
       
     }
+
+    
 
 
 

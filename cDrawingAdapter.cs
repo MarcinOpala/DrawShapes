@@ -18,28 +18,19 @@ namespace DrawShape {
       
       pDrawing = new cDrawing();
 
-      /*      if (pPolygon.Assembly == null) {
-
-              ProcessPolygon(pDrawing, pPolygon);
-
-            } else {
-
-              ProcessAssmbly(pDrawing, pPolygon.Assembly);
-
-            }*/
-
       ProcessPolygon(pDrawing, pPolygon);
 
       if (pPolygon.Assembly == null)
         return pDrawing;
 
-
-
-
       ProcessAssembly(pDrawing, pPolygon.Assembly);
 
-    
+      pPolygon = xProject.PolygonsEnv.GetPolygonMullion();
 
+      if (pPolygon == null)
+        return pDrawing;
+
+      ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
 
       return pDrawing;
 
@@ -47,8 +38,8 @@ namespace DrawShape {
 
     private void ProcessPolygon(cDrawing xDrawing, cPolygon xPolygon) {
       //funkcja przetwarzająca wielokąt obrysu ramy
-      //xDrawing - 
-      //xPolygon - 
+      //xDrawing - rysownik oryginalny
+      //xPolygon - wielokąt do przetworzenia
 
       cDrawingItem pDrawingItem;
       cDrawingSegment pDrawingSegment;
@@ -63,14 +54,14 @@ namespace DrawShape {
        
       }
 
-      xDrawing.AddItem(pDrawingItem, xPolygon.Index);
+      xDrawing.AddItem(pDrawingItem);
 
     }
 
     private void ProcessAssembly(cDrawing xDrawing, cAssembly xAssembly) {
       //funkcja przetwarzająca Assembly
-      //xDrawing - 
-      //xAssembly - 
+      //xDrawing - rysownik oryginalny
+      //xAssembly - Assembly do przetworzenia
 
       cPolygon pPolygon;
 

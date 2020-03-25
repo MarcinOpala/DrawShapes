@@ -1,24 +1,10 @@
 
 
-19.03.2020:
-
-cPolygonsEnv
- Dictionary<int, cPolygon> mPolygons
+24.03.2020:
 
 
-cProject
- string mNe
- cPolygonsEnv mPolygonsEnv
 
- void CreateMe(xWidth szer. profilu, średnica, xNe)
-
-
-dwie zakładki:
- -Operacje
- -Ustawienia
-
-dodac przyciski:
-- Utwórz projekt
-- Rysuj projekt
-
-
+Polygon_FrameOutline
+Assembly
+Polygon_FrameVirtual - Env 
+cPolygon.Parent -> rodzic

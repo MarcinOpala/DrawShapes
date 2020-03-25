@@ -34,12 +34,21 @@ namespace DrawShape {
       this.pnlInput = new System.Windows.Forms.Panel();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.btnAddColumn = new System.Windows.Forms.Button();
       this.txtProjectName = new System.Windows.Forms.TextBox();
       this.lblProjectName = new System.Windows.Forms.Label();
       this.btnSetToCurve = new System.Windows.Forms.Button();
       this.btnDrawAssembly = new System.Windows.Forms.Button();
       this.btnCreateProject = new System.Windows.Forms.Button();
       this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.lblMullionLocation = new System.Windows.Forms.Label();
+      this.txtMullionLocation = new System.Windows.Forms.TextBox();
+      this.lblUnitWidth = new System.Windows.Forms.Label();
+      this.lblUnitHeight = new System.Windows.Forms.Label();
+      this.txtWidth = new System.Windows.Forms.TextBox();
+      this.txtHeight = new System.Windows.Forms.TextBox();
+      this.lblWidth = new System.Windows.Forms.Label();
+      this.lblHeight = new System.Windows.Forms.Label();
       this.lblSelectSide = new System.Windows.Forms.Label();
       this.txtSelectSide = new System.Windows.Forms.TextBox();
       this.lblProfileUnit = new System.Windows.Forms.Label();
@@ -58,6 +67,8 @@ namespace DrawShape {
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
+      this.lblMullionWidth = new System.Windows.Forms.Label();
+      this.txtMullionWidth = new System.Windows.Forms.TextBox();
       this.pnlAllForm.SuspendLayout();
       this.pnlInput.SuspendLayout();
       this.tabControl1.SuspendLayout();
@@ -108,6 +119,7 @@ namespace DrawShape {
       // tabPage1
       // 
       this.tabPage1.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage1.Controls.Add(this.btnAddColumn);
       this.tabPage1.Controls.Add(this.txtProjectName);
       this.tabPage1.Controls.Add(this.lblProjectName);
       this.tabPage1.Controls.Add(this.btnSetToCurve);
@@ -120,6 +132,17 @@ namespace DrawShape {
       this.tabPage1.Size = new System.Drawing.Size(438, 645);
       this.tabPage1.TabIndex = 0;
       this.tabPage1.Text = "tabPage1";
+      // 
+      // btnAddColumn
+      // 
+      this.btnAddColumn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnAddColumn.Location = new System.Drawing.Point(32, 230);
+      this.btnAddColumn.Name = "btnAddColumn";
+      this.btnAddColumn.Size = new System.Drawing.Size(158, 40);
+      this.btnAddColumn.TabIndex = 50;
+      this.btnAddColumn.Text = "btnAddColumn";
+      this.btnAddColumn.UseVisualStyleBackColor = true;
+      this.btnAddColumn.Click += new System.EventHandler(this.InsertMullion);
       // 
       // txtProjectName
       // 
@@ -146,7 +169,7 @@ namespace DrawShape {
       // btnSetToCurve
       // 
       this.btnSetToCurve.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnSetToCurve.Location = new System.Drawing.Point(32, 197);
+      this.btnSetToCurve.Location = new System.Drawing.Point(32, 180);
       this.btnSetToCurve.Name = "btnSetToCurve";
       this.btnSetToCurve.Size = new System.Drawing.Size(158, 40);
       this.btnSetToCurve.TabIndex = 43;
@@ -156,7 +179,7 @@ namespace DrawShape {
       // btnDrawAssembly
       // 
       this.btnDrawAssembly.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnDrawAssembly.Location = new System.Drawing.Point(32, 139);
+      this.btnDrawAssembly.Location = new System.Drawing.Point(32, 130);
       this.btnDrawAssembly.Name = "btnDrawAssembly";
       this.btnDrawAssembly.Size = new System.Drawing.Size(158, 40);
       this.btnDrawAssembly.TabIndex = 42;
@@ -166,7 +189,7 @@ namespace DrawShape {
       // btnCreateProject
       // 
       this.btnCreateProject.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnCreateProject.Location = new System.Drawing.Point(32, 83);
+      this.btnCreateProject.Location = new System.Drawing.Point(32, 80);
       this.btnCreateProject.Name = "btnCreateProject";
       this.btnCreateProject.Size = new System.Drawing.Size(158, 40);
       this.btnCreateProject.TabIndex = 25;
@@ -176,6 +199,16 @@ namespace DrawShape {
       // tabPage2
       // 
       this.tabPage2.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage2.Controls.Add(this.lblMullionWidth);
+      this.tabPage2.Controls.Add(this.txtMullionWidth);
+      this.tabPage2.Controls.Add(this.lblMullionLocation);
+      this.tabPage2.Controls.Add(this.txtMullionLocation);
+      this.tabPage2.Controls.Add(this.lblUnitWidth);
+      this.tabPage2.Controls.Add(this.lblUnitHeight);
+      this.tabPage2.Controls.Add(this.txtWidth);
+      this.tabPage2.Controls.Add(this.txtHeight);
+      this.tabPage2.Controls.Add(this.lblWidth);
+      this.tabPage2.Controls.Add(this.lblHeight);
       this.tabPage2.Controls.Add(this.lblSelectSide);
       this.tabPage2.Controls.Add(this.txtSelectSide);
       this.tabPage2.Controls.Add(this.lblProfileUnit);
@@ -192,6 +225,7 @@ namespace DrawShape {
       this.tabPage2.Controls.Add(this.txtMarginH);
       this.tabPage2.Controls.Add(this.lblMarginVertical);
       this.tabPage2.Controls.Add(this.lblMarginHorizontal);
+      this.tabPage2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
       this.tabPage2.Location = new System.Drawing.Point(4, 39);
       this.tabPage2.Name = "tabPage2";
       this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -199,9 +233,77 @@ namespace DrawShape {
       this.tabPage2.TabIndex = 1;
       this.tabPage2.Text = "tabPage2";
       // 
+      // lblColumnLocation
+      // 
+      this.lblMullionLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblMullionLocation.Location = new System.Drawing.Point(43, 267);
+      this.lblMullionLocation.Name = "lblColumnLocation";
+      this.lblMullionLocation.Size = new System.Drawing.Size(94, 30);
+      this.lblMullionLocation.TabIndex = 68;
+      this.lblMullionLocation.Text = "lblColumnLocation";
+      // 
+      // txtColumnLocation
+      // 
+      this.txtMullionLocation.Location = new System.Drawing.Point(153, 264);
+      this.txtMullionLocation.Name = "txtColumnLocation";
+      this.txtMullionLocation.Size = new System.Drawing.Size(84, 27);
+      this.txtMullionLocation.TabIndex = 67;
+      this.txtMullionLocation.Text = "txtColumnLocation";
+      // 
+      // lblUnitWidth
+      // 
+      this.lblUnitWidth.Location = new System.Drawing.Point(246, 174);
+      this.lblUnitWidth.Name = "lblUnitWidth";
+      this.lblUnitWidth.Size = new System.Drawing.Size(49, 30);
+      this.lblUnitWidth.TabIndex = 66;
+      this.lblUnitWidth.Text = "lblUnitWidth";
+      // 
+      // lblUnitHeight
+      // 
+      this.lblUnitHeight.Location = new System.Drawing.Point(246, 144);
+      this.lblUnitHeight.Name = "lblUnitHeight";
+      this.lblUnitHeight.Size = new System.Drawing.Size(49, 30);
+      this.lblUnitHeight.TabIndex = 65;
+      this.lblUnitHeight.Text = "lblUnitHeight";
+      // 
+      // txtWidth
+      // 
+      this.txtWidth.Location = new System.Drawing.Point(153, 174);
+      this.txtWidth.Name = "txtWidth";
+      this.txtWidth.Size = new System.Drawing.Size(84, 27);
+      this.txtWidth.TabIndex = 64;
+      this.txtWidth.Text = "txtWidth";
+      // 
+      // txtHeight
+      // 
+      this.txtHeight.Location = new System.Drawing.Point(153, 144);
+      this.txtHeight.Name = "txtHeight";
+      this.txtHeight.Size = new System.Drawing.Size(84, 27);
+      this.txtHeight.TabIndex = 63;
+      this.txtHeight.Text = "txtHeight";
+      // 
+      // lblWidth
+      // 
+      this.lblWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblWidth.Location = new System.Drawing.Point(43, 174);
+      this.lblWidth.Name = "lblWidth";
+      this.lblWidth.Size = new System.Drawing.Size(104, 30);
+      this.lblWidth.TabIndex = 62;
+      this.lblWidth.Text = "lblWidth";
+      // 
+      // lblHeight
+      // 
+      this.lblHeight.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblHeight.Location = new System.Drawing.Point(43, 144);
+      this.lblHeight.Name = "lblHeight";
+      this.lblHeight.Size = new System.Drawing.Size(104, 30);
+      this.lblHeight.TabIndex = 61;
+      this.lblHeight.Text = "lblHeight";
+      // 
       // lblSelectSide
       // 
-      this.lblSelectSide.Location = new System.Drawing.Point(43, 234);
+      this.lblSelectSide.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblSelectSide.Location = new System.Drawing.Point(43, 237);
       this.lblSelectSide.Name = "lblSelectSide";
       this.lblSelectSide.Size = new System.Drawing.Size(94, 30);
       this.lblSelectSide.TabIndex = 60;
@@ -211,7 +313,7 @@ namespace DrawShape {
       // 
       this.txtSelectSide.Location = new System.Drawing.Point(153, 234);
       this.txtSelectSide.Name = "txtSelectSide";
-      this.txtSelectSide.Size = new System.Drawing.Size(84, 30);
+      this.txtSelectSide.Size = new System.Drawing.Size(84, 27);
       this.txtSelectSide.TabIndex = 59;
       this.txtSelectSide.Text = "txtSelectSide";
       // 
@@ -225,7 +327,8 @@ namespace DrawShape {
       // 
       // lblProfileSize
       // 
-      this.lblProfileSize.Location = new System.Drawing.Point(43, 204);
+      this.lblProfileSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblProfileSize.Location = new System.Drawing.Point(43, 207);
       this.lblProfileSize.Name = "lblProfileSize";
       this.lblProfileSize.Size = new System.Drawing.Size(94, 30);
       this.lblProfileSize.TabIndex = 57;
@@ -235,13 +338,13 @@ namespace DrawShape {
       // 
       this.txtProfileSize.Location = new System.Drawing.Point(153, 204);
       this.txtProfileSize.Name = "txtProfileSize";
-      this.txtProfileSize.Size = new System.Drawing.Size(84, 30);
+      this.txtProfileSize.Size = new System.Drawing.Size(84, 27);
       this.txtProfileSize.TabIndex = 56;
       this.txtProfileSize.Text = "txtProfileSize";
       // 
       // lblUnitDiametr
       // 
-      this.lblUnitDiametr.Location = new System.Drawing.Point(246, 174);
+      this.lblUnitDiametr.Location = new System.Drawing.Point(246, 555);
       this.lblUnitDiametr.Name = "lblUnitDiametr";
       this.lblUnitDiametr.Size = new System.Drawing.Size(69, 30);
       this.lblUnitDiametr.TabIndex = 55;
@@ -249,7 +352,7 @@ namespace DrawShape {
       // 
       // lblDiametr
       // 
-      this.lblDiametr.Location = new System.Drawing.Point(43, 174);
+      this.lblDiametr.Location = new System.Drawing.Point(43, 555);
       this.lblDiametr.Name = "lblDiametr";
       this.lblDiametr.Size = new System.Drawing.Size(94, 30);
       this.lblDiametr.TabIndex = 54;
@@ -257,7 +360,7 @@ namespace DrawShape {
       // 
       // lblSide
       // 
-      this.lblSide.Location = new System.Drawing.Point(43, 144);
+      this.lblSide.Location = new System.Drawing.Point(43, 519);
       this.lblSide.Name = "lblSide";
       this.lblSide.Size = new System.Drawing.Size(108, 30);
       this.lblSide.TabIndex = 53;
@@ -265,17 +368,17 @@ namespace DrawShape {
       // 
       // txtDiameter
       // 
-      this.txtDiameter.Location = new System.Drawing.Point(153, 174);
+      this.txtDiameter.Location = new System.Drawing.Point(153, 555);
       this.txtDiameter.Name = "txtDiameter";
-      this.txtDiameter.Size = new System.Drawing.Size(84, 30);
+      this.txtDiameter.Size = new System.Drawing.Size(84, 27);
       this.txtDiameter.TabIndex = 52;
       this.txtDiameter.Text = "txtDiameter";
       // 
       // txtSides
       // 
-      this.txtSides.Location = new System.Drawing.Point(153, 144);
+      this.txtSides.Location = new System.Drawing.Point(153, 519);
       this.txtSides.Name = "txtSides";
-      this.txtSides.Size = new System.Drawing.Size(84, 30);
+      this.txtSides.Size = new System.Drawing.Size(84, 27);
       this.txtSides.TabIndex = 51;
       this.txtSides.Text = "txtSlides";
       // 
@@ -299,7 +402,7 @@ namespace DrawShape {
       // 
       this.txtMarginV.Location = new System.Drawing.Point(153, 114);
       this.txtMarginV.Name = "txtMarginV";
-      this.txtMarginV.Size = new System.Drawing.Size(84, 30);
+      this.txtMarginV.Size = new System.Drawing.Size(84, 27);
       this.txtMarginV.TabIndex = 48;
       this.txtMarginV.Text = "txtMarginV";
       // 
@@ -307,12 +410,13 @@ namespace DrawShape {
       // 
       this.txtMarginH.Location = new System.Drawing.Point(153, 84);
       this.txtMarginH.Name = "txtMarginH";
-      this.txtMarginH.Size = new System.Drawing.Size(84, 30);
+      this.txtMarginH.Size = new System.Drawing.Size(84, 27);
       this.txtMarginH.TabIndex = 47;
       this.txtMarginH.Text = "txtMarginH";
       // 
       // lblMarginVertical
       // 
+      this.lblMarginVertical.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
       this.lblMarginVertical.Location = new System.Drawing.Point(43, 114);
       this.lblMarginVertical.Name = "lblMarginVertical";
       this.lblMarginVertical.Size = new System.Drawing.Size(104, 30);
@@ -321,6 +425,7 @@ namespace DrawShape {
       // 
       // lblMarginHorizontal
       // 
+      this.lblMarginHorizontal.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
       this.lblMarginHorizontal.Location = new System.Drawing.Point(43, 87);
       this.lblMarginHorizontal.Name = "lblMarginHorizontal";
       this.lblMarginHorizontal.Size = new System.Drawing.Size(104, 30);
@@ -352,6 +457,23 @@ namespace DrawShape {
       this.pnlCanvas.Name = "pnlCanvas";
       this.pnlCanvas.Size = new System.Drawing.Size(650, 649);
       this.pnlCanvas.TabIndex = 0;
+      // 
+      // lblMullionSize
+      // 
+      this.lblMullionWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblMullionWidth.Location = new System.Drawing.Point(43, 297);
+      this.lblMullionWidth.Name = "lblMullionSize";
+      this.lblMullionWidth.Size = new System.Drawing.Size(108, 30);
+      this.lblMullionWidth.TabIndex = 70;
+      this.lblMullionWidth.Text = "lblMullionSize";
+      // 
+      // txtMullionSize
+      // 
+      this.txtMullionWidth.Location = new System.Drawing.Point(153, 294);
+      this.txtMullionWidth.Name = "txtMullionSize";
+      this.txtMullionWidth.Size = new System.Drawing.Size(84, 27);
+      this.txtMullionWidth.TabIndex = 69;
+      this.txtMullionWidth.Text = "txtMullionSize";
       // 
       // MainForm
       // 
@@ -404,6 +526,17 @@ namespace DrawShape {
     private Label lblMarginHorizontal;
     private Label lblProjectName;
     private TextBox txtProjectName;
-  }
+    private Button btnAddColumn;
+    private Label lblUnitWidth;
+    private Label lblUnitHeight;
+    private TextBox txtWidth;
+    private TextBox txtHeight;
+    private Label lblWidth;
+    private Label lblHeight;
+    private Label lblMullionLocation;
+    private TextBox txtMullionLocation;
+        private Label lblMullionWidth;
+        private TextBox txtMullionWidth;
+    }
 }
 

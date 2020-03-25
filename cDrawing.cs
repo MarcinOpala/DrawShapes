@@ -11,7 +11,7 @@ namespace DrawShape {
 
   public class cDrawing {
 
-    private Dictionary<int, cDrawingItem> mDrawingItems;
+    private Dictionary<int, cDrawingItem> mDrawingItems;    //lista DrawingItems
 
     internal Dictionary<int, cDrawingItem> DrawingItem { get { return mDrawingItems; } set { mDrawingItems = value; } }
 
@@ -21,12 +21,13 @@ namespace DrawShape {
 
     }
 
-    internal void AddItem(cDrawingItem xDrawingItem, int xIndex) {
+    internal void AddItem(cDrawingItem xDrawingItem) {
       //funkcja dodająca nowy item do listy
       //xDrawingItem - wybrany item
       //xIndex - numer itemu
 
-      mDrawingItems.Add(xIndex, xDrawingItem);
+      
+      mDrawingItems.Add(GetIndex_FirstEmpty(), xDrawingItem);
 
     }
 
@@ -52,6 +53,9 @@ namespace DrawShape {
 
     public void DrawItem(int xIndex, double xScale, cPoint xPt_Base, PaintEventArgs e) {
       //funkcja rysująca Itemy
+      //xIndex - indeks itemu do rysowania
+      //xScale - skala w jakiej ma być narysowany
+      //xPt_Base - punkt startowy rysowania
 
       Pen pBluePen;                                         //kolor długopisu
       PointF[] pLinePoints;                                 //punkty tworzące linie
@@ -75,15 +79,6 @@ namespace DrawShape {
 
         //przekształcenie punktu poligonu na współrzędne do wyświetlenia na Canvas
         var pPoints = TransformPoints(pSegment, pSegment_Next, xScale, xPt_Base);
-
-
-
-        //szukanie błędu przy ośmiokącie bok 6
-/*        Console.WriteLine(">>> <<<<  " + xScale);
-        Console.WriteLine($"PtA:{pPoints.Pt_A.X - pPoints.Pt_B.X}");  //, {pPoints.Pt_A.Y}    PtB:{pPoints.Pt_B.X}, {pPoints.Pt_B.Y}");
-*/
-
-
 
         if (!pSegment.IsCurve) {                            //jeśli segment jest prosty
           pLinePoints[0] = new PointF(pPoints.Pt_A.X, pPoints.Pt_A.Y);
@@ -128,6 +123,7 @@ namespace DrawShape {
       //xSegment - segmentu pierwszy
       //xPt_A - współrzędne punktów przeskalowanych
       //xPt_B - współrzędne punktów przeskalowanych
+      //xIndex - indeks DrawingItemu
 
       Pen pBluePen;                                         //kolor długopisu
       float pCenterX, pCenterY;                             //punkt środka segmentu
@@ -151,7 +147,7 @@ namespace DrawShape {
       pBluePen = new Pen(Color.Blue, 3);
 
       //przeliczanie wektorów w zależności od położenia segmentu wzgledem środka koła
-      if (((int)(xPt_A.X) - (int)(xPt_B.X)) == 0) {                       // f(x)=0
+      if (((int)(xPt_A.X) - (int)(xPt_B.X)) == 0) {         // f(x)=0
         pVectNormalX = Math.Abs((xPt_B.Y - xPt_A.Y) / 4);
         pVectNormalY = 0;
 
@@ -206,12 +202,28 @@ namespace DrawShape {
 
     internal void SetQuarterIndex(cSegment xSegment, int xIndex, out int xQuarterIndex) {
       //fukcja ustawiająca wartość xQuarterIndex w zależności od tego w której ćwiartce znajduje się środek segmentu
-      //xSegment - segment
+      //xSegment - bok, który jest sprawdzany do wyznaczenia ćwiartki
+      //xIndex - numer DrawingItemu
       //xQuarterIndex - nr ćwiartki liczona według schematu:      3|4 
       //                                                          2|1
 
       cPoint pPt_Base_ItemNext;
       cPoint pPt_Base_Item;
+
+
+        if (xSegment.Polygon_Parent.CntPF == PolygonFunctionalityEnum.FrameOutline) {
+
+        //punkt bazowy DrawingItemu
+        pPt_Base_Item = new cPoint();
+        pPt_Base_Item.X = GetDrawingItemByIndex(xIndex).DrawingSegments[xSegment.Index].Segment.Point.X;
+        pPt_Base_Item.Y = GetDrawingItemByIndex(xIndex).DrawingSegments[xSegment.Index].Segment.Point.Y;
+
+        //punkt bazowy nastepnego DrawingItemu
+        pPt_Base_ItemNext = new cPoint();
+        pPt_Base_ItemNext.X = GetDrawingItemByIndex(xIndex).DrawingSegments[xSegment.Index].Segment.Segment_Next.Point.X;
+        pPt_Base_ItemNext.Y = GetDrawingItemByIndex(xIndex).DrawingSegments[xSegment.Index].Segment.Segment_Next.Point.Y;
+
+      } else { 
 
       //punkt bazowy DrawingItemu
       pPt_Base_Item = new cPoint();
@@ -223,6 +235,7 @@ namespace DrawShape {
       pPt_Base_ItemNext.X = GetDrawingItemByIndex(xIndex + 1).DrawingSegments[1].Segment.Point.X;
       pPt_Base_ItemNext.Y = GetDrawingItemByIndex(xIndex + 1).DrawingSegments[1].Segment.Point.Y;
 
+      }
 
       xQuarterIndex = new int();
 
@@ -262,6 +275,16 @@ namespace DrawShape {
 
     }
     
+    private int GetIndex_FirstEmpty() {
+
+      int pNextIndex;
+
+      pNextIndex =  mDrawingItems.Count + 1;
+
+      return pNextIndex;
+
+    }
+
   }
 
 }
