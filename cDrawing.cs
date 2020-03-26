@@ -85,6 +85,7 @@ namespace DrawShape {
           pLinePoints[1] = new PointF(pPoints.Pt_B.X, pPoints.Pt_B.Y);
 
           e.Graphics.DrawPolygon(pBluePen, pLinePoints);
+         
 
         } else {                                            //jeśli segment jest krzywywą
           DrawBezierCurve(pSegment, pPoints.Pt_A, pPoints.Pt_B, xIndex, e);

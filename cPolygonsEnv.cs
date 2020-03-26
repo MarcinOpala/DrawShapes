@@ -8,7 +8,7 @@ namespace DrawShape {
 
   public class cPolygonsEnv {
 
-    private Dictionary<int, cPolygon> mPolygons;
+    private Dictionary<int, cPolygon> mPolygons;            //lista Polygonów
 
     internal Dictionary<int, cPolygon> Polygons { get { return mPolygons; } set { mPolygons = value; } }
 
@@ -125,6 +125,79 @@ namespace DrawShape {
       }
 
       return null;
+
+    }
+
+    internal cPolygon GetPolygonVirtual_WithoutChild() {
+      //znajduję pierwszy virtual bez dziecka
+
+      foreach (cPolygon pPolygon in mPolygons.Values) {
+        if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
+          if (pPolygon.Child == null)
+            return pPolygon;
+      }
+
+      return null;
+
+    }
+
+    internal void CreatePolygon_Sash(cPolygon xPolygon, float xWidth_Profile, double xC_Frame, double xC_Mullion) {
+      //funkcja tworząca wielokąt skrzydła
+
+      cPolygon pPolygon_A;
+      cVector pCFrame_CFrame;
+      cVector pCMullion_CFrame;
+      
+      pPolygon_A = xPolygon.Clone();
+
+      xPolygon.Child = pPolygon_A;
+
+      pPolygon_A.Parent = xPolygon;
+      pPolygon_A.CntPF = PolygonFunctionalityEnum.FrameOutline;
+      pPolygon_A.Index = GetEmptyIndex();
+
+      //ustawiamy SegmentIsIncludedEnum
+      if (GetPolygonMullion() == null)
+        foreach (cSegment pSegment in pPolygon_A.Segments.Values) {
+          pSegment.CntSInclude = SegmentIsIncludedEnum.FrameOutline;
+        }
+      else {
+        foreach (cPolygon pPolygon_B in mPolygons.Values) {
+          if (pPolygon_B.CntPF != PolygonFunctionalityEnum.Mullion) continue;
+
+          foreach (cSegment pSegment in pPolygon_A.Segments.Values) {
+            if (pSegment.CntSInclude == SegmentIsIncludedEnum.Mullion) continue;
+
+            if (pPolygon_B.Segments[1].Point.X <= pSegment.Point.X && pPolygon_B.Segments[1].Point.Y <= pSegment.Point.Y
+             && pPolygon_B.Segments[3].Point.X >= pSegment.Point.X && pPolygon_B.Segments[3].Point.Y >= pSegment.Point.Y)
+
+              pSegment.CntSInclude = SegmentIsIncludedEnum.Mullion;
+
+            else pSegment.CntSInclude = SegmentIsIncludedEnum.FrameOutline;
+
+          }
+        }
+      }
+
+      //setujemy boki
+      pCFrame_CFrame = new cVector(xC_Frame, xC_Frame);
+      pCMullion_CFrame = new cVector(xC_Mullion, xC_Frame);
+
+      foreach (cSegment pSegment in pPolygon_A.Segments.Values) {
+        if (pSegment.CntSInclude == SegmentIsIncludedEnum.FrameOutline)
+          pSegment.SetPointByVector(pCFrame_CFrame);
+
+        else if (pSegment.CntSInclude == SegmentIsIncludedEnum.Mullion)
+          pSegment.SetPointByVector(pCMullion_CFrame);
+
+        else
+          Console.WriteLine("Error with SegmentIsIncludedEnum in CreatePolygon_Sash");
+      }
+
+      //TODO Assembly
+      
+
+      AddPolygon(pPolygon_A);
 
     }
 

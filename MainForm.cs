@@ -37,21 +37,21 @@ namespace DrawShape {
       this.btnDrawAssembly.Text = "Wstaw Ramę";
       this.lblProfileUnit.Text = "mm";
       this.lblProfileSize.Text = "Profil:";
-      this.txtProfileSize.Text = "25";
+      this.txtProfileSize.Text = "60";
       this.tabPage1.Text = "Operacje";
       this.tabPage2.Text = "Ustawienia";
       this.lblProjectName.Text = "Nazwa Projektu";
       this.txtProjectName.Text = "Wprowadź nazwę projektu";
-      this.txtHeight.Text = "300";
-      this.txtWidth.Text = "500";
+      this.txtHeight.Text = "1000";
+      this.txtWidth.Text = "2000";
       this.lblHeight.Text = "Wysokość:";
       this.lblWidth.Text = "Szerokość:";
       this.lblUnitWidth.Text = "mm";
       this.lblUnitHeight.Text = "mm";
-      this.btnAddColumn.Text = "Wstaw słupek";
-      this.txtMullionLocation.Text = "150";
+      this.btnAddMullion.Text = "Wstaw słupek";
+      this.txtMullionLocation.Text = "700";
       this.lblMullionLocation.Text = "Pozycja słupeka:";
-      this.txtMullionWidth.Text = "20";
+      this.txtMullionWidth.Text = "50";
       this.lblMullionWidth.Text = "Szerokość słupka:";
 
 
@@ -145,7 +145,6 @@ namespace DrawShape {
 
       mProject.PolygonsEnv.CreatePolygon_Virtual(pPolygon);
 
-
       this.pnlCanvas.Refresh();
 
     }
@@ -188,6 +187,32 @@ namespace DrawShape {
       mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, pMullionPosition_X, pWidth_Mullion, pWidth_Profile);
 
       this.pnlCanvas.Refresh();
+
+    }
+
+    private void InsertSash(object sender, EventArgs e) {
+      //funkcja wstawiająca okno w pierwszym wolnym wielokącie wirtualnym
+
+      cPolygon pPolygon;
+      float pWidth_Profile;
+      double pC_Frame;
+      double pC_Mullion;
+
+      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_WithoutChild();
+
+      if (pPolygon == null) return;
+
+      pWidth_Profile = float.Parse(txtProfileSize.Text);
+      pC_Frame = 40;
+      pC_Mullion = 20;
+
+      mProject.PolygonsEnv.CreatePolygon_Sash(pPolygon, pWidth_Profile, pC_Frame, pC_Mullion);
+
+      this.pnlCanvas.Refresh();
+
+    }
+
+    private void RemoveSash(object sender, EventArgs e) {
 
     }
 
@@ -267,7 +292,7 @@ namespace DrawShape {
       this.txtProjectName.ForeColor = System.Drawing.SystemColors.WindowText;
       this.txtProjectName.Text = "";
     }
-    
+
     public double CalculateScale() {
       //funkcja obliczająca skale według największej wartości INPUT
 

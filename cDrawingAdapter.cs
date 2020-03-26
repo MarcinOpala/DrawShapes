@@ -12,26 +12,42 @@ namespace DrawShape {
       //xProject - projekt wielokąta oryginalny
 
       cDrawing pDrawing;
-      cPolygon pPolygon;
 
-      pPolygon = xProject.PolygonsEnv.Polygons[1];          //wielokąt obrysu ramy
-      
       pDrawing = new cDrawing();
 
-      ProcessPolygon(pDrawing, pPolygon);
+      foreach (cPolygon pPolygon in xProject.PolygonsEnv.Polygons.Values) {
 
-      if (pPolygon.Assembly == null)
-        return pDrawing;
+        if (pPolygon.CntPF == PolygonFunctionalityEnum.Undefined)
+          ProcessPolygon(pDrawing, pPolygon);
 
-      ProcessAssembly(pDrawing, pPolygon.Assembly);
+        else if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameOutline) {
+          ProcessPolygon(pDrawing, pPolygon);
 
-      pPolygon = xProject.PolygonsEnv.GetPolygonMullion();
+          if (pPolygon.Assembly != null)
+            ProcessAssembly(pDrawing, pPolygon.Assembly);
 
-      if (pPolygon == null)
-        return pDrawing;
+          if (pPolygon.AssemblyItem != null)
+            ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
 
-      ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
+        } else if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) {
+          if (pPolygon.Assembly != null)
+            ProcessAssembly(pDrawing, pPolygon.Assembly);
 
+          if (pPolygon.AssemblyItem != null)
+            ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
+
+        } else if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameVirtual) {
+          if (pPolygon.Child != null)
+            ProcessPolygon(pDrawing, pPolygon.Child);
+
+          if (pPolygon.Assembly != null)
+            ProcessAssembly(pDrawing, pPolygon.Assembly);
+
+          if (pPolygon.AssemblyItem != null)
+            ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
+        }
+      }
+      
       return pDrawing;
 
     }

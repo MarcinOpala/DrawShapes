@@ -15,8 +15,9 @@ namespace DrawShape {
 
   public class cPolygon {
 
-    private cAssembly mAssembly;                            //
-    private cAssemblyItem mAssemblyItem;                    //
+    private cAssembly mAssembly;                            //Assembly wielokąta
+    private cAssemblyItem mAssemblyItem;                    //AssemblyItem wielokąta
+    private cPolygon mChild;                                //dziecko wielokąta
     private PolygonFunctionalityEnum mCntPF;                //typ funkcji
     private int mIndex;                                     //numer wielokąta
     private cPolygon mParent;                               //rodzic wielokąta
@@ -24,6 +25,7 @@ namespace DrawShape {
 
     internal cAssembly Assembly { get { return mAssembly; } }
     internal cAssemblyItem AssemblyItem { get { return mAssemblyItem; } }
+    internal cPolygon Child { get { return mChild; } set { mChild = value; } }
     internal PolygonFunctionalityEnum CntPF { get { return mCntPF; } set { mCntPF = value; } } 
     internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
@@ -174,8 +176,8 @@ namespace DrawShape {
       pPolygon = Clone();
 
       pPolygon.Index = mIndex + 1;
-      pPolygon.Segments[1].Point.X -= xWidth;
-      pPolygon.Segments[4].Point.X -= xWidth;
+      pPolygon.Segments[1].Point.X = xWidth;
+      pPolygon.Segments[4].Point.X = xWidth;
 
       pCln.Add(2, pPolygon);
 
@@ -183,40 +185,29 @@ namespace DrawShape {
 
     }
 
-    internal void AddAssemblyItem(cAssemblyItem xAssemblyItem) {
-      //funkcja dodająca AssemblyItem
-
-      mAssemblyItem = xAssemblyItem;
-      
-    }
-
-    internal void Resize(int xMullionPosition_X, int xMullionWidth) {
-
-
-      mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
-      mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
-      mSegments[3].Point.X = xMullionPosition_X + xMullionWidth / 2;
-      mSegments[4].Point.X = xMullionPosition_X - xMullionWidth / 2; 
-
-    }
-
     internal void SetPolygonToMullion(cPolygon xPolygon, int xMullionPosition_X, int xMullionWidth, float xWidth_Profile) {
-      //
+      //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion
+      //xPolygon - Polygon bazowy
+      //xMullionPosition_X - współrzędna X osi słupka
+      //xMullionWidth - szerokość słupka
+      //xWidth_Profile - szerokość profilu
 
       cAssemblyItem pAssemblyItem;
 
       mCntPF = PolygonFunctionalityEnum.Mullion;
+      mParent = xPolygon;
 
-      mParent = xPolygon;                             
-
-      Resize(xMullionPosition_X, xMullionWidth);
+      //ustawiamy boki względem pozycji słupka + przesunięte o połowę jego szerokości
+      mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
+      mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
+      mSegments[3].Point.X = xMullionPosition_X + xMullionWidth / 2;
+      mSegments[4].Point.X = xMullionPosition_X - xMullionWidth / 2;
 
       pAssemblyItem = new cAssemblyItem(mIndex);
-
       pAssemblyItem.CreateAssemblyItem_Mullion(this, xWidth_Profile);
 
-      AddAssemblyItem(pAssemblyItem);
-
+      mAssemblyItem = pAssemblyItem;
+    
     }
 
   }

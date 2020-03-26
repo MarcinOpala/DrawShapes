@@ -34,13 +34,17 @@ namespace DrawShape {
       this.pnlInput = new System.Windows.Forms.Panel();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
-      this.btnAddColumn = new System.Windows.Forms.Button();
+      this.btnRemoveSash = new System.Windows.Forms.Button();
+      this.btnAddSash = new System.Windows.Forms.Button();
+      this.btnAddMullion = new System.Windows.Forms.Button();
       this.txtProjectName = new System.Windows.Forms.TextBox();
       this.lblProjectName = new System.Windows.Forms.Label();
       this.btnSetToCurve = new System.Windows.Forms.Button();
       this.btnDrawAssembly = new System.Windows.Forms.Button();
       this.btnCreateProject = new System.Windows.Forms.Button();
       this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.lblMullionWidth = new System.Windows.Forms.Label();
+      this.txtMullionWidth = new System.Windows.Forms.TextBox();
       this.lblMullionLocation = new System.Windows.Forms.Label();
       this.txtMullionLocation = new System.Windows.Forms.TextBox();
       this.lblUnitWidth = new System.Windows.Forms.Label();
@@ -67,8 +71,6 @@ namespace DrawShape {
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
-      this.lblMullionWidth = new System.Windows.Forms.Label();
-      this.txtMullionWidth = new System.Windows.Forms.TextBox();
       this.pnlAllForm.SuspendLayout();
       this.pnlInput.SuspendLayout();
       this.tabControl1.SuspendLayout();
@@ -119,7 +121,9 @@ namespace DrawShape {
       // tabPage1
       // 
       this.tabPage1.BackColor = System.Drawing.Color.LightGray;
-      this.tabPage1.Controls.Add(this.btnAddColumn);
+      this.tabPage1.Controls.Add(this.btnRemoveSash);
+      this.tabPage1.Controls.Add(this.btnAddSash);
+      this.tabPage1.Controls.Add(this.btnAddMullion);
       this.tabPage1.Controls.Add(this.txtProjectName);
       this.tabPage1.Controls.Add(this.lblProjectName);
       this.tabPage1.Controls.Add(this.btnSetToCurve);
@@ -133,16 +137,38 @@ namespace DrawShape {
       this.tabPage1.TabIndex = 0;
       this.tabPage1.Text = "tabPage1";
       // 
-      // btnAddColumn
+      // btnRemoveSash
       // 
-      this.btnAddColumn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnAddColumn.Location = new System.Drawing.Point(32, 230);
-      this.btnAddColumn.Name = "btnAddColumn";
-      this.btnAddColumn.Size = new System.Drawing.Size(158, 40);
-      this.btnAddColumn.TabIndex = 50;
-      this.btnAddColumn.Text = "btnAddColumn";
-      this.btnAddColumn.UseVisualStyleBackColor = true;
-      this.btnAddColumn.Click += new System.EventHandler(this.InsertMullion);
+      this.btnRemoveSash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnRemoveSash.Location = new System.Drawing.Point(32, 330);
+      this.btnRemoveSash.Name = "btnRemoveSash";
+      this.btnRemoveSash.Size = new System.Drawing.Size(158, 40);
+      this.btnRemoveSash.TabIndex = 52;
+      this.btnRemoveSash.Text = "btnRemoveSash";
+      this.btnRemoveSash.UseVisualStyleBackColor = true;
+      this.btnRemoveSash.Click += new System.EventHandler(this.RemoveSash);
+      // 
+      // btnAddSash
+      // 
+      this.btnAddSash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnAddSash.Location = new System.Drawing.Point(32, 280);
+      this.btnAddSash.Name = "btnAddSash";
+      this.btnAddSash.Size = new System.Drawing.Size(158, 40);
+      this.btnAddSash.TabIndex = 51;
+      this.btnAddSash.Text = "btnAddSash";
+      this.btnAddSash.UseVisualStyleBackColor = true;
+      this.btnAddSash.Click += new System.EventHandler(this.InsertSash);
+      // 
+      // btnAddMullion
+      // 
+      this.btnAddMullion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnAddMullion.Location = new System.Drawing.Point(32, 230);
+      this.btnAddMullion.Name = "btnAddMullion";
+      this.btnAddMullion.Size = new System.Drawing.Size(158, 40);
+      this.btnAddMullion.TabIndex = 50;
+      this.btnAddMullion.Text = "btnAddMullion";
+      this.btnAddMullion.UseVisualStyleBackColor = true;
+      this.btnAddMullion.Click += new System.EventHandler(this.InsertMullion);
       // 
       // txtProjectName
       // 
@@ -233,19 +259,36 @@ namespace DrawShape {
       this.tabPage2.TabIndex = 1;
       this.tabPage2.Text = "tabPage2";
       // 
-      // lblColumnLocation
+      // lblMullionWidth
+      // 
+      this.lblMullionWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblMullionWidth.Location = new System.Drawing.Point(43, 297);
+      this.lblMullionWidth.Name = "lblMullionWidth";
+      this.lblMullionWidth.Size = new System.Drawing.Size(108, 30);
+      this.lblMullionWidth.TabIndex = 70;
+      this.lblMullionWidth.Text = "lblMullionSize";
+      // 
+      // txtMullionWidth
+      // 
+      this.txtMullionWidth.Location = new System.Drawing.Point(153, 294);
+      this.txtMullionWidth.Name = "txtMullionWidth";
+      this.txtMullionWidth.Size = new System.Drawing.Size(84, 27);
+      this.txtMullionWidth.TabIndex = 69;
+      this.txtMullionWidth.Text = "txtMullionSize";
+      // 
+      // lblMullionLocation
       // 
       this.lblMullionLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
       this.lblMullionLocation.Location = new System.Drawing.Point(43, 267);
-      this.lblMullionLocation.Name = "lblColumnLocation";
+      this.lblMullionLocation.Name = "lblMullionLocation";
       this.lblMullionLocation.Size = new System.Drawing.Size(94, 30);
       this.lblMullionLocation.TabIndex = 68;
       this.lblMullionLocation.Text = "lblColumnLocation";
       // 
-      // txtColumnLocation
+      // txtMullionLocation
       // 
       this.txtMullionLocation.Location = new System.Drawing.Point(153, 264);
-      this.txtMullionLocation.Name = "txtColumnLocation";
+      this.txtMullionLocation.Name = "txtMullionLocation";
       this.txtMullionLocation.Size = new System.Drawing.Size(84, 27);
       this.txtMullionLocation.TabIndex = 67;
       this.txtMullionLocation.Text = "txtColumnLocation";
@@ -458,23 +501,6 @@ namespace DrawShape {
       this.pnlCanvas.Size = new System.Drawing.Size(650, 649);
       this.pnlCanvas.TabIndex = 0;
       // 
-      // lblMullionSize
-      // 
-      this.lblMullionWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-      this.lblMullionWidth.Location = new System.Drawing.Point(43, 297);
-      this.lblMullionWidth.Name = "lblMullionSize";
-      this.lblMullionWidth.Size = new System.Drawing.Size(108, 30);
-      this.lblMullionWidth.TabIndex = 70;
-      this.lblMullionWidth.Text = "lblMullionSize";
-      // 
-      // txtMullionSize
-      // 
-      this.txtMullionWidth.Location = new System.Drawing.Point(153, 294);
-      this.txtMullionWidth.Name = "txtMullionSize";
-      this.txtMullionWidth.Size = new System.Drawing.Size(84, 27);
-      this.txtMullionWidth.TabIndex = 69;
-      this.txtMullionWidth.Text = "txtMullionSize";
-      // 
       // MainForm
       // 
       this.ClientSize = new System.Drawing.Size(1205, 750);
@@ -526,7 +552,7 @@ namespace DrawShape {
     private Label lblMarginHorizontal;
     private Label lblProjectName;
     private TextBox txtProjectName;
-    private Button btnAddColumn;
+    private Button btnAddMullion;
     private Label lblUnitWidth;
     private Label lblUnitHeight;
     private TextBox txtWidth;
@@ -537,6 +563,8 @@ namespace DrawShape {
     private TextBox txtMullionLocation;
         private Label lblMullionWidth;
         private TextBox txtMullionWidth;
-    }
+    private Button btnRemoveSash;
+    private Button btnAddSash;
+  }
 }
 
