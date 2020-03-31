@@ -24,9 +24,7 @@ namespace DrawShape {
     internal void AddItem(cDrawingItem xDrawingItem) {
       //funkcja dodająca nowy item do listy
       //xDrawingItem - wybrany item
-      //xIndex - numer itemu
-
-      
+          
       mDrawingItems.Add(GetIndex_FirstEmpty(), xDrawingItem);
 
     }
@@ -43,15 +41,15 @@ namespace DrawShape {
       pCount = mDrawingItems.Count;
 
       //pętla wywołująca rysowanie DrawingItemów
-      for (pIndex = 1; pIndex <= (pCount); pIndex++) {  
+      for (pIndex = 1; pIndex <= (pCount); pIndex++) {
 
+        FillItem(pIndex, xScale, xPt_Base, e);
         DrawItem(pIndex, xScale, xPt_Base, e);
 
       }
-
     }
 
-    public void DrawItem(int xIndex, double xScale, cPoint xPt_Base, PaintEventArgs e) {
+    private void DrawItem(int xIndex, double xScale, cPoint xPt_Base, PaintEventArgs e) {
       //funkcja rysująca Itemy
       //xIndex - indeks itemu do rysowania
       //xScale - skala w jakiej ma być narysowany
@@ -61,21 +59,16 @@ namespace DrawShape {
       PointF[] pLinePoints;                                 //punkty tworzące linie
       cSegment pSegment;
       cSegment pSegment_Next;
-      int pIndex;
       cDrawingItem pDrawingItem;
 
-      pBluePen = new Pen(Color.Blue, 3);
+      pBluePen = new Pen(Color.Blue, 2);
       pLinePoints = new PointF[2];
 
       pDrawingItem = mDrawingItems[xIndex];
 
-      Console.WriteLine("Punkty wielokąta");
-
-      for (pIndex = 1; pIndex <= pDrawingItem.DrawingSegments.Count; pIndex++) {
-
-        
-        pSegment = pDrawingItem.GetSegmentByNumer(pIndex).Segment;
-        pSegment_Next = pDrawingItem.GetSegmentByNumer(pIndex + 1).Segment;
+      foreach (cDrawingSegment pDrawingSegment in pDrawingItem.DrawingSegments.Values) {
+        pSegment = pDrawingSegment.Segment;
+        pSegment_Next = pDrawingItem.GetSegmentByIndex(pSegment.Index + 1).Segment; 
 
         //przekształcenie punktu poligonu na współrzędne do wyświetlenia na Canvas
         var pPoints = TransformPoints(pSegment, pSegment_Next, xScale, xPt_Base);
@@ -85,7 +78,6 @@ namespace DrawShape {
           pLinePoints[1] = new PointF(pPoints.Pt_B.X, pPoints.Pt_B.Y);
 
           e.Graphics.DrawPolygon(pBluePen, pLinePoints);
-         
 
         } else {                                            //jeśli segment jest krzywywą
           DrawBezierCurve(pSegment, pPoints.Pt_A, pPoints.Pt_B, xIndex, e);
@@ -283,6 +275,38 @@ namespace DrawShape {
       pNextIndex =  mDrawingItems.Count + 1;
 
       return pNextIndex;
+
+    }
+
+    private void FillItem(int xIndex, double xScale, cPoint xPt_Base, PaintEventArgs e) {
+      //funkcja wypełniająca wnętrze elementu
+      //xIndex - numer elementu
+      //xScale - skala do przygotowania punktów
+      //xPt_Base - punkt bazowy
+
+      SolidBrush blueBrush;                                         
+      PointF[] pLinePoints;                                 
+      int pIndex;
+      cDrawingItem pDrawingItem;
+
+      pDrawingItem = mDrawingItems[xIndex];
+
+      if (pDrawingItem.CntDIF != DrawingItemFillingEnum.IsFilled) return;
+
+      blueBrush = new SolidBrush(Color.White);              
+      pLinePoints = new PointF[4];
+      pIndex = 0;
+
+      foreach (cDrawingSegment pDrawingSegment in pDrawingItem.DrawingSegments.Values) {
+
+        //przekształcam pozycję punktów według skali i punktu bazowego
+        var pPoints = TransformPoints(pDrawingSegment.Segment, pDrawingSegment.Segment.Segment_Next, xScale, xPt_Base);
+        pLinePoints[pIndex] = new PointF(pPoints.Pt_A.X, pPoints.Pt_A.Y);
+        pIndex++;
+
+      }
+
+      e.Graphics.FillPolygon(blueBrush, pLinePoints);
 
     }
 

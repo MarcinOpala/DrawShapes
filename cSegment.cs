@@ -7,22 +7,13 @@ using System.Threading.Tasks;
 
 namespace DrawShape {
 
-  public enum SegmentIsIncludedEnum {                       //numerator opisujący w jakim poligonie jest zawarty
-    Undefined = 0,                                          //nieokreślony
-    FrameOutline = 1,                                       //tylko w wielokącie ramy
-    Mullion = 2,                                            //w wielokącie słupka
- // MullionMullion = 3 ?????                                //w dwóch słupkach
-  }
-
   public class cSegment {
 
-    private SegmentIsIncludedEnum mCntSInclude;             //typ zawarcia w wielokącie
     private int mIndex;                                     //numer danego cSegmentu
     private bool mIsCurve;                                  //czy jest łuk
     private cPoint mPoint;                                  //punkt początkowy danego cSegmentu
     private cPolygon mPolygon_Parent;                       //poligon rodzica
 
-    internal SegmentIsIncludedEnum CntSInclude { get { return mCntSInclude; } set { mCntSInclude = value; } }
     internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal bool IsCurve { get { return mIsCurve; } set { mIsCurve = value; } }
     internal cPoint Point { get { return mPoint; } set { mPoint = value; } }
@@ -31,7 +22,7 @@ namespace DrawShape {
 
     public cSegment() {
 
-      mCntSInclude = SegmentIsIncludedEnum.Undefined;
+    
 
     }
 
@@ -45,7 +36,7 @@ namespace DrawShape {
       mIndex = xIndex;
       mIsCurve = xIsCurve;
       mPolygon_Parent = xPolygon_Parent;
-      mCntSInclude = SegmentIsIncludedEnum.Undefined;
+      
     }
 
     internal void SetPolygon_Parent(cPolygon xPolygon) {
@@ -99,29 +90,26 @@ namespace DrawShape {
 
     }
 
-    internal void SetPointByVector(cVector xVector) {
+    internal void MovePointInwardsPolygonByVector(cVector xVector) {
+      //funkcja zmieniająca położenie punku
+      //UWAGA: tylko dla prostokątów
+      //xVector - wektor przesunięcia
 
-      cSegment pSegment;
+      if (mIndex == 1) {
+        mPoint.X += (float)xVector.X;
+        mPoint.Y += (float)xVector.Y;
 
-      pSegment = this;
+      } else if (mIndex == 2) {
+        mPoint.X -= (float)xVector.X;
+        mPoint.Y += (float)xVector.Y;
 
-
-      if (pSegment.Index == 1) {
-        pSegment.Point.X += (float)xVector.X;
-        pSegment.Point.Y += (float)xVector.Y;
-
-
-      } else if (pSegment.Index == 2) {
-        pSegment.Point.X -= (float)xVector.X;
-        pSegment.Point.Y += (float)xVector.Y;
-
-      } else if (pSegment.Index == 3) {
-        pSegment.Point.X -= (float)xVector.X;
-        pSegment.Point.Y -= (float)xVector.Y;
+      } else if (mIndex == 3) {
+        mPoint.X -= (float)xVector.X;
+        mPoint.Y -= (float)xVector.Y;
 
       } else {
-        pSegment.Point.X += (float)xVector.X;
-        pSegment.Point.Y -= (float)xVector.Y;
+        mPoint.X += (float)xVector.X;
+        mPoint.Y -= (float)xVector.Y;
 
       }
 

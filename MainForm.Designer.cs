@@ -43,6 +43,10 @@ namespace DrawShape {
       this.btnDrawAssembly = new System.Windows.Forms.Button();
       this.btnCreateProject = new System.Windows.Forms.Button();
       this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.lblCWidth_Mullion = new System.Windows.Forms.Label();
+      this.txtCWidth_Mullion = new System.Windows.Forms.TextBox();
+      this.lblCWidth_Profile = new System.Windows.Forms.Label();
+      this.txtCWidth_Profile = new System.Windows.Forms.TextBox();
       this.lblMullionWidth = new System.Windows.Forms.Label();
       this.txtMullionWidth = new System.Windows.Forms.TextBox();
       this.lblMullionLocation = new System.Windows.Forms.Label();
@@ -225,6 +229,10 @@ namespace DrawShape {
       // tabPage2
       // 
       this.tabPage2.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage2.Controls.Add(this.lblCWidth_Mullion);
+      this.tabPage2.Controls.Add(this.txtCWidth_Mullion);
+      this.tabPage2.Controls.Add(this.lblCWidth_Profile);
+      this.tabPage2.Controls.Add(this.txtCWidth_Profile);
       this.tabPage2.Controls.Add(this.lblMullionWidth);
       this.tabPage2.Controls.Add(this.txtMullionWidth);
       this.tabPage2.Controls.Add(this.lblMullionLocation);
@@ -258,6 +266,40 @@ namespace DrawShape {
       this.tabPage2.Size = new System.Drawing.Size(438, 645);
       this.tabPage2.TabIndex = 1;
       this.tabPage2.Text = "tabPage2";
+      // 
+      // lblCWidth_Mullion
+      // 
+      this.lblCWidth_Mullion.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblCWidth_Mullion.Location = new System.Drawing.Point(44, 357);
+      this.lblCWidth_Mullion.Name = "lblCWidth_Mullion";
+      this.lblCWidth_Mullion.Size = new System.Drawing.Size(108, 30);
+      this.lblCWidth_Mullion.TabIndex = 74;
+      this.lblCWidth_Mullion.Text = "lblCWidth_Mullion";
+      // 
+      // txtCWidth_Mullion
+      // 
+      this.txtCWidth_Mullion.Location = new System.Drawing.Point(154, 354);
+      this.txtCWidth_Mullion.Name = "txtCWidth_Mullion";
+      this.txtCWidth_Mullion.Size = new System.Drawing.Size(84, 27);
+      this.txtCWidth_Mullion.TabIndex = 73;
+      this.txtCWidth_Mullion.Text = "txtCWidth_Mullion";
+      // 
+      // lblCWidth_Profile
+      // 
+      this.lblCWidth_Profile.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblCWidth_Profile.Location = new System.Drawing.Point(44, 327);
+      this.lblCWidth_Profile.Name = "lblCWidth_Profile";
+      this.lblCWidth_Profile.Size = new System.Drawing.Size(94, 30);
+      this.lblCWidth_Profile.TabIndex = 72;
+      this.lblCWidth_Profile.Text = "lblCWidth_Profile";
+      // 
+      // txtCWidth_Profile
+      // 
+      this.txtCWidth_Profile.Location = new System.Drawing.Point(154, 324);
+      this.txtCWidth_Profile.Name = "txtCWidth_Profile";
+      this.txtCWidth_Profile.Size = new System.Drawing.Size(84, 27);
+      this.txtCWidth_Profile.TabIndex = 71;
+      this.txtCWidth_Profile.Text = "txtCWidth_Profile";
       // 
       // lblMullionWidth
       // 
@@ -565,6 +607,10 @@ namespace DrawShape {
         private TextBox txtMullionWidth;
     private Button btnRemoveSash;
     private Button btnAddSash;
+    private Label lblCWidth_Mullion;
+    private TextBox txtCWidth_Mullion;
+    private Label lblCWidth_Profile;
+    private TextBox txtCWidth_Profile;
   }
 }
 

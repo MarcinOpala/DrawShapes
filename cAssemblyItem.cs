@@ -1,33 +1,46 @@
 ﻿using System;
 
 namespace DrawShape {
-
+  
   public class cAssemblyItem {
 
+    private int mAxis_X;                                    //oś X AssemblyItemu
+    private int mAxis_Y;                                    //oś Y AssemblyItemu
     private int mIndex;                                     //numer AssemblyItemu
     private cPolygon mPolygon;                              //Polygon AssemblyItemu
     private cPolygon mParent;                               //rodzic wielokąta
     private int mWidth_Profile;                             //szerokość profilu
+    private int mC;                                         //odległość od krawędzi do następnego elementu
 
+    internal int Axis_X { get { return mAxis_X; } set { mAxis_X = value; } }
+    internal int Axis_Y { get { return mAxis_Y; } set { mAxis_Y = value; } }
+    internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
     internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
+    internal int C { get { return mC; } }
+    internal int Width_Profile { get { return mWidth_Profile; } }
 
     public cAssemblyItem(int xIndex) {
+      //xIndex - numer AssemblyItemu
 
+      //ag - usunąć indeks
       mPolygon = new cPolygon(xIndex);
       mIndex = xIndex;
+      
 
     }
 
-    public void CreateAssemblyItem_Profile(cSegment xSegment, int xWidth_Profile) {
+    public void CreateAssemblyItem_Profile(cSegment xSegment, int xWidth_Profile, int xC) {
       //funkcja tworząca AssemblyItem - kształt profilu na podstawie boku wielokąta
       //xSegment - oryginalny bok wielokąta
       //xWidth_Profile - szerokość profilu
+      //xC - stała C dla każdego profilu
 
       cSegment pSegment;
       float pOffset_X, pOffset_Y;
 
       mWidth_Profile = xWidth_Profile;
+      mC = xC;
 
       //Bok 1 punkt z oryginału
       pSegment = new cSegment(xSegment.Point, 1, xSegment.IsCurve, mPolygon);
@@ -58,6 +71,8 @@ namespace DrawShape {
       pSegment.Point.Y += pOffset_Y;
 
       mPolygon.AddSegment(pSegment);
+
+      mPolygon.CntPF = PolygonFunctionalityEnum.Profile;
 
     }
 
@@ -120,14 +135,17 @@ namespace DrawShape {
 
     }
 
-    internal void CreateAssemblyItem_Mullion(cPolygon xPolygon, float xWidth_Profile) {
+    internal void CreateAssemblyItem_Mullion(cPolygon xPolygon, float xWidth_Profile, int xC) {
       //funkcja tworząca AssemblyItem - kształt słupka (xPolygon skrócony o szerokość profilu)
       //xPolygon - Polygon bazowy
       //xWidth_Profile - szerokość profilu
+      //xC - odległość od osi słupka do skrzydła, które dodamy
 
       cPoint pPoint;
       cSegment pSegment_Base;
       cSegment pSegment;
+
+      mC = xC;
 
       pSegment_Base = xPolygon.Segments[1];
       pPoint = new cPoint(pSegment_Base.Point.X, pSegment_Base.Point.Y + xWidth_Profile);

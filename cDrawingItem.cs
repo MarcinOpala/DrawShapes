@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace DrawShape {
 
+  public enum DrawingItemFillingEnum {                       //numerator funkcjonalności wielokąta
+    Undefined = 0,                                           //nieokreślony
+    IsFilled = 1,                                            //AItem ma być wypełniony kolorem
+  }
+
   public class cDrawingItem {
 
+    private DrawingItemFillingEnum mCntDIF;                //informacja o tym, czy element jest wypełniony
     private Dictionary<int, cDrawingSegment> mDrawingSegments;
     private int mIndex;
 
+    internal DrawingItemFillingEnum CntDIF { get { return mCntDIF; } set { mCntDIF = value; } }
     internal Dictionary<int, cDrawingSegment> DrawingSegments { get { return mDrawingSegments; } set { mDrawingSegments = value; } }
     internal int Index { get { return mIndex; } set { mIndex = value; } }
 
@@ -18,11 +25,11 @@ namespace DrawShape {
     public cDrawingItem() {
 
       mDrawingSegments = new Dictionary<int, cDrawingSegment>();
-     
 
     }
 
     public cDrawingItem(int xIndex) {
+      //xIndex - numer drawing itemu
 
       mDrawingSegments = new Dictionary<int, cDrawingSegment>();
       mIndex = xIndex;
@@ -32,27 +39,26 @@ namespace DrawShape {
     internal void AddSegment(cDrawingSegment xDrawingSegments) {
       //funkcja dodająca nowy segment do listy
       //xDrawingSegments - wybrany segment
-      //xNumber - numer segmentu
 
       mDrawingSegments.Add(xDrawingSegments.Index, xDrawingSegments);
 
     }
 
-    internal cDrawingSegment GetSegmentByNumer(int xNumber) {
-      //funkcja zwracająca segment
-      //xSegmentNumber - numer segmentu
+    internal cDrawingSegment GetSegmentByIndex(int xIndex) {
+      //funkcja zwracająca segment po indeksie
+      //xIndex - numer boku
 
-      int pSegmentNumber;
+      int pIndexSegment;
       int pCountMax;
 
       pCountMax = mDrawingSegments.Count;
 
-      pSegmentNumber = xNumber;
+      pIndexSegment = xIndex;
 
-      if (xNumber > pCountMax)
-        pSegmentNumber = 1;
+      if (xIndex > pCountMax)
+        pIndexSegment = 1;
 
-      return mDrawingSegments[pSegmentNumber];
+      return mDrawingSegments[pIndexSegment];
 
     }
 

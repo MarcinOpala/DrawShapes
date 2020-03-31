@@ -6,7 +6,6 @@ namespace DrawShape {
 
     public cDrawingAdapter() { }
 
-
     public cDrawing GetDrawing(cProject xProject) {
       //funkcja zwracająca Drawing_Project
       //xProject - projekt wielokąta oryginalny
@@ -15,11 +14,16 @@ namespace DrawShape {
 
       pDrawing = new cDrawing();
 
+      //do Drawing dodajemy ramę i słupek
       foreach (cPolygon pPolygon in xProject.PolygonsEnv.Polygons.Values) {
 
+        if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameVirtual) continue;
+
+        //obrys
         if (pPolygon.CntPF == PolygonFunctionalityEnum.Undefined)
           ProcessPolygon(pDrawing, pPolygon);
 
+        //profil
         else if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameOutline) {
           ProcessPolygon(pDrawing, pPolygon);
 
@@ -29,25 +33,31 @@ namespace DrawShape {
           if (pPolygon.AssemblyItem != null)
             ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
 
+          //słupek
         } else if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) {
           if (pPolygon.Assembly != null)
             ProcessAssembly(pDrawing, pPolygon.Assembly);
 
           if (pPolygon.AssemblyItem != null)
             ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
-
-        } else if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameVirtual) {
-          if (pPolygon.Child != null)
-            ProcessPolygon(pDrawing, pPolygon.Child);
-
-          if (pPolygon.Assembly != null)
-            ProcessAssembly(pDrawing, pPolygon.Assembly);
-
-          if (pPolygon.AssemblyItem != null)
-            ProcessPolygon(pDrawing, pPolygon.AssemblyItem.Polygon);
-        }
+        } 
       }
-      
+
+      //do Drawing dodajemy skrzydła
+      foreach (cPolygon pPolygon in xProject.PolygonsEnv.Polygons.Values) {
+        if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
+
+        if (pPolygon.Child == null) continue;
+
+        ProcessPolygon(pDrawing, pPolygon.Child);
+
+        if (pPolygon.Child.Assembly != null)
+          ProcessAssembly(pDrawing, pPolygon.Child.Assembly);
+
+        if (pPolygon.Child.AssemblyItem != null)
+          ProcessPolygon(pDrawing, pPolygon.Child.AssemblyItem.Polygon);
+
+      }
       return pDrawing;
 
     }
@@ -61,6 +71,11 @@ namespace DrawShape {
       cDrawingSegment pDrawingSegment;
 
       pDrawingItem = new cDrawingItem();
+
+      if (xPolygon.CntPF == PolygonFunctionalityEnum.Profile ||     //jeżeli wielokąt jest profilem/słupkiem to wypełniamy wnętrze
+          xPolygon.CntPF == PolygonFunctionalityEnum.Mullion)
+
+        pDrawingItem.CntDIF = DrawingItemFillingEnum.IsFilled;
 
       foreach (cSegment pSegment in xPolygon.Segments.Values) {
 

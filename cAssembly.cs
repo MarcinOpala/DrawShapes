@@ -19,10 +19,33 @@ namespace DrawShape {
 
     }
 
-    internal void CreateMe(int xWidth, cPolygon xPolygon_Parent) {
+    internal void CreateMe(int xWidth, cPolygon xPolygon_Parent, int xC) {
       //funkcja tworząca konstrukcję dla wybranego poligonu
       //xWidth - szerokość profilu
       //xPolygon_Parent - poligon bazowy
+           //xC_Cln - kolekcja stałej C 
+
+      cAssemblyItem pAssemblyItem;
+
+      mPolygon_Parent = xPolygon_Parent;
+
+      //tworzenie AssemblyItemu dla każdego segmentu
+      foreach (cSegment pSegment in xPolygon_Parent.Segments.Values) {
+
+        pAssemblyItem = new cAssemblyItem(pSegment.Index);
+        pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth, xC);
+
+        AddAssemblyItem(pSegment.Index, pAssemblyItem);
+
+      }
+
+    }
+
+    internal void CreateMe(int xWidth, cPolygon xPolygon_Parent, Dictionary<int, int> xC_Cln) {
+      //funkcja tworząca konstrukcję dla wybranego poligonu
+      //xWidth - szerokość profilu
+      //xPolygon_Parent - poligon bazowy
+      //xC_Cln - kolekcja stałej C 
 
       cAssemblyItem pAssemblyItem;                          
 
@@ -31,13 +54,10 @@ namespace DrawShape {
       //tworzenie AssemblyItemu dla każdego segmentu
       foreach (cSegment pSegment in xPolygon_Parent.Segments.Values) {
 
-        int pIndex;
-        pIndex = pSegment.Index + xPolygon_Parent.Index;
+        pAssemblyItem = new cAssemblyItem(pSegment.Index);
+        pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth, xC_Cln[pSegment.Index]);
 
-        pAssemblyItem = new cAssemblyItem(pIndex);
-        pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth);
-
-        AddAssemblyItem(pIndex, pAssemblyItem);
+        AddAssemblyItem(pSegment.Index, pAssemblyItem);
 
       }
       
