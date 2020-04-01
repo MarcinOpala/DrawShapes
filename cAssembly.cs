@@ -90,6 +90,49 @@ namespace DrawShape {
 
     }
 
+    internal void CreateCross(int xMullion_X, int xMullion_Y, int xSize) {
+
+      cAssemblyItem pAssemblyItem;
+      cPolygon pPolygon;
+      cSegment pSegment;
+
+      pPolygon = new cPolygon();
+      pSegment = new cSegment();
+      pSegment.Point.X = xMullion_X - xSize;
+      pSegment.Point.Y = xMullion_Y;
+      pSegment.Index = 1;
+      pPolygon.AddSegment(pSegment);
+
+      pSegment = new cSegment();
+      pSegment.Point.X = xMullion_X + xSize;
+      pSegment.Point.Y = xMullion_Y;
+      pSegment.Index = 2;
+
+      pPolygon.AddSegment(pSegment);
+      pAssemblyItem = new cAssemblyItem();
+      pAssemblyItem.Polygon = pPolygon;
+
+      AddAssemblyItem(1, pAssemblyItem);
+
+      ///////
+      pPolygon = new cPolygon();
+      pSegment = new cSegment();
+      pSegment.Point.X = xMullion_X;
+      pSegment.Point.Y = xMullion_Y - xSize;
+      pSegment.Index = 1;
+      pPolygon.AddSegment(pSegment);
+
+      pSegment = new cSegment();
+      pSegment.Point.X = xMullion_X;
+      pSegment.Point.Y = xMullion_Y + xSize;
+      pSegment.Index = 2;
+      pPolygon.AddSegment(pSegment);
+      pAssemblyItem = new cAssemblyItem();
+      pAssemblyItem.Polygon = pPolygon;
+
+      AddAssemblyItem(2, pAssemblyItem);
+    }
+
   }
 
 }

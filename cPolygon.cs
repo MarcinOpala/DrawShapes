@@ -36,8 +36,9 @@ namespace DrawShape {
     public cPolygon() {
 
       mSegments = new Dictionary<int, cSegment>();
-      mCntPF = PolygonFunctionalityEnum.Undefined;     
-      
+      mCntPF = PolygonFunctionalityEnum.Undefined;
+      mAssembly = new cAssembly();
+
     }
 
     public cPolygon(int xIndex) {
@@ -184,7 +185,7 @@ namespace DrawShape {
     }
 
     public Dictionary <int, cPolygon> Split_PolygonByWidth(int xWidth) {
-      //funkcja zwracająca kolekcję podzielonych prostokątów
+      //funkcja zwracająca kolekcję podzielonych prostokątów po szerokości
       //xWidth - szerokości względem której dzielimy prostokąt
 
       Dictionary<int, cPolygon> pCln;
@@ -216,8 +217,8 @@ namespace DrawShape {
     }
 
     public Dictionary<int, cPolygon> Split_PolygonByHeight(int xHeight) {
-      //funkcja zwracająca kolekcję podzielonych prostokątów
-      //xHeight - szerokości względem której dzielimy prostokąt
+      //funkcja zwracająca kolekcję podzielonych prostokątów po wysokości
+      //xHeight - wysokość względem której dzielimy prostokąt
 
       Dictionary<int, cPolygon> pCln;
       cPolygon pPolygon;
@@ -237,7 +238,7 @@ namespace DrawShape {
       pPolygon = Clone();
 
       pPolygon.Parent = this;
-      pPolygon.Index = mIndex + 1;
+      pPolygon.Index = mIndex + 2;
       pPolygon.Segments[1].Point.Y = xHeight;
       pPolygon.Segments[2].Point.Y = xHeight;
 
@@ -247,8 +248,8 @@ namespace DrawShape {
 
     }
 
-    internal void SetPolygonToMullion_Vertical(cPolygon xPolygon, int xMullionPosition_X, int xMullionWidth, float xWidth_Profile, int xC) {
-      //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion
+    internal void SetPolygonToMullion(cPolygon xPolygon, int xMullionPosition_X, int xMullionPosition_Y, int xMullionWidth, int xC) {
+      //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion - pionowy
       //xPolygon - Polygon bazowy
       //xMullionPosition_X - współrzędna X osi słupka
       //xMullionWidth - szerokość słupka
@@ -260,44 +261,31 @@ namespace DrawShape {
       mCntPF = PolygonFunctionalityEnum.Mullion;
       mParent = xPolygon;
 
-      //ustawiamy boki względem pozycji słupka + przesunięte o połowę jego szerokości
-      mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
-      mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
-      mSegments[3].Point.X = xMullionPosition_X + xMullionWidth / 2;
-      mSegments[4].Point.X = xMullionPosition_X - xMullionWidth / 2;
-
-      //ag - usunąć stąd index - to jest pojedynczy AI
-      pAssemblyItem = new cAssemblyItem(mIndex);
-      pAssemblyItem.CreateAssemblyItem_Mullion(this, xWidth_Profile, xC);
-      pAssemblyItem.Axis_Y = xMullionPosition_X;
-
-      mAssemblyItem = pAssemblyItem;
-    
-    }
-
-    internal void SetPolygonToMullion_Horizontal(cPolygon xPolygon, int xMullionPosition_Y, int xMullionWidth, float xWidth_Profile, int xC) {
-      //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion
-      //xPolygon - Polygon bazowy
-      //xMullionPosition_X - współrzędna X osi słupka
-      //xMullionWidth - szerokość słupka
-      //xWidth_Profile - szerokość profilu
-      //xC - odległość C dla słupka
-
-      cAssemblyItem pAssemblyItem;
-
-      mCntPF = PolygonFunctionalityEnum.Mullion;
-      mParent = xPolygon;
+      pAssemblyItem = null;
 
       //ustawiamy boki względem pozycji słupka + przesunięte o połowę jego szerokości
-      mSegments[1].Point.Y = xMullionPosition_Y - xMullionWidth / 2;
-      mSegments[2].Point.Y = xMullionPosition_Y + xMullionWidth / 2;
-      mSegments[3].Point.Y = xMullionPosition_Y + xMullionWidth / 2;
-      mSegments[4].Point.Y = xMullionPosition_Y - xMullionWidth / 2;
+      if (xMullionPosition_Y == 0) {
+        mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
+        mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
+        mSegments[3].Point.X = xMullionPosition_X + xMullionWidth / 2;
+        mSegments[4].Point.X = xMullionPosition_X - xMullionWidth / 2;
 
-      //ag - usunąć stąd index - to jest pojedynczy AI
-      pAssemblyItem = new cAssemblyItem(mIndex);
-      pAssemblyItem.CreateAssemblyItem_Mullion(this, xWidth_Profile, xC);
-      pAssemblyItem.Axis_X = xMullionPosition_Y;
+        pAssemblyItem = new cAssemblyItem();
+
+        pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
+        pAssemblyItem.Axis_Symmetry = xMullionPosition_X;
+
+      } else if (xMullionPosition_X == 0) {
+        mSegments[1].Point.Y = xMullionPosition_Y - xMullionWidth / 2;
+        mSegments[2].Point.Y = xMullionPosition_Y - xMullionWidth / 2;
+        mSegments[3].Point.Y = xMullionPosition_Y + xMullionWidth / 2;
+        mSegments[4].Point.Y = xMullionPosition_Y + xMullionWidth / 2;
+
+        pAssemblyItem = new cAssemblyItem();
+        pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
+
+        pAssemblyItem.Axis_Symmetry = xMullionPosition_Y;
+      }
 
       mAssemblyItem = pAssemblyItem;
 
@@ -341,25 +329,49 @@ namespace DrawShape {
 
     }
 
-    internal cPoint GetCenterPoint() {
-      //funkcja zwracająca punkt będący środkiem poligonu
+/*
+    public Dictionary<int, cPolygon> Split_PolygonByVector(cVector xVector_Mullion) {
+      // !!!  UWAGA FUNKJCA NIE DZIAŁA JEST W TRAKCIE TWORZENIA!!!
+      //funkcja zwracająca kolekcję podzielonych wielokątów wektorem
+      //xVector_Mullion - wektor słupka
 
-      cPoint pPoint;
-      float pX, pY;
+      Dictionary<int, cPolygon> pCln;
+      cPolygon pPolygon;
 
-      float[] pArreyX; 
-      float[] pArreyY;
+      //Polygon A
+      pPolygon = Clone();
 
-      pArreyX = new float[] { mSegments[1].Point.X, mSegments[2].Point.X, mSegments[3].Point.X, mSegments[4].Point.X };
-      pArreyY = new float[] { mSegments[1].Point.Y, mSegments[2].Point.Y, mSegments[3].Point.Y, mSegments[4].Point.Y };
+      pPolygon.Parent = this;
+      pPolygon.Index = mIndex;
+      pPolygon.Segments[2].Point.X = (float)xVector_Mullion.X;
+      pPolygon.Segments[3].Point.X = (float)xVector_Mullion.X;
 
-      pX = (pArreyX.Min() + (pArreyX.Max() - pArreyX.Min()) / 2);
-      pY = (pArreyY.Min() + (pArreyY.Max() - pArreyY.Min()) / 2);
 
-      pPoint = new cPoint(pX, pY);
 
-      return pPoint;
-    }
+      pCln = new Dictionary<int, cPolygon>();
+      pCln.Add(1, pPolygon);
+
+      //Polygon B
+      pPolygon = Clone();
+
+      pPolygon.Parent = this;
+      pPolygon.Index = mIndex + 2;
+      pPolygon.Segments[1].Point.X = (float)xVector_Mullion.X;
+      pPolygon.Segments[4].Point.X = (float)xVector_Mullion.X;
+
+
+      if x = 0
+      pPolygon.Segments[3].Point.Y = (float)xVector_Mullion.Y;
+      pPolygon.Segments[4].Point.Y = (float)xVector_Mullion.Y;
+
+      pPolygon.Segments[1].Point.Y = (float)xVector_Mullion.Y;
+      pPolygon.Segments[2].Point.Y = (float)xVector_Mullion.Y;
+
+      pCln.Add(2, pPolygon);
+
+      return pCln;
+
+    }*/
 
   }
 

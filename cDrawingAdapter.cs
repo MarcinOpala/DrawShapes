@@ -22,6 +22,8 @@ namespace DrawShape {
         //obrys
         if (pPolygon.CntPF == PolygonFunctionalityEnum.Undefined)
           ProcessPolygon(pDrawing, pPolygon);
+        if (pPolygon.CntPF == PolygonFunctionalityEnum.Undefined && pPolygon.Assembly != null)
+          ProcessAssembly(pDrawing, pPolygon.Assembly);
 
         //profil
         else if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameOutline) {

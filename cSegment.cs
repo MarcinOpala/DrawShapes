@@ -22,7 +22,7 @@ namespace DrawShape {
 
     public cSegment() {
 
-    
+      mPoint = new cPoint();
 
     }
 

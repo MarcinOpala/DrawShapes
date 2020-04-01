@@ -49,16 +49,18 @@ namespace DrawShape {
       this.lblWidth.Text = "Szerokość:";
       this.lblUnitWidth.Text = "mm";
       this.lblUnitHeight.Text = "mm";
-      this.btnAddMullion.Text = "Wstaw słupek";
-      this.txtMullionLocation.Text = "700";
-      this.lblMullionLocation.Text = "Pozycja słupeka:";
+      this.btnAddMullionVertical.Text = "Wstaw słupek |";
+      this.btnAddMullionHorizontal.Text = "Wstaw słupek -";
+      this.txtMullionLocationX.Text = "700";
+      this.txtMullionLocationY.Text = "700";
+      this.lblMullionLocation.Text = "Pozycja słupeka (X , Y):";
       this.txtMullionWidth.Text = "50";
       this.lblMullionWidth.Text = "Szerokość słupka:";
       this.btnAddSash.Text = "Wstaw skrzydło";
       this.btnRemoveSash.Text = "Usuń skrzydło";
       this.txtCWidth_Profile.Text = "40";
       this.lblCWidth_Profile.Text = "C Profilu:";
-      this.txtCWidth_Mullion.Text = "5";
+      this.txtCWidth_Mullion.Text = "10";
       this.lblCWidth_Mullion.Text = "C Słupka:";
 
 
@@ -71,20 +73,22 @@ namespace DrawShape {
       this.txtDiameter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtSelectSide.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtProfileSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
-      this.txtMullionLocation.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtMullionLocationX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
+      this.txtMullionLocationY.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtMullionWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtCWidth_Mullion.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
       this.txtCWidth_Profile.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckKeyPress);
 
+      this.txtMullionLocationX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Insert_Cross);
+      this.txtMullionLocationY.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Insert_Cross);
 
-      
 
       //funkcje CLICK
       this.btnCreateProject.Click += new System.EventHandler(this.CreateProject_Click);            
       this.btnSetToCurve.Click += new System.EventHandler(this.SetToCurve_Click);                  
-      this.btnDrawAssembly.Click += new System.EventHandler(this.InsertAssembly);       
+      this.btnDrawAssembly.Click += new System.EventHandler(this.InsertProfile);       
       
       //funkcje inne
       this.Resize += new System.EventHandler(this.MainForm_Resize);                                
@@ -97,7 +101,6 @@ namespace DrawShape {
 
       cDrawing pDrawing;
       cPoint pPt_Base;
-      float pRadius;
       int pHeight, pWidth;
     
       if (mProject == null)                         //jeśli nie istnieje projekt
@@ -105,9 +108,6 @@ namespace DrawShape {
 
       pHeight = int.Parse(txtHeight.Text);
       pWidth = int.Parse(txtWidth.Text);
-           
-      pRadius = float.Parse(txtDiameter.Text) / 2;
-
       mMarginV = double.Parse(txtMarginV.Text);
       mMarginH = double.Parse(txtMarginH.Text);
 
@@ -116,26 +116,23 @@ namespace DrawShape {
       pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - pWidth * mScale) / 2);
       pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - pHeight * mScale) / 2));
 
-      Console.WriteLine(">>>> X: " + pPt_Base.X + " Y: " + pPt_Base.Y);
 
       mDrawingAdapter = new cDrawingAdapter();
-
       pDrawing = mDrawingAdapter.GetDrawing(mProject); 
 
       pDrawing.Draw(mScale, pPt_Base, e);
 
-      Console.WriteLine("....");
-      foreach (cPolygon pPoly in mProject.PolygonsEnv.Polygons.Values) {
-                
-        Console.WriteLine("\n"+pPoly.CntPF + " " + pPoly.Index);
-        foreach (cSegment pseg in pPoly.Segments.Values) {
-          Console.WriteLine(pseg.Index + ": (" + pseg.Point.X + " ; " + pseg.Point.Y + ")");
 
-        }
+          //wypisanie wszystkich polygonsów w ENV
+          Console.WriteLine("......................");
+          foreach (cPolygon pPoly in mProject.PolygonsEnv.Polygons.Values) {
+            Console.WriteLine("\n"+pPoly.CntPF + " " + pPoly.Index);
+            foreach (cSegment pseg in pPoly.Segments.Values) {
+              Console.WriteLine(pseg.Index + ": (" + pseg.Point.X + " ; " + pseg.Point.Y + ")");
+            }
+          }
 
-      }
-
-      }
+    }
 
     private void CreateProject_Click(object sender, EventArgs e) {
       //funkca tworząca projekt
@@ -156,15 +153,12 @@ namespace DrawShape {
 
     }
 
-    private void InsertAssembly(object sender, EventArgs e) {
+    private void InsertProfile(object sender, EventArgs e) {
       //funkca wywołująca wstawienie profilu
 
-      Dictionary<int, int> pC_Cln;
       cPolygon pPolygon;
       int pWidth_Profile;
       int pC_Frame;
-
-      pC_Cln = new Dictionary<int, int>();
    
       pPolygon = mProject.PolygonsEnv.Polygons[1];
 
@@ -172,23 +166,20 @@ namespace DrawShape {
       pC_Frame = int.Parse(txtCWidth_Profile.Text);
       pWidth_Profile = int.Parse(txtProfileSize.Text);      
 
-      //tworzymy kolekcję wartości C
-      foreach (cSegment pSegment in pPolygon.Segments.Values) {
-        pC_Cln.Add(pSegment.Index, pC_Frame);
-      }
-      //ag - wpuścić tylko jedno C - przeładowanie funkcji
-      pPolygon.CreateAssembly(pWidth_Profile, pPolygon, pC_Cln);
+      pPolygon.CreateAssembly(pWidth_Profile, pPolygon, pC_Frame);
 
       pPolygon.CntPF = PolygonFunctionalityEnum.FrameOutline;
 
       mProject.PolygonsEnv.CreatePolygon_Virtual(pPolygon);
 
+      //dodajemy krzyżyk wskazujący miejsce słupka
+
       this.pnlCanvas.Refresh();
 
     }
 
-    private void InsertMullion(object sender, EventArgs e) {
-      //funkcja wstawiająca słupek 
+    private void InsertMullion_Vertical(object sender, EventArgs e) {
+      //funkcja wstawiająca słupek pionowy
       
       int pMullionPosition_X, pMullionPosition_Y; 
       cPolygon pPolygon;
@@ -197,35 +188,67 @@ namespace DrawShape {
       float pWidth_Profile;
       int pC_Mullion;
 
-      //if (mProject.PolygonsEnv.GetPolygonMullion() != null) return;   //jeśli już jest słupek to koniec
-
       //pobieramy wartości Input z menu - settings
       pC_Mullion = int.Parse(txtCWidth_Mullion.Text);
-      pMullionPosition_X = int.Parse(txtMullionLocation.Text);
-      pMullionPosition_Y = 0;
+      pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
+      pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
       pWidth_Mullion = int.Parse(txtMullionWidth.Text);
       pWidth_Frame = int.Parse(txtWidth.Text);
       pWidth_Profile = float.Parse(txtProfileSize.Text);
 
-      //ag
-      if (pMullionPosition_X + pWidth_Mullion / 2 > pWidth_Frame - pWidth_Profile) return;   //ograniczenie z prawej
-      if (pMullionPosition_X - pWidth_Mullion / 2 < pWidth_Profile) return;                  //ograniczenie z lewej
+      //ograniczenia pozycji słupka
+      if (pMullionPosition_X + pWidth_Mullion / 2 > pWidth_Frame - pWidth_Profile) return;   //prawej
+      if (pMullionPosition_X - pWidth_Mullion / 2 < pWidth_Profile) return;                  //lewej
+
+      //sprawdzenie czy słupek już w tym miejscu istnieje
+      //TODO
+      //if ()
 
 
-      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_By_MullionPositon(pMullionPosition_X);
+      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
 
-      //pPolygon = mProject.PolygonsEnv.GetPolygonVirtual();
-
-      //utworzenie słupka na bazie Polygon_Outline
-      mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, pMullionPosition_X, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
-
-
-
-      //pPolygon = mProject.PolygonsEnv.GetPolygonVirtual();
+      //utworzenie słupka na bazie wirtualnego wielokąta, w którym się znajduje
+      mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, pMullionPosition_X, 0, pWidth_Mullion, pWidth_Profile, pC_Mullion);
 
       //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.Split_Polygon(pMullionPosition_X, pMullionPosition_Y, pPolygon);
+      mProject.PolygonsEnv.Split_Polygon(pMullionPosition_X, 0, pPolygon);
 
+      this.pnlCanvas.Refresh();
+
+    }
+
+    private void InsertMullion_Horizontal(object sender, EventArgs e) {
+      //funkcja wstawiająca słupek poziomy
+
+      int pMullionPosition_X, pMullionPosition_Y;
+      cPolygon pPolygon;
+      int pWidth_Frame;
+      int pWidth_Mullion;
+      float pWidth_Profile;
+      int pC_Mullion;
+
+      //pobieramy wartości Input z menu - settings
+      pC_Mullion = int.Parse(txtCWidth_Mullion.Text);
+      pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
+      pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
+      pWidth_Mullion = int.Parse(txtMullionWidth.Text);
+      pWidth_Frame = int.Parse(txtWidth.Text);
+      pWidth_Profile = float.Parse(txtProfileSize.Text);
+
+
+      //ograniczenia pozycji słupka TODO!!!
+
+
+      //sprawdzenie czy słupek już w tym miejscu istnieje
+      //TODO
+
+      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
+
+      //utworzenie słupka na bazie wirtualnego wielokąta, w którym się znajduje
+      mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
+
+      //dzielenie Polygon_Virtual w miejscu pozycji kolumny
+      mProject.PolygonsEnv.Split_Polygon(0, pMullionPosition_Y, pPolygon);
 
       this.pnlCanvas.Refresh();
 
@@ -239,7 +262,7 @@ namespace DrawShape {
 
       pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_WithoutChild();
 
-      if (pPolygon == null) return;         //jeśli nie ma wolnego miejsca koniec
+      if (pPolygon == null) return;         //jeśli nie ma wolnego miejsca to wyjście
 
       //przypisujemy wartość z Input menu - settings
       pWidth_Profile = int.Parse(txtProfileSize.Text);
@@ -308,20 +331,14 @@ namespace DrawShape {
       for (int h = 58; h <= 127; h++) {
         if (e.KeyChar == h) {
           e.Handled = true;
-
         }
-
       }
-
       //pętla blokująca znaki szczególne
       for (int k = 32; k <= 47; k++) {
         if (e.KeyChar == k) {
           e.Handled = true;
-
         }
-
       }
-
     }
 
     private int TakeMaxValueOfArrey(int[] xArray) {
@@ -391,6 +408,43 @@ namespace DrawShape {
       mArrayOfInput = new int[mArrayOfInput.Length - 3];                                              //czyszczę tablicę
 
       return mScale;
+
+    }
+
+    private void Insert_Cross(object sender, KeyPressEventArgs e) {
+      //funkcja wstawiająca do projektu krzyż - środek słupka
+
+      int pMullionPosition_X;
+      int pMullionPosition_Y;
+      int pCross_Size;
+      cPolygon pPolygon;
+      int pIdx;
+      int pHeight, pWidth;
+
+      //Wymiary projektu
+      pHeight = int.Parse(txtHeight.Text);
+      pWidth = int.Parse(txtWidth.Text);
+
+      pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
+      if (pMullionPosition_X <= 0 || pMullionPosition_X >= pWidth) return;
+
+      pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
+      if (pMullionPosition_Y <= 0 || pMullionPosition_Y >= pHeight) return;
+
+      pCross_Size = 20;
+
+      pPolygon = new cPolygon();
+
+      pPolygon.Assembly.CreateCross(pMullionPosition_X, pMullionPosition_Y, pCross_Size);
+
+      mProject.PolygonsEnv.AddPolygon(pPolygon);
+
+      this.pnlCanvas.Refresh();
+
+      pIdx = mProject.PolygonsEnv.Polygons.Count;
+
+      mProject.PolygonsEnv.Polygons.Remove(pIdx);
+
 
     }
 

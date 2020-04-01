@@ -34,9 +34,10 @@ namespace DrawShape {
       this.pnlInput = new System.Windows.Forms.Panel();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.btnAddMullionHorizontal = new System.Windows.Forms.Button();
       this.btnRemoveSash = new System.Windows.Forms.Button();
       this.btnAddSash = new System.Windows.Forms.Button();
-      this.btnAddMullion = new System.Windows.Forms.Button();
+      this.btnAddMullionVertical = new System.Windows.Forms.Button();
       this.txtProjectName = new System.Windows.Forms.TextBox();
       this.lblProjectName = new System.Windows.Forms.Label();
       this.btnSetToCurve = new System.Windows.Forms.Button();
@@ -50,7 +51,7 @@ namespace DrawShape {
       this.lblMullionWidth = new System.Windows.Forms.Label();
       this.txtMullionWidth = new System.Windows.Forms.TextBox();
       this.lblMullionLocation = new System.Windows.Forms.Label();
-      this.txtMullionLocation = new System.Windows.Forms.TextBox();
+      this.txtMullionLocationX = new System.Windows.Forms.TextBox();
       this.lblUnitWidth = new System.Windows.Forms.Label();
       this.lblUnitHeight = new System.Windows.Forms.Label();
       this.txtWidth = new System.Windows.Forms.TextBox();
@@ -75,6 +76,7 @@ namespace DrawShape {
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
+      this.txtMullionLocationY = new System.Windows.Forms.TextBox();
       this.pnlAllForm.SuspendLayout();
       this.pnlInput.SuspendLayout();
       this.tabControl1.SuspendLayout();
@@ -125,9 +127,10 @@ namespace DrawShape {
       // tabPage1
       // 
       this.tabPage1.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage1.Controls.Add(this.btnAddMullionHorizontal);
       this.tabPage1.Controls.Add(this.btnRemoveSash);
       this.tabPage1.Controls.Add(this.btnAddSash);
-      this.tabPage1.Controls.Add(this.btnAddMullion);
+      this.tabPage1.Controls.Add(this.btnAddMullionVertical);
       this.tabPage1.Controls.Add(this.txtProjectName);
       this.tabPage1.Controls.Add(this.lblProjectName);
       this.tabPage1.Controls.Add(this.btnSetToCurve);
@@ -141,10 +144,21 @@ namespace DrawShape {
       this.tabPage1.TabIndex = 0;
       this.tabPage1.Text = "tabPage1";
       // 
+      // btnAddMullionHorizontal
+      // 
+      this.btnAddMullionHorizontal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnAddMullionHorizontal.Location = new System.Drawing.Point(32, 280);
+      this.btnAddMullionHorizontal.Name = "btnAddMullionHorizontal";
+      this.btnAddMullionHorizontal.Size = new System.Drawing.Size(158, 40);
+      this.btnAddMullionHorizontal.TabIndex = 53;
+      this.btnAddMullionHorizontal.Text = "btnAddMullionHorizontal";
+      this.btnAddMullionHorizontal.UseVisualStyleBackColor = true;
+      this.btnAddMullionHorizontal.Click += new System.EventHandler(this.InsertMullion_Horizontal);
+      // 
       // btnRemoveSash
       // 
       this.btnRemoveSash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnRemoveSash.Location = new System.Drawing.Point(32, 330);
+      this.btnRemoveSash.Location = new System.Drawing.Point(32, 380);
       this.btnRemoveSash.Name = "btnRemoveSash";
       this.btnRemoveSash.Size = new System.Drawing.Size(158, 40);
       this.btnRemoveSash.TabIndex = 52;
@@ -155,7 +169,7 @@ namespace DrawShape {
       // btnAddSash
       // 
       this.btnAddSash.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnAddSash.Location = new System.Drawing.Point(32, 280);
+      this.btnAddSash.Location = new System.Drawing.Point(32, 330);
       this.btnAddSash.Name = "btnAddSash";
       this.btnAddSash.Size = new System.Drawing.Size(158, 40);
       this.btnAddSash.TabIndex = 51;
@@ -163,16 +177,16 @@ namespace DrawShape {
       this.btnAddSash.UseVisualStyleBackColor = true;
       this.btnAddSash.Click += new System.EventHandler(this.InsertSash);
       // 
-      // btnAddMullion
+      // btnAddMullionVertical
       // 
-      this.btnAddMullion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btnAddMullion.Location = new System.Drawing.Point(32, 230);
-      this.btnAddMullion.Name = "btnAddMullion";
-      this.btnAddMullion.Size = new System.Drawing.Size(158, 40);
-      this.btnAddMullion.TabIndex = 50;
-      this.btnAddMullion.Text = "btnAddMullion";
-      this.btnAddMullion.UseVisualStyleBackColor = true;
-      this.btnAddMullion.Click += new System.EventHandler(this.InsertMullion);
+      this.btnAddMullionVertical.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnAddMullionVertical.Location = new System.Drawing.Point(32, 230);
+      this.btnAddMullionVertical.Name = "btnAddMullionVertical";
+      this.btnAddMullionVertical.Size = new System.Drawing.Size(158, 40);
+      this.btnAddMullionVertical.TabIndex = 50;
+      this.btnAddMullionVertical.Text = "btnAddMullionVertical";
+      this.btnAddMullionVertical.UseVisualStyleBackColor = true;
+      this.btnAddMullionVertical.Click += new System.EventHandler(this.InsertMullion_Vertical);
       // 
       // txtProjectName
       // 
@@ -199,12 +213,14 @@ namespace DrawShape {
       // btnSetToCurve
       // 
       this.btnSetToCurve.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btnSetToCurve.BackColor = System.Drawing.Color.DarkGray;
+      this.btnSetToCurve.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
       this.btnSetToCurve.Location = new System.Drawing.Point(32, 180);
       this.btnSetToCurve.Name = "btnSetToCurve";
       this.btnSetToCurve.Size = new System.Drawing.Size(158, 40);
       this.btnSetToCurve.TabIndex = 43;
       this.btnSetToCurve.Text = "btnDrawArc";
-      this.btnSetToCurve.UseVisualStyleBackColor = true;
+      this.btnSetToCurve.UseVisualStyleBackColor = false;
       // 
       // btnDrawAssembly
       // 
@@ -229,6 +245,7 @@ namespace DrawShape {
       // tabPage2
       // 
       this.tabPage2.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage2.Controls.Add(this.txtMullionLocationY);
       this.tabPage2.Controls.Add(this.lblCWidth_Mullion);
       this.tabPage2.Controls.Add(this.txtCWidth_Mullion);
       this.tabPage2.Controls.Add(this.lblCWidth_Profile);
@@ -236,7 +253,7 @@ namespace DrawShape {
       this.tabPage2.Controls.Add(this.lblMullionWidth);
       this.tabPage2.Controls.Add(this.txtMullionWidth);
       this.tabPage2.Controls.Add(this.lblMullionLocation);
-      this.tabPage2.Controls.Add(this.txtMullionLocation);
+      this.tabPage2.Controls.Add(this.txtMullionLocationX);
       this.tabPage2.Controls.Add(this.lblUnitWidth);
       this.tabPage2.Controls.Add(this.lblUnitHeight);
       this.tabPage2.Controls.Add(this.txtWidth);
@@ -325,15 +342,15 @@ namespace DrawShape {
       this.lblMullionLocation.Name = "lblMullionLocation";
       this.lblMullionLocation.Size = new System.Drawing.Size(94, 30);
       this.lblMullionLocation.TabIndex = 68;
-      this.lblMullionLocation.Text = "lblColumnLocation";
+      this.lblMullionLocation.Text = "lblMullionLocation";
       // 
-      // txtMullionLocation
+      // txtMullionLocationX
       // 
-      this.txtMullionLocation.Location = new System.Drawing.Point(153, 264);
-      this.txtMullionLocation.Name = "txtMullionLocation";
-      this.txtMullionLocation.Size = new System.Drawing.Size(84, 27);
-      this.txtMullionLocation.TabIndex = 67;
-      this.txtMullionLocation.Text = "txtColumnLocation";
+      this.txtMullionLocationX.Location = new System.Drawing.Point(153, 264);
+      this.txtMullionLocationX.Name = "txtMullionLocationX";
+      this.txtMullionLocationX.Size = new System.Drawing.Size(84, 27);
+      this.txtMullionLocationX.TabIndex = 67;
+      this.txtMullionLocationX.Text = "txtMullionLocationX";
       // 
       // lblUnitWidth
       // 
@@ -543,6 +560,14 @@ namespace DrawShape {
       this.pnlCanvas.Size = new System.Drawing.Size(650, 649);
       this.pnlCanvas.TabIndex = 0;
       // 
+      // txtMullionLocationY
+      // 
+      this.txtMullionLocationY.Location = new System.Drawing.Point(250, 264);
+      this.txtMullionLocationY.Name = "txtMullionLocationY";
+      this.txtMullionLocationY.Size = new System.Drawing.Size(84, 27);
+      this.txtMullionLocationY.TabIndex = 75;
+      this.txtMullionLocationY.Text = "txtMullionLocationY";
+      // 
       // MainForm
       // 
       this.ClientSize = new System.Drawing.Size(1205, 750);
@@ -594,7 +619,7 @@ namespace DrawShape {
     private Label lblMarginHorizontal;
     private Label lblProjectName;
     private TextBox txtProjectName;
-    private Button btnAddMullion;
+    private Button btnAddMullionVertical;
     private Label lblUnitWidth;
     private Label lblUnitHeight;
     private TextBox txtWidth;
@@ -602,7 +627,7 @@ namespace DrawShape {
     private Label lblWidth;
     private Label lblHeight;
     private Label lblMullionLocation;
-    private TextBox txtMullionLocation;
+    private TextBox txtMullionLocationX;
         private Label lblMullionWidth;
         private TextBox txtMullionWidth;
     private Button btnRemoveSash;
@@ -611,6 +636,8 @@ namespace DrawShape {
     private TextBox txtCWidth_Mullion;
     private Label lblCWidth_Profile;
     private TextBox txtCWidth_Profile;
+        private Button btnAddMullionHorizontal;
+    private TextBox txtMullionLocationY;
   }
 }
 
