@@ -47,18 +47,21 @@ namespace DrawShape {
       //xPolygon_Parent - poligon bazowy
       //xC_Cln - kolekcja stałej C 
 
-      cAssemblyItem pAssemblyItem;                          
+      cAssemblyItem pAssemblyItem;
+      int pIdx;
 
+      pIdx = 1;
       mPolygon_Parent = xPolygon_Parent;
  
       //tworzenie AssemblyItemu dla każdego segmentu
       foreach (cSegment pSegment in xPolygon_Parent.Segments.Values) {
 
         pAssemblyItem = new cAssemblyItem(pSegment.Index);
-        pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth, xC_Cln[pSegment.Index]);
+        pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth, xC_Cln[pIdx]);
 
         AddAssemblyItem(pSegment.Index, pAssemblyItem);
 
+        pIdx++;
       }
       
     }
@@ -134,5 +137,6 @@ namespace DrawShape {
     }
 
   }
+
 
 }

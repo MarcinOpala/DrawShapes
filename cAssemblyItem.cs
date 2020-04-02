@@ -10,6 +10,7 @@ namespace DrawShape {
     private cPolygon mParent;                               //rodzic wielokąta
     private int mWidth_Profile;                             //szerokość profilu
     private int mC;                                         //odległość od krawędzi do następnego elementu
+    private cAssembly mAssemblyParent;
 
     internal int Axis_Symmetry { get { return mAxis_Symmetry; } set { mAxis_Symmetry = value; } }
     internal int Index { get { return mIndex; } set { mIndex = value; } }
@@ -17,6 +18,9 @@ namespace DrawShape {
     internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
     internal int C { get { return mC; } }
     internal int Width_Profile { get { return mWidth_Profile; } }
+
+    internal cAssembly AssemblyParent { get { return mAssemblyParent; } }
+    internal cAssemblyItem AssemblyItem_Next { get { return GetAssemblyItem_Next(); } }
 
 
     public cAssemblyItem() {
@@ -208,7 +212,24 @@ namespace DrawShape {
 
     }
 
-    
+   private cAssemblyItem GetAssemblyItem_Next() {
+      //funkja zwracjąca następny AssemblyItem
+
+      int pIndex_Next;
+      int pCountMax;
+
+      pCountMax = mParent.Assembly.AssemblyItems.Count;
+
+      pIndex_Next = mIndex + 1;
+
+      if (mIndex > pCountMax)
+        pIndex_Next = 1;
+
+      return mParent.Assembly.GetAssemblyItemByIndex(pIndex_Next);
+      
+    }
+
+
 
 
   }

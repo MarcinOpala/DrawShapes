@@ -17,12 +17,27 @@ namespace DrawShape {
     internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal bool IsCurve { get { return mIsCurve; } set { mIsCurve = value; } }
     internal cPoint Point { get { return mPoint; } set { mPoint = value; } }
-    internal cPolygon Polygon_Parent { get { return mPolygon_Parent; } }
+    internal cPolygon Polygon_Parent { get { return mPolygon_Parent; } set { mPolygon_Parent = value; } }
     internal cSegment Segment_Next { get { return GetSegment_Next(); } }
 
     public cSegment() {
 
       mPoint = new cPoint();
+
+    }
+
+
+    public cSegment(int xIndex) {
+
+      mIndex = xIndex;
+      mPoint = new cPoint();
+
+    }
+
+    public cSegment(cPoint xPoint, int xIndex) {
+
+      mIndex = xIndex;
+      mPoint = xPoint;
 
     }
 

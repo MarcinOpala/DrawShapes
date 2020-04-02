@@ -204,14 +204,15 @@ namespace DrawShape {
       //TODO
       //if ()
 
-
+      
       pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
 
       //utworzenie słupka na bazie wirtualnego wielokąta, w którym się znajduje
       mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, pMullionPosition_X, 0, pWidth_Mullion, pWidth_Profile, pC_Mullion);
 
       //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.Split_Polygon(pMullionPosition_X, 0, pPolygon);
+      mProject.PolygonsEnv.SplitPolygonVertical_ByVector(pPolygon);
+    //  mProject.PolygonsEnv.Split_Polygon(pMullionPosition_X, 0, pPolygon);
 
       this.pnlCanvas.Refresh();
 

@@ -329,49 +329,178 @@ namespace DrawShape {
 
     }
 
-/*
-    public Dictionary<int, cPolygon> Split_PolygonByVector(cVector xVector_Mullion) {
+
+    public Dictionary<int, cPolygon> Split_PolygonByVector(cVector xVector_Mullion, int xOffserVector) {
       // !!!  UWAGA FUNKJCA NIE DZIAŁA JEST W TRAKCIE TWORZENIA!!!
       //funkcja zwracająca kolekcję podzielonych wielokątów wektorem
       //xVector_Mullion - wektor słupka
 
       Dictionary<int, cPolygon> pCln;
-      cPolygon pPolygon;
+      cPolygon pPolygon_A, pPolygon_B, pParent;
+      cPoint pPoint;
+      float pWidth, pHeight;
+      cSegment pSegmentNew;
+
+      pWidth = mSegments[2].Point.X - mSegments[1].Point.X;
+      pHeight = mSegments[3].Point.Y - mSegments[2].Point.Y;
+
+
+      pParent = this;
 
       //Polygon A
-      pPolygon = Clone();
+      pPolygon_A = new cPolygon();
 
-      pPolygon.Parent = this;
-      pPolygon.Index = mIndex;
-      pPolygon.Segments[2].Point.X = (float)xVector_Mullion.X;
-      pPolygon.Segments[3].Point.X = (float)xVector_Mullion.X;
+      pPolygon_A.CntPF = this.CntPF;
+      pPolygon_A.Parent = this;
+      pPolygon_A.Index = mIndex;
+
+
+      //Polygon B
+      pPolygon_B = new cPolygon();
+
+      pPolygon_B.Parent = this;
+      pPolygon_A.CntPF = this.CntPF;
+      pPolygon_B.Index = mIndex + 2;
+      int pIdx = 0;
+
+      foreach (cSegment pSegment in mSegments.Values) {
+        
+        
+        pPoint = Get_CrossPoint(pSegment.Index, xVector_Mullion, xOffserVector);
+        if (pPoint == null) continue;
+        if (pPoint.X > pWidth || pPoint.X < 0 ||
+            pPoint.Y > pHeight || pPoint.Y < 0)
+          continue;
+
+        pIdx++;
+        pSegmentNew = new cSegment(pPoint, pIdx);
+        pSegmentNew.Polygon_Parent = pPolygon_A;
+        pPolygon_A.AddSegment(pSegmentNew);
+
+        pSegmentNew = new cSegment(pPoint, pIdx);
+        pSegmentNew.Polygon_Parent = pPolygon_B;
+        pPolygon_B.AddSegment(pSegmentNew);
+
+      }
+      
+      foreach (cSegment pSegment in pParent.Segments.Values) {
+
+        bool pCheck;
+        pSegmentNew = pSegment.Clone();
+
+        pCheck = CheckPoint_BelowVector(pSegment.Point, xVector_Mullion, xOffserVector);
+        if (pCheck == true) {
+          pSegmentNew.Polygon_Parent = pPolygon_B;
+          pSegmentNew.Index = pPolygon_B.Segments.Count + 1;
+          pPolygon_B.AddSegment(pSegmentNew);
+
+        } else {
+          pSegmentNew.Polygon_Parent = pPolygon_A;
+          pSegmentNew.Index = pPolygon_A.Segments.Count + 1;
+          pPolygon_A.AddSegment(pSegmentNew);
+
+        }
+
+      }
+
 
 
 
       pCln = new Dictionary<int, cPolygon>();
-      pCln.Add(1, pPolygon);
+      pCln.Add(1, pPolygon_B);
+      
+      pCln.Add(2, pPolygon_A);
 
-      //Polygon B
-      pPolygon = Clone();
-
-      pPolygon.Parent = this;
-      pPolygon.Index = mIndex + 2;
-      pPolygon.Segments[1].Point.X = (float)xVector_Mullion.X;
-      pPolygon.Segments[4].Point.X = (float)xVector_Mullion.X;
-
-
-      if x = 0
-      pPolygon.Segments[3].Point.Y = (float)xVector_Mullion.Y;
-      pPolygon.Segments[4].Point.Y = (float)xVector_Mullion.Y;
-
-      pPolygon.Segments[1].Point.Y = (float)xVector_Mullion.Y;
-      pPolygon.Segments[2].Point.Y = (float)xVector_Mullion.Y;
-
-      pCln.Add(2, pPolygon);
+      Console.WriteLine(".........<<><><><>......");
+      foreach (cPolygon pPoly in pCln.Values) {
+        Console.WriteLine("\n" + pPoly.CntPF + " " + pPoly.Index);
+        foreach (cSegment pseg in pPoly.Segments.Values) {
+          Console.WriteLine(pseg.Index + ": (" + pseg.Point.X + " ; " + pseg.Point.Y + ")");
+        }
+      }
 
       return pCln;
 
-    }*/
+    }
+
+    private cPoint Get_CrossPoint(int xIdx, cVector xVector, int xOffsetVector) {
+      //zrobić z punktem zaczepienia wektora!!
+
+      cPoint pPoint;
+      double pX, pY, pX_A, pX_B, pY_A, pY_B;
+      double pA_1, pB_1, pC_1;
+      double pA_2, pB_2, pC_2;
+      double pW, pWx, pWy;
+
+     
+
+      pX_A = mSegments[xIdx].Point.X;
+      pY_A = mSegments[xIdx].Point.Y;
+
+      pX_B = mSegments[xIdx].Segment_Next.Point.X;
+      pY_B = mSegments[xIdx].Segment_Next.Point.Y;
+
+      if (pX_B - pX_A == 0) {
+        pA_1 = 1;
+        pB_1 = 0;
+        pC_1 = - pX_B;
+      }
+      else {
+        pA_1 = -(pY_B - pY_A) / (pX_B - pX_A);
+        pB_1 = 1;
+        pC_1 = (((pY_B - pY_A) / (pX_B - pX_A) * pX_A) - pY_A);
+
+      }
+      pA_2 = -xVector.X;
+      pB_2 = xVector.Y;
+      pC_2 = -(xOffsetVector); 
+
+      if (pA_1 == pA_2 && pB_1 == pB_2) return null;
+
+      pW = (pA_1 * pB_2) - (pA_2 * pB_1);
+      pWx = ((-pC_1) * pB_2) - ((-pC_2) * pB_1);
+      pWy = (pA_1 * (-pC_2)) - (pA_2 * (-pC_1));
+
+      if (pW == 0) {
+        pX = pWx;
+        pY = pWy;
+      } else {
+        pX = pWx / pW;
+        pY = pWy / pW;
+      }
+
+      pPoint = new cPoint((float)pX, (float)pY);
+
+      return pPoint;
+
+    }
+
+    private bool CheckPoint_BelowVector(cPoint xPoint, cVector xVector, int xOffsetVector) {
+      bool check;
+
+      double pA, pB, pC;
+      double rownanieProstej;
+
+      pA = -xVector.X;
+      pB = xVector.Y;
+      pC = -(xOffsetVector);
+
+
+      rownanieProstej = ((pA * xPoint.X) + (pB * xPoint.Y) + pC);
+
+      if (rownanieProstej < 0) {
+        check = true;
+
+      } else if (rownanieProstej > 0) {
+        check = false;
+      }
+      else
+        check = false;
+    
+      return check;
+      
+    }
+
 
   }
 

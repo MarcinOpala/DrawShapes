@@ -142,8 +142,8 @@ namespace DrawShape {
       } else { }
 
     }
-/*
-    internal void SplitPolygonVertical_ByVector(cVector xVector_Mullion, cPolygon xPolygon) {
+
+    internal void SplitPolygonVertical_ByVector(cPolygon xPolygon) {
       // UWAGA FUNKCJA NIE SKOŃCZONA!!! - MO
 
 
@@ -151,22 +151,22 @@ namespace DrawShape {
       cPolygon pPolygon_A, pPolygon_B;
       Dictionary<int, int> pC_Cln_A, pC_Cln_B;
       int pWidht_Profile;
-      int pC;
       int pIdx;
+      cVector xVector_Mullion;
 
-      pC = 0;
       //szerokość profilu (dla wszystkich obiektów taka sama)
       pWidht_Profile = xPolygon.Assembly.AssemblyItems[1].Width_Profile;
 
-      pC_Cln_A = new Dictionary<int, int>();
-      pC_Cln_B = new Dictionary<int, int>();
+      int pOffsetVector = 500;
+      xVector_Mullion = new cVector(0, 1);
 
-      pPolygons = xPolygon.Split_PolygonByVector(xVector_Mullion);
+      pPolygons = xPolygon.Split_PolygonByVector(xVector_Mullion, pOffsetVector);
       pPolygon_A = pPolygons[1];
       pPolygon_B = pPolygons[2];
 
-      pC = Get_C_FromMullion(xVector_Mullion);     //foreach;
-      Prepare_Cln_C(pPolygon_A, pPolygon_B, xVector_Mullion);
+
+      pC_Cln_A = Prepare_Cln_C(pPolygon_A, xVector_Mullion);
+      pC_Cln_B = Prepare_Cln_C(pPolygon_B, xVector_Mullion);
 
       pIdx = xPolygon.Index;
       mPolygons.Remove(xPolygon.Index);
@@ -175,14 +175,26 @@ namespace DrawShape {
       AddPolygon(pPolygon_B);
 
       pPolygon_A.CreateAssembly(pWidht_Profile, pPolygon_A, pC_Cln_A);
-      pPolygon_B.CreateAssembly(pWidht_Profile, pPolygon_A, pC_Cln_A);
+      pPolygon_B.CreateAssembly(pWidht_Profile, pPolygon_B, pC_Cln_B);
 
-      AssemblyItem_A.polygon.setCntPF(xVector_Mullion);
-      AssemblyItem_B.polygon.setCntPF(xVector_Mullion);
+      foreach (cPolygon pPolygon_Child in pPolygons.Values) {
+        foreach (cAssemblyItem pAssemblyItem in pPolygon_Child.Assembly.AssemblyItems.Values) {
 
+          foreach (cPolygon pPolygon in mPolygons.Values) {
+            if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) {
+              if (pPolygon.AssemblyItem.Axis_Symmetry == xVector_Mullion.X ||
+                  pPolygon.AssemblyItem.Axis_Symmetry == xVector_Mullion.Y) {
 
+                pAssemblyItem.Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
+                pAssemblyItem.AssemblyItem_Next.Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
+
+              }
+            }
+          }
+        }
+      }
     }
-*/
+
     internal int GetEmptyIndex() {
       //funkcja zwracająca pierwszy wolny Index z listy mPolygons
 
@@ -334,6 +346,35 @@ namespace DrawShape {
 
     }
 
-  }
 
+    private Dictionary<int, int> Prepare_Cln_C(cPolygon xPolygon_Child, cVector xVector_Mullion) {
+
+
+      Dictionary<int, int> pC_Cln;
+      int pIdx;
+
+      pC_Cln = new Dictionary<int, int>();
+
+      pIdx = 1;
+      foreach (cSegment pSegment in xPolygon_Child.Segments.Values) {
+
+        foreach (cPolygon pPolygon in mPolygons.Values) {
+          if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) {
+            if (pPolygon.AssemblyItem.Axis_Symmetry == xVector_Mullion.X ||
+                pPolygon.AssemblyItem.Axis_Symmetry == xVector_Mullion.Y) {
+              pC_Cln[pIdx] = pPolygon.AssemblyItem.C;
+              break;
+            }
+          } else
+            pC_Cln[pIdx] = xPolygon_Child.Parent.Assembly.AssemblyItems[pIdx].C;
+        }
+        pIdx++;
+         
+      }
+
+      return pC_Cln;
+
+      }
+
+  }
 }
