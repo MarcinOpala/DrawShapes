@@ -36,6 +36,8 @@ namespace DrawShape {
     }
 
     internal void Split_Polygon(int xMullionPosition_X, int xMullionPosition_Y, cPolygon xPolygon) {
+      // !!!UWAGA!!! fukncja zostaje do puki druga nie będzie działać poprawnie!!!
+
       //fukncja  dzieląca Polygon na 2 w miejscu słupka 
       //xMullionPosition_X - pozycja X słupka
       //xPolygon - wielokąt do podziału
@@ -143,9 +145,8 @@ namespace DrawShape {
 
     }
 
-    internal void SplitPolygonVertical_ByVector(cPolygon xPolygon) {
+    internal void SplitPolygonVirtual_ByLine(cPolygon xPolygon, int xMullionPosition_X, int xMullionPosition_Y) {
       // UWAGA FUNKCJA NIE SKOŃCZONA!!! - MO
-
 
       Dictionary<int, cPolygon> pPolygons;
       cPolygon pPolygon_A, pPolygon_B;
@@ -153,17 +154,18 @@ namespace DrawShape {
       int pWidht_Profile;
       int pIdx;
       cVector xVector_Mullion;
+      cPoint pPt_Vector;
 
       //szerokość profilu (dla wszystkich obiektów taka sama)
       pWidht_Profile = xPolygon.Assembly.AssemblyItems[1].Width_Profile;
 
-      int pOffsetVector = 500;
-      xVector_Mullion = new cVector(0, 1);
+      pPt_Vector = new cPoint(xMullionPosition_X, xMullionPosition_Y);
 
-      pPolygons = xPolygon.Split_PolygonByVector(xVector_Mullion, pOffsetVector);
+      xVector_Mullion = new cVector(1, 1);
+
+      pPolygons = xPolygon.Split_PolygonByVector(xVector_Mullion, pPt_Vector);
       pPolygon_A = pPolygons[1];
       pPolygon_B = pPolygons[2];
-
 
       pC_Cln_A = Prepare_Cln_C(pPolygon_A, xVector_Mullion);
       pC_Cln_B = Prepare_Cln_C(pPolygon_B, xVector_Mullion);
@@ -171,8 +173,8 @@ namespace DrawShape {
       pIdx = xPolygon.Index;
       mPolygons.Remove(xPolygon.Index);
 
-      AddPolygon(pIdx, pPolygon_A);
-      AddPolygon(pPolygon_B);
+      AddPolygon(pIdx, pPolygon_B);
+      AddPolygon(pPolygon_A);
 
       pPolygon_A.CreateAssembly(pWidht_Profile, pPolygon_A, pC_Cln_A);
       pPolygon_B.CreateAssembly(pWidht_Profile, pPolygon_B, pC_Cln_B);
@@ -307,7 +309,7 @@ namespace DrawShape {
     }
 
     internal void CreatePolygon_Mullion(cPolygon xPolygon, int xMullionPosition_X, int xMullionPosition_Y, int xMullionWidth, float xWidth_Profile, int xC) {
-      //funkcja tworząca wirtualny wielokąt
+      //funkcja tworząca  wielokąt
       //xPolygon - wielokąt, z którego ma zostać utworzony Polygon_Mullion
       //xMullionPosition_X - pozycja X słupka
       //xMullionWidth - szerokość słupka

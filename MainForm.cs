@@ -211,7 +211,7 @@ namespace DrawShape {
       mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, pMullionPosition_X, 0, pWidth_Mullion, pWidth_Profile, pC_Mullion);
 
       //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.SplitPolygonVertical_ByVector(pPolygon);
+      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pMullionPosition_X, 0);
     //  mProject.PolygonsEnv.Split_Polygon(pMullionPosition_X, 0, pPolygon);
 
       this.pnlCanvas.Refresh();
@@ -249,7 +249,8 @@ namespace DrawShape {
       mProject.PolygonsEnv.CreatePolygon_Mullion(pPolygon, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
 
       //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.Split_Polygon(0, pMullionPosition_Y, pPolygon);
+      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, 0, pMullionPosition_Y);
+    //  mProject.PolygonsEnv.Split_Polygon(0, pMullionPosition_Y, pPolygon);
 
       this.pnlCanvas.Refresh();
 

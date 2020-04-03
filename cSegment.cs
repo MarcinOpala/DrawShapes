@@ -37,7 +37,7 @@ namespace DrawShape {
     public cSegment(cPoint xPoint, int xIndex) {
 
       mIndex = xIndex;
-      mPoint = xPoint;
+      mPoint = new cPoint(xPoint.X, xPoint.Y);
 
     }
 
