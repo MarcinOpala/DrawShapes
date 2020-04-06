@@ -155,15 +155,18 @@ namespace DrawShape {
       int pIdx;
       cVector xVector_Mullion;
       cPoint pPt_Vector;
+      cStraightLine pStraightLine;
 
       //szerokość profilu (dla wszystkich obiektów taka sama)
       pWidht_Profile = xPolygon.Assembly.AssemblyItems[1].Width_Profile;
 
       pPt_Vector = new cPoint(xMullionPosition_X, xMullionPosition_Y);
 
-      xVector_Mullion = new cVector(1, 1);
+      xVector_Mullion = new cVector(1, 0);
 
-      pPolygons = xPolygon.Split_PolygonByVector(xVector_Mullion, pPt_Vector);
+      pStraightLine = new cStraightLine(0, 1, -700);
+
+      pPolygons = xPolygon.Split_PolygonByStreightLine(pStraightLine);
       pPolygon_A = pPolygons[1];
       pPolygon_B = pPolygons[2];
 
@@ -220,17 +223,24 @@ namespace DrawShape {
 
     }
 
-    internal cPolygon GetPolygonVirtual_By_MullionPositon(int xMullionPosition_X, int xMullionPosition_Y) {
+    internal Dictionary<int, cPolygon> GetPolygonsVirtual_By_MullionPositon(int xMullionPosition_X, int xMullionPosition_Y) {
       //funkcja zwracająca pierwszy wirtualny Polygon
 
+      Dictionary<int, cPolygon> pCln;
+      int pIdx;
+
+      pCln = new Dictionary<int, cPolygon>();
+      pIdx = 1;
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
         if (pPolygon.Segments[1].Point.X <= xMullionPosition_X && pPolygon.Segments[3].Point.X >= xMullionPosition_X &&
-            pPolygon.Segments[1].Point.Y <= xMullionPosition_Y && pPolygon.Segments[3].Point.Y >= xMullionPosition_Y)
-        return pPolygon;
+            pPolygon.Segments[1].Point.Y <= xMullionPosition_Y && pPolygon.Segments[3].Point.Y >= xMullionPosition_Y) {
+          pCln.Add(pIdx, pPolygon);
+          pIdx++;
+        }
       }
 
-      return null;
+      return pCln;
 
     }
 
@@ -308,7 +318,7 @@ namespace DrawShape {
 
     }
 
-    internal void CreatePolygon_Mullion(cPolygon xPolygon, int xMullionPosition_X, int xMullionPosition_Y, int xMullionWidth, float xWidth_Profile, int xC) {
+    internal void CreatePolygon_Mullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X, int xMullionPosition_Y, int xMullionWidth, float xWidth_Profile, int xC) {
       //funkcja tworząca  wielokąt
       //xPolygon - wielokąt, z którego ma zostać utworzony Polygon_Mullion
       //xMullionPosition_X - pozycja X słupka
@@ -318,13 +328,18 @@ namespace DrawShape {
 
       cPolygon pPolygon;
 
-      pPolygon = xPolygon.Clone();
+      pPolygon = new cPolygon();
 
       pPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
 
-      pPolygon.SetPolygonToMullion(xPolygon, xMullionPosition_X, xMullionPosition_Y, xMullionWidth, xC);
+      pPolygon.SetPolygonToMullion(xCln_Polygons, xMullionPosition_X, xMullionPosition_Y, xMullionWidth, xC);
+
+      pPolygon.Organize_Segments(pPolygon);
 
       AddPolygon(pPolygon);
+
+      pPolygon.Parent = xCln_Polygons[1].Parent.Parent;
+
 
     }
 

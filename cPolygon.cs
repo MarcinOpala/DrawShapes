@@ -134,12 +134,12 @@ namespace DrawShape {
       int pSegmentIndex;
       int pCountMax;
 
-      pCountMax = mSegments.Count;
+      pCountMax = mSegments.Keys.Min() + mSegments.Count - 1;
 
-      pSegmentIndex = xIndex;
+      pSegmentIndex = mSegments.Keys.Min() + xIndex - 1;
 
       if (xIndex > pCountMax)
-        pSegmentIndex = 1;
+        pSegmentIndex = mSegments.Keys.Min();
 
       return mSegments[pSegmentIndex];
 
@@ -248,7 +248,8 @@ namespace DrawShape {
 
     }
 
-    internal void SetPolygonToMullion(cPolygon xPolygon, int xMullionPosition_X, int xMullionPosition_Y, int xMullionWidth, int xC) {
+    internal void SetPolygonToMullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X,
+                                      int xMullionPosition_Y, int xMullionWidth, int xC) {
       //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion - pionowy
       //xPolygon - Polygon bazowy
       //xMullionPosition_X - współrzędna X osi słupka
@@ -257,13 +258,71 @@ namespace DrawShape {
       //xC - odległość C dla słupka
 
       cAssemblyItem pAssemblyItem;
+      cSegment pSegment;
+      cPolygon pPolygon_A, pPolygon_B;
+      cStraightLine pStraightLine, pStraightLine_A, pStraightLine_B, pStraightLine_Segment;
+      int pIdx;
+      cPoint pPoint;
 
-      mCntPF = PolygonFunctionalityEnum.Mullion;
-      mParent = xPolygon;
+      pPolygon_A = xCln_Polygons[1];
+      pPolygon_B = xCln_Polygons[2];
+      pIdx = 0;
+      
 
       pAssemblyItem = null;
 
-      //ustawiamy boki względem pozycji słupka + przesunięte o połowę jego szerokości
+      foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
+        foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
+          if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
+            pSegment = new cSegment(pSegment_A.Point, pIdx+20);
+            AddSegment(pSegment);
+            pSegment.Polygon_Parent = this;
+            pIdx++;
+          }
+        }
+      }
+      pStraightLine = new cStraightLine(mSegments[20].Point, mSegments[21].Point);
+
+      foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
+
+        pPoint = new cPoint();
+        pStraightLine_Segment = new cStraightLine(pSegment_A);
+
+        pStraightLine_A = pStraightLine.Get_Parallel((xMullionWidth*1000));
+
+        pPoint = pStraightLine_A.Get_PointFromCrossLines(pStraightLine_Segment);
+        if (pPoint == null) continue;                           //jeśli prosta jest równoległa
+        
+
+        pSegment = new cSegment(pPoint, pIdx+20);
+        AddSegment(pSegment);
+        pSegment.Polygon_Parent = this;
+        pIdx++;
+      }
+
+      foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
+
+        pPoint = new cPoint();
+        pStraightLine_Segment = new cStraightLine(pSegment_B);
+
+        pStraightLine_B = pStraightLine.Get_Parallel(-(xMullionWidth *1000));
+
+        pPoint = pStraightLine_B.Get_PointFromCrossLines(pStraightLine_Segment);
+        if (pPoint == null) continue;                           //jeśli prosta jest równoległa
+
+
+        pSegment = new cSegment(pPoint, pIdx+20);
+        AddSegment(pSegment);
+        pSegment.Polygon_Parent = this;
+        mParent = this.Clone();
+        pIdx++;
+      }
+
+
+      
+
+
+/*      //ustawiamy boki względem pozycji słupka + przesunięte o połowę jego szerokości
       if (xMullionPosition_Y == 0) {
         mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
         mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
@@ -287,7 +346,7 @@ namespace DrawShape {
         pAssemblyItem.Axis_Symmetry = xMullionPosition_Y;
       }
 
-      mAssemblyItem = pAssemblyItem;
+      mAssemblyItem = pAssemblyItem;*/
 
     }
 
@@ -330,20 +389,19 @@ namespace DrawShape {
     }
 
 
-    public Dictionary<int, cPolygon> Split_PolygonByVector(cVector xVector_Mullion, cPoint xPt_Vector) {
+    public Dictionary<int, cPolygon> Split_PolygonByStreightLine(cStraightLine xStraightLine) {
       // !!!  UWAGA FUNKJCA NIE DZIAŁA JEST W TRAKCIE TWORZENIA!!!
       //funkcja zwracająca kolekcję podzielonych wielokątów prostą stworząną z wektora
-      //xVector_Mullion - wektor słupka
-      //xPt_Vector - punkt zaczepienia wektora
+      //
 
       Dictionary<int, cPolygon> pCln_Polygon;
       cPolygon pPolygon_A, pPolygon_B;
       cPoint pPoint;
       float pWidth, pHeight;
       cSegment pSegmentNew;
-      int pCheck;
-      float xOffsetVector;
+      double pDistance;
       Dictionary<int, cPoint> pCln_Points;
+      cStraightLine pStraightLine;
 
       //Polygon A
       pPolygon_A = new cPolygon();
@@ -357,9 +415,6 @@ namespace DrawShape {
       pPolygon_B.CntPF = PolygonFunctionalityEnum.FrameVirtual;
       pPolygon_B.Index = mIndex + 2;
 
-      if (xPt_Vector.X == 0) xOffsetVector = xPt_Vector.Y;  //obliczenie przesunięcia wektora
-      else xOffsetVector = xPt_Vector.X;
-
       int pIdx = 0;
       pWidth = mSegments[2].Point.X - mSegments[1].Point.X;     //szerokość wielokąta - będzie działać tylko dla prostokątów
       pHeight = mSegments[3].Point.Y - mSegments[2].Point.Y;    //wysokość wielokąta
@@ -368,7 +423,8 @@ namespace DrawShape {
       
       //obliczenie punktów na wielokącie przeciętym prostą
       foreach (cSegment pSegment in mSegments.Values) {
-        pPoint = Get_CrossPoint(pSegment.Index, xVector_Mullion, xOffsetVector);
+        pStraightLine = new cStraightLine(pSegment);
+        pPoint = xStraightLine.Get_PointFromCrossLines(pStraightLine);
         if (pPoint == null) continue;               //jeśli prosta jest równoległa
         if (pPoint.X > pWidth || pPoint.X < 0 ||    //jeśli prosta przecina drugą prostą poza obszarem wielokąta
             pPoint.Y > pHeight || pPoint.Y < 0)
@@ -377,29 +433,30 @@ namespace DrawShape {
         pCln_Points[pIdx] = pPoint;
 
         //Polygon_A
-        pSegmentNew = new cSegment(pPoint, pPolygon_A.Segments.Count + 10);    //uzyskane punkty dodajemy do nowych poligonów
-        pSegmentNew.Polygon_Parent = pPolygon_A;
+        pSegmentNew = new cSegment(pPoint, pPolygon_A.Segments.Count + 20);    //uzyskane punkty dodajemy do nowych poligonów ...
+        pSegmentNew.Polygon_Parent = pPolygon_A;                               //... +20 dla łatwiejszego porządkowania w Organize_Segment()
         pPolygon_A.AddSegment(pSegmentNew);
         //Polygon_B
-        pSegmentNew = new cSegment(pPoint, pPolygon_B.Segments.Count + 10);
+        pSegmentNew = new cSegment(pPoint, pPolygon_B.Segments.Count + 20);
         pSegmentNew.Polygon_Parent = pPolygon_B;
         pPolygon_B.AddSegment(pSegmentNew);
 
       } //każdy bok wielokąta bazowego kopiujemy i sprawdzamy do którego wielokąta należy
       foreach (cSegment pSegment in mSegments.Values) {
         pSegmentNew = pSegment.Clone();
-        pCheck = Check_PointBelongsToLine(pSegment.Point, pCln_Points);
-        if (pCheck > 0) { //bok leży powyżej prostej dzielącej wielokąt
+        pStraightLine = new cStraightLine(pCln_Points);
+        pDistance = pStraightLine.Get_DistanceToLine(pSegment.Point);
+        if (pDistance > 0) { //bok leży powyżej prostej dzielącej wielokąt
           pSegmentNew.Polygon_Parent = pPolygon_B;
-          pSegmentNew.Index = pPolygon_B.Segments.Count + 10; //+10 dla łatwiejszego porządkowania w Organize_Segment()
+          pSegmentNew.Index = pPolygon_B.Segments.Count + 20; //+20 dla łatwiejszego porządkowania w Organize_Segment()
           pPolygon_B.AddSegment(pSegmentNew);
 
-        } else {         //bok leży poniżej prostej dzielącej wielokąt (w tym przypadku nie możliwe, żęby leżał na prostej)
+        } else {             //bok leży poniżej prostej dzielącej wielokąt (w tym przypadku nie możliwe, żęby leżał na prostej)
           pSegmentNew.Polygon_Parent = pPolygon_A;
-          pSegmentNew.Index = pPolygon_A.Segments.Count + 10;
+          pSegmentNew.Index = pPolygon_A.Segments.Count + 20;
           pPolygon_A.AddSegment(pSegmentNew);
         }
-      } //uporządkowanie boków zgodnie z całym projektem
+      }   //uporządkowanie boków zgodnie z całym projektem
       Organize_Segments(pPolygon_A);
       Organize_Segments(pPolygon_B);
 
@@ -411,71 +468,21 @@ namespace DrawShape {
 
     }
 
-    private cPoint Get_CrossPoint(int xIdx, cVector xVector, float xOffsetVector) {
-      //funkcja zwracająca punkt przecięcia dwóch prostych w postaci ogólnej Ax + By + C = 0
-      //xIdx - numer boku pokrywającego się z pierwszą prostą
-      //xVector - wektor nadający kierunek drugiej prostej
-      //xOffsetVector - przesunięcie wektora
-
-      cPoint pPoint;
-      double pX, pY;
-      double pX_1, pY_1, pA_1, pB_1, pC_1;
-      double pX_2, pY_2, pA_2, pB_2, pC_2;
-      double pW, pWx, pWy;
-
-      pX_1 = mSegments[xIdx].Point.X;
-      pY_1 = mSegments[xIdx].Point.Y;
-
-      pX_2 = mSegments[xIdx].Segment_Next.Point.X;
-      pY_2 = mSegments[xIdx].Segment_Next.Point.Y;
-
-      //przygotowanie składników do ogólnego równania prostej Ax + By + C = 0
-      if (pX_2 - pX_1 == 0) {   //prosta jest równoległa do osi Y
-        pA_1 = 1;
-        pB_1 = 0;
-        pC_1 = - pX_2;
-      }
-      else {
-        pA_1 = (pY_2 - pY_1) / (pX_2 - pX_1);
-        pB_1 = 1;
-        pC_1 = (((pY_2 - pY_1) / (pX_2 - pX_1) * pX_1) - pY_1);
-
-      }
-      pA_2 = -xVector.X;
-      pB_2 = xVector.Y;
-      pC_2 = -(xOffsetVector); 
-
-      if (pA_1 == pA_2 && pB_1 == pB_2) return null; //proste są równoległe
-
-      pW = (pA_1 * pB_2) - (pA_2 * pB_1);            //obliczenie wyznaczników
-      pWx = ((-pC_1) * pB_2) - ((-pC_2) * pB_1);
-      pWy = (pA_1 * (-pC_2)) - (pA_2 * (-pC_1));
-
-      if (pW == 0) {        //prosta jest prostopadła
-        pX = pWx;
-        pY = pWy;
-      } else {
-        pX = pWx / pW;
-        pY = pWy / pW;
-      }
-
-      pPoint = new cPoint((float)pX, (float)pY);
-
-      return pPoint;
-
-    }
-
     internal void Organize_Segments(cPolygon xPolygon) {
       //funkcja porządkująca boki w wielokącie.
       //Pierwszy najbliższy (0; 0), kolejne przeciwnie do ruchu zegara 
       //xPolygon - wielokąt do uporządkowania
 
-      int pCheck;
-      Dictionary<int, cPoint> pCln_Points, pCln_LinePoints;
+      double pDistance;
+      Dictionary<int, cPoint> pCln_Points;
       int pIdx_Cln_Points; 
       int pNewIdx_Segment;
       cSegment pSegment;
       int pCountSegments;
+      cStraightLine pStraightLine;
+      cPolygon pPolygon;
+
+      //pPolygon = new cPolygon()
 
       //dodajemy do listy wszystkie punkty wielokąta
       pCln_Points = new Dictionary<int, cPoint>();
@@ -484,7 +491,7 @@ namespace DrawShape {
       }
       //wybieramy pierwszy punkt (położony najbliżej 0;0 ) i usuwamy go z listy
       pNewIdx_Segment = 1;
-      var dict = pCln_Points.OrderBy(x => x.Value.X).ThenBy(x => x.Value.Y).ToDictionary(x => x.Key, x => x.Value);
+      var dict = pCln_Points.OrderBy(x => x.Value.X).ThenBy(x => x.Value.Y).ToDictionary(x => x.Key, x => x.Value);   //sortowanie listy: najmniejszy X, Y
       xPolygon.Segments.Add(pNewIdx_Segment, xPolygon.Segments[dict.Keys.First()]);
       pCln_Points.Remove(dict.Keys.First());
       
@@ -506,13 +513,10 @@ namespace DrawShape {
         pIdx_Cln_Points = 0;
         foreach (cPoint pPoint in pCln_Points.Values) {  //każdy punkt z listy sprawdzamy, czy leży na prostej
           pIdx_Cln_Points++;
-          pCln_LinePoints = new Dictionary<int, cPoint>();
-          pCln_LinePoints[1] = pSegment_Parent.Point;
-          pCln_LinePoints[2] = pSegment_Parent.Segment_Next.Point;
+          pStraightLine = new cStraightLine(pSegment_Parent);
+          pDistance = pStraightLine.Get_DistanceToLine(pPoint);
 
-          pCheck = Check_PointBelongsToLine(pPoint, pCln_LinePoints); //obliczenie równania prostej w postaci ogólnej
-
-          if (pCheck == 0 ) {        //jeśli prawda to leży na prostej
+          if (pDistance == 0 ) {        //jeśli prawda to pPoint leży na prostej
             pSegment = xPolygon.Segments[pCln_Points.Keys.ElementAt(pIdx_Cln_Points - 1)];
             xPolygon.Segments.Add(pNewIdx_Segment, pSegment);
             pCln_Points.Remove(pCln_Points.Keys.ElementAt(pIdx_Cln_Points - 1));  //usuwamy znaleziony punkt z listy
@@ -525,42 +529,9 @@ namespace DrawShape {
       pCountSegments = xPolygon.Segments.Count / 2;
 
       for (int i = 1; i <= pCountSegments; i++) {  // usuwamy niepotrzebne boki
-        xPolygon.Segments.Remove(i+9);
+        xPolygon.Segments.Remove(i+19);
         xPolygon.Segments[i].Index = i;
       }
-    }
-
-    private int Check_PointBelongsToLine(cPoint xPoint, Dictionary<int, cPoint> xCln) {
-      //funkcja zwracająca obliczone równanie prostej w postaci ogólnej Ax+By+C
-      //jeśli wynik jest > 0 punkt leży powyżęj prostej; =0 leży na prostej; < 0 poniżej prostej
-      //xPoint - punkt, dla którego obliczamy równanie prostej
-      //xCln - kolekcja dwóch punktów tworzących prostą
-
-      double pA, pB, pC;
-      double pGeneralEquation_StraightLine;
-      double pX_1, pY_1;
-      double pY_2, pX_2;
-
-      pX_1 = xCln[1].X;
-      pY_1 = xCln[1].Y;
-
-      pX_2 = xCln[2].X;
-      pY_2 = xCln[2].Y;
-
-      if (pX_2 - pX_1 == 0) { //prosta jest równoległa do osi Y
-        pA = 1;
-        pB = 0;
-        pC = -pX_2;
-
-      } else {
-        pA = -(pY_2 - pY_1) / (pX_2 - pX_1);
-        pB = 1;
-        pC = (((pY_2 - pY_1) / (pX_2 - pX_1) * pX_1) - pY_1);
-      } 
-      pGeneralEquation_StraightLine = ((pA * xPoint.X) + (pB * xPoint.Y) + pC); // Ax+Bx+C
-
-      return (int)pGeneralEquation_StraightLine;
-
     }
 
   }
