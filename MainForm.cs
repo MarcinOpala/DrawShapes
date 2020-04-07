@@ -188,6 +188,7 @@ namespace DrawShape {
       float pWidth_Profile;
       int pC_Mullion;
       Dictionary<int, cPolygon> pCln;
+      cStraightLine pStraightLine;
 
       //pobieramy wartości Input z menu - settings
       pC_Mullion = int.Parse(txtCWidth_Mullion.Text);
@@ -209,54 +210,11 @@ namespace DrawShape {
       pPolygon = pCln[1];
 
       //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pMullionPosition_X, 0);
-
-      //  mProject.PolygonsEnv.Split_Polygon(0, pMullionPosition_Y, pPolygon);
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
-
-      //utworzenie słupka na bazie wirtualnego wielokąta, w którym się znajduje
-      mProject.PolygonsEnv.CreatePolygon_Mullion(pCln, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
+      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pMullionPosition_X, 0, pC_Mullion);
 
 
-      this.pnlCanvas.Refresh();
-
-    }
-
-    private void InsertMullion_Horizontal(object sender, EventArgs e) {
-      //funkcja wstawiająca słupek poziomy
-
-      int pMullionPosition_X, pMullionPosition_Y;
-      cPolygon pPolygon;
-      int pWidth_Frame;
-      int pWidth_Mullion;
-      float pWidth_Profile;
-      int pC_Mullion;
-      Dictionary<int, cPolygon> pCln;
-
-      //pobieramy wartości Input z menu - settings
-      pC_Mullion = int.Parse(txtCWidth_Mullion.Text);
-      pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
-      pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
-      pWidth_Mullion = int.Parse(txtMullionWidth.Text);
-      pWidth_Frame = int.Parse(txtWidth.Text);
-      pWidth_Profile = float.Parse(txtProfileSize.Text);
-
-
-      //ograniczenia pozycji słupka TODO!!!
-
-
-      //sprawdzenie czy słupek już w tym miejscu istnieje
-      //TODO
-
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
-
-      pPolygon = pCln[1];
-
-      //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, 0, pMullionPosition_Y);
-
-      //  mProject.PolygonsEnv.Split_Polygon(0, pMullionPosition_Y, pPolygon);
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
+      pStraightLine = new cStraightLine(1, 1, -700);
+      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_ByStraightLine(pStraightLine);
 
       //utworzenie słupka na bazie wirtualnego wielokąta, w którym się znajduje
       mProject.PolygonsEnv.CreatePolygon_Mullion(pCln, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);

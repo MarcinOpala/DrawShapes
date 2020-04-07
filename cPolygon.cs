@@ -184,70 +184,6 @@ namespace DrawShape {
 
     }
 
-    public Dictionary <int, cPolygon> Split_PolygonByWidth(int xWidth) {
-      //funkcja zwracająca kolekcję podzielonych prostokątów po szerokości
-      //xWidth - szerokości względem której dzielimy prostokąt
-
-      Dictionary<int, cPolygon> pCln;
-      cPolygon pPolygon;
-      
-      //Polygon A
-      pPolygon = Clone();
-
-      pPolygon.Parent = this;
-      pPolygon.Index = mIndex;
-      pPolygon.Segments[2].Point.X = xWidth;
-      pPolygon.Segments[3].Point.X = xWidth;
-      
-      pCln = new Dictionary<int, cPolygon>();
-      pCln.Add(1, pPolygon);
-
-      //Polygon B
-      pPolygon = Clone();
-
-      pPolygon.Parent = this;
-      pPolygon.Index = mIndex + 2;
-      pPolygon.Segments[1].Point.X = xWidth;
-      pPolygon.Segments[4].Point.X = xWidth;
-      
-      pCln.Add(2, pPolygon);
-
-      return pCln;
-
-    }
-
-    public Dictionary<int, cPolygon> Split_PolygonByHeight(int xHeight) {
-      //funkcja zwracająca kolekcję podzielonych prostokątów po wysokości
-      //xHeight - wysokość względem której dzielimy prostokąt
-
-      Dictionary<int, cPolygon> pCln;
-      cPolygon pPolygon;
-
-      //Polygon A
-      pPolygon = Clone();
-
-      pPolygon.Parent = this;
-      pPolygon.Index = mIndex;
-      pPolygon.Segments[3].Point.Y = xHeight;
-      pPolygon.Segments[4].Point.Y = xHeight;
-
-      pCln = new Dictionary<int, cPolygon>();
-      pCln.Add(1, pPolygon);
-
-      //Polygon B
-      pPolygon = Clone();
-
-      pPolygon.Parent = this;
-      pPolygon.Index = mIndex + 2;
-      pPolygon.Segments[1].Point.Y = xHeight;
-      pPolygon.Segments[2].Point.Y = xHeight;
-
-      pCln.Add(2, pPolygon);
-
-      return pCln;
-
-    }
-
     internal void SetPolygonToMullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X,
                                       int xMullionPosition_Y, int xMullionWidth, int xC) {
       //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion - pionowy
@@ -268,9 +204,6 @@ namespace DrawShape {
       pPolygon_B = xCln_Polygons[2];
       pIdx = 0;
       
-
-      pAssemblyItem = null;
-
       foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
         foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
           if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
@@ -292,14 +225,12 @@ namespace DrawShape {
 
         pPoint = pStraightLine_A.Get_PointFromCrossLines(pStraightLine_Segment);
         if (pPoint == null) continue;                           //jeśli prosta jest równoległa
-        
 
         pSegment = new cSegment(pPoint, pIdx+20);
         AddSegment(pSegment);
         pSegment.Polygon_Parent = this;
         pIdx++;
       }
-
       foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
 
         pPoint = new cPoint();
@@ -310,43 +241,18 @@ namespace DrawShape {
         pPoint = pStraightLine_B.Get_PointFromCrossLines(pStraightLine_Segment);
         if (pPoint == null) continue;                           //jeśli prosta jest równoległa
 
-
         pSegment = new cSegment(pPoint, pIdx+20);
-        AddSegment(pSegment);
         pSegment.Polygon_Parent = this;
-        mParent = this.Clone();
+        AddSegment(pSegment);
         pIdx++;
       }
 
+      pAssemblyItem = new cAssemblyItem();
+    //  pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
+      pAssemblyItem.Axis_Symmetry = pStraightLine;
 
-      
-
-
-/*      //ustawiamy boki względem pozycji słupka + przesunięte o połowę jego szerokości
-      if (xMullionPosition_Y == 0) {
-        mSegments[1].Point.X = xMullionPosition_X - xMullionWidth / 2;
-        mSegments[2].Point.X = xMullionPosition_X + xMullionWidth / 2;
-        mSegments[3].Point.X = xMullionPosition_X + xMullionWidth / 2;
-        mSegments[4].Point.X = xMullionPosition_X - xMullionWidth / 2;
-
-        pAssemblyItem = new cAssemblyItem();
-
-        pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
-        pAssemblyItem.Axis_Symmetry = xMullionPosition_X;
-
-      } else if (xMullionPosition_X == 0) {
-        mSegments[1].Point.Y = xMullionPosition_Y - xMullionWidth / 2;
-        mSegments[2].Point.Y = xMullionPosition_Y - xMullionWidth / 2;
-        mSegments[3].Point.Y = xMullionPosition_Y + xMullionWidth / 2;
-        mSegments[4].Point.Y = xMullionPosition_Y + xMullionWidth / 2;
-
-        pAssemblyItem = new cAssemblyItem();
-        pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
-
-        pAssemblyItem.Axis_Symmetry = xMullionPosition_Y;
-      }
-
-      mAssemblyItem = pAssemblyItem;*/
+      mAssemblyItem = pAssemblyItem;
+      mParent = this.Clone();
 
     }
 
@@ -366,25 +272,57 @@ namespace DrawShape {
     internal void SetSegmentsPointBy_C() {
       //funkcja ustawiająca punkty boków w zależności od C
 
+      cVector pVector_1, pVector_2;
       cVector pC_Vector;
-      int pC_1, pC_2, pC_3, pC_4;
+      int pC_1, pC_2;
+      double pC, pY;
+      double pCos, pSin;
+      double pAlfa, pAngleInRadian;
+      cAssemblyItem pAssemblyItem;
+      cStraightLine pStraightLine, pStraightLine_2;
+      cSegment pSegment_Oryginal;
 
-      pC_1 = Parent.Assembly.AssemblyItems[1].C;
-      pC_2 = Parent.Assembly.AssemblyItems[2].C;
-      pC_3 = Parent.Assembly.AssemblyItems[3].C;
-      pC_4 = Parent.Assembly.AssemblyItems[4].C;
+      float pOffset_X, pOffset_Y;
+      
+      foreach (cSegment pSegment in mSegments.Values) {
 
-      pC_Vector = new cVector(pC_4, pC_1);
-      mSegments[1].MovePointInwardsPolygonByVector(pC_Vector);
+        pC_1 = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Index].C;
+        pC_2 = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Segment_Before.Index].C;
 
-      pC_Vector = new cVector(pC_2, pC_1);
-      mSegments[2].MovePointInwardsPolygonByVector(pC_Vector);
+        pSegment_Oryginal = pSegment.Polygon_Parent.Parent.Segments[pSegment.Index];
+        pStraightLine = new cStraightLine(pSegment_Oryginal.Segment_Before);
 
-      pC_Vector = new cVector(pC_2, pC_3);
-      mSegments[3].MovePointInwardsPolygonByVector(pC_Vector);
+        pSegment.CalculatePointOffset(pSegment, pC_1, pC_2, pStraightLine, out pOffset_X, out pOffset_Y);
 
-      pC_Vector = new cVector(pC_4, pC_3);
-      mSegments[4].MovePointInwardsPolygonByVector(pC_Vector);
+
+
+        pSegment.Point.X += pOffset_X;
+        pSegment.Point.Y += pOffset_Y;
+
+        /*     pAssemblyItem = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Index];
+             pSegment_Oryginal = pSegment.Polygon_Parent.Parent.Segments[pSegment.Index];
+             pC = pAssemblyItem.C;
+             pStraightLine_1 = new cStraightLine(pSegment_Oryginal.Segment_Before);
+             pStraightLine_2 = new cStraightLine(pSegment_Oryginal);
+
+             pAlfa = pStraightLine_1.Get_Angle(pStraightLine_2);
+             pAngleInRadian = (pAlfa * (Math.PI)) / 180;
+             pCos = Math.Cos(pAngleInRadian);
+             pSin = Math.Sin(pAngleInRadian);
+             pVector_1 = new cVector(pC * pCos, pC*pSin);
+
+
+             pAssemblyItem = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Segment_Before.Index];
+             pC = pAssemblyItem.C;
+             pVector_2 = new cVector(pC * pSin, pC * pCos);
+
+             pC_Vector = pVector_1.AddVectors(pVector_1, pVector_2);
+
+             pSegment.Point.X += (float)pC_Vector.X;
+             pSegment.Point.Y += (float)pC_Vector.Y;
+
+             pY = 0;*/
+      }
 
     }
 

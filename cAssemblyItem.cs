@@ -4,7 +4,7 @@ namespace DrawShape {
   
   public class cAssemblyItem {
 
-    private int mAxis_Symmetry;                                    //oś Y AssemblyItemu
+    private cStraightLine mAxis_Symmetry;                   //równanie prostej pokrywające oś symetrii
     private int mIndex;                                     //numer AssemblyItemu
     private cPolygon mPolygon;                              //Polygon AssemblyItemu
     private cPolygon mParent;                               //rodzic wielokąta
@@ -12,7 +12,7 @@ namespace DrawShape {
     private int mC;                                         //odległość od krawędzi do następnego elementu
     private cAssembly mAssemblyParent;
 
-    internal int Axis_Symmetry { get { return mAxis_Symmetry; } set { mAxis_Symmetry = value; } }
+    internal cStraightLine Axis_Symmetry { get { return mAxis_Symmetry; } set { mAxis_Symmetry = value; } }
     internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
     internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
@@ -46,6 +46,7 @@ namespace DrawShape {
 
       cSegment pSegment;
       float pOffset_X, pOffset_Y;
+      cStraightLine pStraightLine;
 
       mWidth_Profile = xWidth_Profile;
       mC = xC;
@@ -61,8 +62,10 @@ namespace DrawShape {
       //Bok 3 przypisujemy wartość segmentu, z którego robimy przesunięcie
       pSegment = new cSegment(xSegment.Segment_Next.Point, 3, xSegment.Segment_Next.IsCurve, mPolygon);
 
+      pStraightLine = new cStraightLine(xSegment);
+
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 3
-      CalculatePointOffset(xSegment.Segment_Next, xWidth_Profile, out pOffset_X, out pOffset_Y);
+      CalculatePointOffset(xSegment.Segment_Next, xWidth_Profile, pStraightLine, out pOffset_X, out pOffset_Y);
 
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
@@ -72,8 +75,10 @@ namespace DrawShape {
       //Bok 4 przypisujemy wartość segmentu, z którego robimy przesunięcie
       pSegment = new cSegment(xSegment.Point, 4, false, mPolygon);
 
+      pStraightLine = new cStraightLine(xSegment.Segment_Before);
+
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 4
-      CalculatePointOffset(xSegment, xWidth_Profile, out pOffset_X, out pOffset_Y);
+      CalculatePointOffset(xSegment, xWidth_Profile, pStraightLine, out pOffset_X, out pOffset_Y);
 
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
@@ -84,7 +89,7 @@ namespace DrawShape {
 
     }
 
-    private static void CalculatePointOffset(cSegment xSegment, int xWidth_Profile, out float xPtX_Offset, out float xPtY_Offset) {
+    private static void CalculatePointOffset(cSegment xSegment, int xWidth_Profile, cStraightLine xStraightLine, out float xPtX_Offset, out float xPtY_Offset) {
       //funkcja zwracająca wartość przesunięcia punktów. 
       //działanie: pokrywający się z segment_next vektor (o długości przekątnej profilu) obracamy o kąt przy podstawie profilu
       //xSegment - bazowy segment
@@ -97,6 +102,7 @@ namespace DrawShape {
       double pDiagonalSize;
       double pPt_X, pPt_Y;
       cVector pVector_SegNext, pVector_OX;
+      cStraightLine pStraightLine_1, pStraightLine_2;
 
       //nowy wektor pokrywający się z następnym bokiem
       pVector_SegNext = new cVector(xSegment, xSegment.Segment_Next);
@@ -128,7 +134,13 @@ namespace DrawShape {
       //obliczanie sin, cos 
       pAlfaInRadius = (pAlfa * (Math.PI)) / 180;
       pSinAlfa = Math.Sin(pAlfaInRadius);
-      pBeta = (180 - (360 / xSegment.Polygon_Parent.Segments.Count)) / 2;
+
+      pStraightLine_1 = new cStraightLine(xSegment);
+      //pStraightLine_2 = new cStraightLine(xStraightLine);
+
+      pBeta = (180 - pStraightLine_1.Get_Angle(xStraightLine)) / 2;
+
+     // pBeta = (180 - (360 / xSegment.Polygon_Parent.Segments.Count)) / 2;
       pBetaInRadius = (pBeta * (Math.PI)) / 180;
       pSinBeta = Math.Sin(pBetaInRadius);
       pCosBeta = Math.Cos(pBetaInRadius);
@@ -212,7 +224,7 @@ namespace DrawShape {
 
     }
 
-   private cAssemblyItem GetAssemblyItem_Next() {
+    private cAssemblyItem GetAssemblyItem_Next() {
       //funkja zwracjąca następny AssemblyItem
 
       int pIndex_Next;
@@ -226,11 +238,8 @@ namespace DrawShape {
         pIndex_Next = 1;
 
       return mParent.Assembly.GetAssemblyItemByIndex(pIndex_Next);
-      
+
     }
-
-
-
 
   }
 

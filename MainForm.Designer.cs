@@ -153,7 +153,6 @@ namespace DrawShape {
       this.btnAddMullionHorizontal.TabIndex = 53;
       this.btnAddMullionHorizontal.Text = "btnAddMullionHorizontal";
       this.btnAddMullionHorizontal.UseVisualStyleBackColor = true;
-      this.btnAddMullionHorizontal.Click += new System.EventHandler(this.InsertMullion_Horizontal);
       // 
       // btnRemoveSash
       // 

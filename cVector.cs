@@ -160,6 +160,16 @@ namespace DrawShape {
 
     }
 
+    internal double Get_VectorLength() {
+
+      double pLength;
+
+      pLength = Math.Sqrt((mX * mX) + (mY * mY));
+
+      return pLength;
+
+    }
+
   }
   
 }

@@ -39,7 +39,7 @@ namespace DrawShape {
     }
 
     public cStraightLine(cPoint xPoint_1, cPoint xPoint_2) {
-      //rownanie prostej pokrywające się z bokiem
+      //rownanie prostej przechodzącej przez 2 pkt
 
       float pX_1, pY_1;
       float pX_2, pY_2;
@@ -177,6 +177,36 @@ namespace DrawShape {
       pAlfa = (Math.Acos(pCos)) * 180 / Math.PI;
 
       return pAlfa;
+    }
+
+    internal bool IsCover(cStraightLine xStraightLine) {
+      //
+      //
+
+      bool pCheck;
+
+      if (mA != 0 && xStraightLine.A != 0) {
+        mB /= mA;
+        mC /= mA;
+        xStraightLine.B /= xStraightLine.A;
+        xStraightLine.C /= xStraightLine.A;
+
+        if (mB == xStraightLine.B && mC == xStraightLine.C) pCheck = true;
+        else pCheck = false;
+
+      } else if (mB != 0 && xStraightLine.B != 0) {
+        mA /= mB;
+        mC /= mB;
+        xStraightLine.A /= xStraightLine.B;
+        xStraightLine.C /= xStraightLine.B;
+
+        if (mA == xStraightLine.A && mC == xStraightLine.C) pCheck = true;
+        else pCheck = false;
+
+      } else pCheck = false;
+
+        return pCheck;
+
     }
   }
 }
