@@ -86,7 +86,7 @@ namespace DrawShape {
 
 
       //funkcje CLICK
-      this.btnCreateProject.Click += new System.EventHandler(this.CreateProject_Click);            
+      this.btnCreateProject.Click += new System.EventHandler(this.CreateProject);            
       this.btnSetToCurve.Click += new System.EventHandler(this.SetToCurve_Click);                  
       this.btnDrawAssembly.Click += new System.EventHandler(this.InsertProfile);       
       
@@ -134,7 +134,7 @@ namespace DrawShape {
 
     }
 
-    private void CreateProject_Click(object sender, EventArgs e) {
+    private void CreateProject(object sender, EventArgs e) {
       //funkca tworząca projekt
 
       int pHeight, pWidth;
@@ -162,7 +162,7 @@ namespace DrawShape {
    
       pPolygon = mProject.PolygonsEnv.Polygons[1];
 
-      //wartości z Input txt w settings
+      //pobieranie wartości z Input txt w settings
       pC_Frame = int.Parse(txtCWidth_Profile.Text);
       pWidth_Profile = int.Parse(txtProfileSize.Text);      
 
@@ -172,53 +172,46 @@ namespace DrawShape {
 
       mProject.PolygonsEnv.CreatePolygon_Virtual(pPolygon);
 
-      //dodajemy krzyżyk wskazujący miejsce słupka
-
       this.pnlCanvas.Refresh();
 
     }
 
-    private void InsertMullion_Vertical(object sender, EventArgs e) {
-      //funkcja wstawiająca słupek pionowy
+    private void InsertMullion(object sender, EventArgs e) {
+      //funkcja wstawiająca słupek
 
-      int pMullionPosition_X, pMullionPosition_Y;
-      cPolygon pPolygon;
-      int pWidth_Frame;
-      int pWidth_Mullion;
-      float pWidth_Profile;
       int pC_Mullion;
       Dictionary<int, cPolygon> pCln;
+      int pMullionPosition_X, pMullionPosition_Y;
+      cPoint pPoint;
+      cPolygon pPolygon;
       cStraightLine pStraightLine;
+      int pWidth_Mullion;
+      float pWidth_Profile;
 
-      //pobieramy wartości Input z menu - settings
+      //pobieranie wartości Input z menu - settings
       pC_Mullion = int.Parse(txtCWidth_Mullion.Text);
       pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
       pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
       pWidth_Mullion = int.Parse(txtMullionWidth.Text);
-      pWidth_Frame = int.Parse(txtWidth.Text);
       pWidth_Profile = float.Parse(txtProfileSize.Text);
 
+            // TODO!!!
+            //sprawdzenie czy słupek już w tym miejscu istnieje, graniczenia pozycji słupka 
 
-      //ograniczenia pozycji słupka TODO!!!
+      pPoint = new cPoint(pMullionPosition_X, pMullionPosition_Y);
+      //pobranie wielokąta, w którym znajduje się punkt słupka
+      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_MullionPositon(pPoint);
 
-
-      //sprawdzenie czy słupek już w tym miejscu istnieje
-      //TODO
-
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_MullionPositon(pMullionPosition_X, pMullionPosition_Y);
-
+      //dzielenie Polygon_Virtual w miejscu prostej (osi słupka)
+      pStraightLine = new cStraightLine(1, 1, -700);              //chwilowo przypisane na "sztywno"
       pPolygon = pCln[1];
+      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pStraightLine, pC_Mullion);
+      
+      //pobranie wielokątów wirtualnych, w których bok pokrywa się z osią słupka
+      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_Line(pStraightLine);
 
-      //dzielenie Polygon_Virtual w miejscu pozycji kolumny
-      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pMullionPosition_X, 0, pC_Mullion);
-
-
-      pStraightLine = new cStraightLine(1, 1, -700);
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_ByStraightLine(pStraightLine);
-
-      //utworzenie słupka na bazie wirtualnego wielokąta, w którym się znajduje
+      //utworzenie słupka na bazie wirtualnych wielokątów, w których się znajduje
       mProject.PolygonsEnv.CreatePolygon_Mullion(pCln, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
-
 
       this.pnlCanvas.Refresh();
 
@@ -382,12 +375,13 @@ namespace DrawShape {
     }
 
     private void Insert_Cross(object sender, KeyPressEventArgs e) {
-      //funkcja wstawiająca do projektu krzyż - środek słupka
+      //funkcja wstawiająca do projektu krzyżyk oznaczająca miejsce położenia środek słupka
 
       int pMullionPosition_X;
       int pMullionPosition_Y;
       int pCross_Size;
       cPolygon pPolygon;
+      cPoint pPoint;
       int pIdx;
       int pHeight, pWidth;
 
@@ -395,26 +389,28 @@ namespace DrawShape {
       pHeight = int.Parse(txtHeight.Text);
       pWidth = int.Parse(txtWidth.Text);
 
+      //wstawienie ograniczeń - krzyżyk musi być w obrębie projektu
       pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
       if (pMullionPosition_X <= 0 || pMullionPosition_X >= pWidth) return;
 
       pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
       if (pMullionPosition_Y <= 0 || pMullionPosition_Y >= pHeight) return;
 
-      pCross_Size = 20;
+      pCross_Size = 20; //wymiary krzyżyka
 
       pPolygon = new cPolygon();
 
-      pPolygon.Assembly.CreateCross(pMullionPosition_X, pMullionPosition_Y, pCross_Size);
+      pPoint = new cPoint(pMullionPosition_X, pMullionPosition_Y);
+
+      pPolygon.Assembly.CreateCross(pPoint, pCross_Size);
 
       mProject.PolygonsEnv.AddPolygon(pPolygon);
 
+      //odświeżamy obszar, ale odrazu usuwamy, żeby nie zakłócał pracy projektu
       this.pnlCanvas.Refresh();
 
       pIdx = mProject.PolygonsEnv.Polygons.Count;
-
       mProject.PolygonsEnv.Polygons.Remove(pIdx);
-
 
     }
 

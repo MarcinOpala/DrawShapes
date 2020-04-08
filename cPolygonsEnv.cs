@@ -19,8 +19,8 @@ namespace DrawShape {
     }
 
     internal void AddPolygon(cPolygon xPolygon) {
-      //funkcja dodająca nowy segment do listy
-      //xPolygon - zadany Polygon
+      //funkcja dodająca wielokąt do listy
+      //xPolygon - zadany wielokąt
 
       xPolygon.Index = GetEmptyIndex();
       mPolygons.Add(GetEmptyIndex(), xPolygon);
@@ -28,34 +28,34 @@ namespace DrawShape {
     }
 
     internal void AddPolygon(int xIndex, cPolygon xPolygon) {
-      //funkcja dodająca nowy segment do listy
-      //xPolygon - zadany Polygon
+      //funkcja dodająca wielokąt do listy
+      //xPolygon - zadany wielokąt
 
       mPolygons.Add(xIndex, xPolygon);
 
     }
 
-    internal void SplitPolygonVirtual_ByLine(cPolygon xPolygon, int xMullionPosition_X, int xMullionPosition_Y, int xC_Mullion) {
-      // UWAGA FUNKCJA NIE SKOŃCZONA!!! - MO
+    internal void SplitPolygonVirtual_ByLine(cPolygon xPolygon, cStraightLine xStraight, int xC_Mullion) {
+      //funkcja dzieląca wielokąt wirtualny na dwa za pomocą prostej
+      //xPolygon - wielokąt do podziału
+      //xStraight - prosta dzieląca
+      //xC_Mullion - stała C dla słupka
 
       Dictionary<int, cPolygon> pPolygons;
       cPolygon pPolygon_A, pPolygon_B;
       Dictionary<int, int> pC_Cln_A, pC_Cln_B;
       int pWidht_Profile;
       int pIdx;
-      cStraightLine pStraightLine;
 
       //szerokość profilu (dla wszystkich obiektów taka sama)
       pWidht_Profile = xPolygon.Assembly.AssemblyItems[1].Width_Profile;
 
-      pStraightLine = new cStraightLine(1, 1, -700);
-
-      pPolygons = xPolygon.Split_PolygonByStreightLine(pStraightLine);
+      pPolygons = xPolygon.Split_Polygon_By_Line(xStraight);  //utworzenie kolekcji wielokątów z podziału prostą
       pPolygon_A = pPolygons[1];
       pPolygon_B = pPolygons[2];
 
-      pC_Cln_A = Prepare_Cln_C(pPolygon_A, pStraightLine, xC_Mullion);
-      pC_Cln_B = Prepare_Cln_C(pPolygon_B, pStraightLine, xC_Mullion);
+      pC_Cln_A = Prepare_Cln_C(pPolygon_A, xStraight, xC_Mullion);    //przygotowanie stałych C do wirtualanego Assembly
+      pC_Cln_B = Prepare_Cln_C(pPolygon_B, xStraight, xC_Mullion);
 
       pIdx = xPolygon.Index;
       mPolygons.Remove(xPolygon.Index);
@@ -66,21 +66,6 @@ namespace DrawShape {
       pPolygon_A.CreateAssembly(pWidht_Profile, pPolygon_A, pC_Cln_A);
       pPolygon_B.CreateAssembly(pWidht_Profile, pPolygon_B, pC_Cln_B);
 
-      foreach (cPolygon pPolygon_Child in pPolygons.Values) {
-        foreach (cAssemblyItem pAssemblyItem in pPolygon_Child.Assembly.AssemblyItems.Values) {
-
-          foreach (cPolygon pPolygon in mPolygons.Values) {
-            if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) {
-              if (pPolygon.AssemblyItem.Axis_Symmetry.IsCover(pStraightLine)) {
-
-                pAssemblyItem.Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
-                //pAssemblyItem.AssemblyItem_Next.Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
-
-              }
-            }
-          }
-        }
-      }
     }
 
     internal int GetEmptyIndex() {
@@ -106,18 +91,21 @@ namespace DrawShape {
 
     }
 
-    internal Dictionary<int, cPolygon> GetPolygonsVirtual_By_MullionPositon(int xMullionPosition_X, int xMullionPosition_Y) {
-      //funkcja zwracająca pierwszy wirtualny Polygon
+    internal Dictionary<int, cPolygon> GetPolygonsVirtual_By_MullionPositon(cPoint xPoint) {
+      //funkcja zwracająca wirtualny wielokąt w zależności od pozycji słupka UWAGA - może nie działać na ukosach!
+      //xPoint - pozycja słupka
 
       Dictionary<int, cPolygon> pCln;
       int pIdx;
 
       pCln = new Dictionary<int, cPolygon>();
       pIdx = 1;
+
+      //dla każdego wirtualnego wielokąta w projekcie sprawdzamy czy punkt należy do niego
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
-        if (pPolygon.Segments[1].Point.X <= xMullionPosition_X && pPolygon.Segments[3].Point.X >= xMullionPosition_X &&
-            pPolygon.Segments[1].Point.Y <= xMullionPosition_Y && pPolygon.Segments[3].Point.Y >= xMullionPosition_Y) {
+        if (pPolygon.Segments[1].Point.X <= xPoint.X && pPolygon.Segments[3].Point.X >= xPoint.X &&
+            pPolygon.Segments[1].Point.Y <= xPoint.Y && pPolygon.Segments[3].Point.Y >= xPoint.Y) {
           pCln.Add(pIdx, pPolygon);
           pIdx++;
         }
@@ -127,8 +115,9 @@ namespace DrawShape {
 
     }
 
-    internal Dictionary<int, cPolygon> GetPolygonsVirtual_ByStraightLine(cStraightLine xStraightLine) {
-      //funkcja zwracająca pierwszy wirtualny Polygon
+    internal Dictionary<int, cPolygon> GetPolygonsVirtual_By_Line(cStraightLine xStraightLine) {
+      //funkcja zwracająca kolekcję wirtualnych wielokątów, w których jeden bok pokrywa się z prostą
+      //xStraightLine - prosta względem której szukamy wielokątów
 
       Dictionary<int, cPolygon> pCln;
       int pIdx;
@@ -136,47 +125,46 @@ namespace DrawShape {
 
       pCln = new Dictionary<int, cPolygon>();
       pIdx = 1;
+
       foreach (cPolygon pPolygon in mPolygons.Values) {
-        if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
+        if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue; //sprawdzamy tylko wirtualne
         foreach (cSegment pSegment in pPolygon.Segments.Values) {
           pStraightLine = new cStraightLine(pSegment);
-          if (pStraightLine.IsCover(xStraightLine)) {
+          if (pStraightLine.IsCover(xStraightLine)) {  //jeśli prosta pokrywa się z bokiem to dodajemy
             pCln.Add(pIdx, pPolygon);
             pIdx++;
           }
         }
-
       }
+
       return pCln;
 
     }
 
     internal cPolygon GetPolygonMullion() {
-      //funkcja zwracająca Polygon pierwszego słupeka
+      //funkcja zwracająca wielokąt pierwszego słupka
 
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.Mullion) continue;
         return pPolygon;
       }
-
       return null;
 
     }
 
     internal cPolygon GetPolygonOutline() {
-      //funkcja zwracająca pierwszy Polygon_Outline
+      //funkcja zwracająca pierwszy wielokąt Outline
 
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameOutline) continue;
         return pPolygon;
       }
-
       return null;
 
     }
 
     internal cPolygon GetPolygonVirtual_WithoutChild() {
-      //znajduję pierwszy virtual bez dziecka
+      //funkcja zwracająca pierwszy wielokąt wirtualny bez dziecka
 
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
@@ -188,14 +176,13 @@ namespace DrawShape {
     }
 
     internal cPolygon GetPolygonVirtual_WithChild() {
-      //znajduję pierwszy virtual bez dziecka
+      //funkcja zwracająca pierwszy wielokąt wirtualny z dzieckiem
 
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
         if (pPolygon.Child != null)
           return pPolygon;
       }
-
       return null;
 
     }
@@ -225,13 +212,15 @@ namespace DrawShape {
 
     }
 
-    internal void CreatePolygon_Mullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X, int xMullionPosition_Y, int xMullionWidth, float xWidth_Profile, int xC) {
-      //funkcja tworząca  wielokąt
-      //xPolygon - wielokąt, z którego ma zostać utworzony Polygon_Mullion
+    internal void CreatePolygon_Mullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X, int xMullionPosition_Y,
+                                        int xMullionWidth, float xWidth_Profile, int xC) {
+      //funkcja tworząca  wielokąt słupka - !!! Brakuje jeszcze AI !!!
+      //xCln_Polygons - kolekcja wielokątów, z których będzie tworzony słupek
       //xMullionPosition_X - pozycja X słupka
+      //xMullionPosition_Y - pozycja Y słupka
       //xMullionWidth - szerokość słupka
       //xWidth_Profile - szerokość profilu
-      //xC - odległość od osi elementu
+      //xC - stała C słupka
 
       cPolygon pPolygon;
 
@@ -247,11 +236,10 @@ namespace DrawShape {
 
       pPolygon.Parent = xCln_Polygons[1].Parent.Parent;
 
-
     }
 
     internal void CreatePolygon_Sash(cPolygon xPolygon, int xWidth_Profile) {
-      //funkcja tworząca wielokąt skrzydła wraz z assembly
+      //funkcja tworząca wielokąt skrzydła wraz z konstrukcją
       //xPolygon - wielokąt, do którego wstawiamy skrzydło (Polygon_Sash)
       //xWidth_Profile - szerokość profilu skrzydła
 
@@ -271,8 +259,11 @@ namespace DrawShape {
     }
 
 
-    private Dictionary<int, int> Prepare_Cln_C(cPolygon xPolygon_Child, cStraightLine xAxis_Symmetry_Mullion, int xC_Mullion) {
-
+    private Dictionary<int, int> Prepare_Cln_C(cPolygon xPolygon, cStraightLine xAxis_Symmetry_Mullion, int xC_Mullion) {
+      //funkcja zwracająca kolekcję przygotowanych stałych C
+      //xPolygon - wielokąt 
+      //xAxis_Symmetry_Mullion - oś symetrii słupka
+      //xC_Mullion - stała C dla słupka
 
       Dictionary<int, int> pC_Cln;
       int pIdx;
@@ -281,18 +272,15 @@ namespace DrawShape {
       pC_Cln = new Dictionary<int, int>();
 
       pIdx = 1;
-      foreach (cSegment pSegment in xPolygon_Child.Segments.Values) {
-
+      //każdy bok sprawdzamy, czy pokrywa się z osią słupka
+      foreach (cSegment pSegment in xPolygon.Segments.Values) {
         pStraightLine = new cStraightLine(pSegment);
-        if (pStraightLine.IsCover(xAxis_Symmetry_Mullion))
+        if (pStraightLine.IsCover(xAxis_Symmetry_Mullion)) //jeśli prosta pokrywa się z osią słupka wstawiamy C słupka
           pC_Cln[pIdx] = xC_Mullion;
         else
-          pC_Cln[pIdx] = xPolygon_Child.Parent.Assembly.AssemblyItems[1].C;
-
+          pC_Cln[pIdx] = xPolygon.Parent.Assembly.AssemblyItems[1].C;  //w innym przypadku C profilu
         pIdx++;
-
       }
-
       return pC_Cln;
 
       }

@@ -50,8 +50,8 @@ namespace DrawShape {
     }
 
     internal void AddSegment(cSegment xSegment) {
-      //funkcja dodająca nowy segment do listy
-      //xSegment - wybrany segment
+      //funkcja dodająca nowy bok do listy
+      //xSegment - wybrany bok
 
       mSegments.Add(xSegment.Index, xSegment);
 
@@ -59,6 +59,8 @@ namespace DrawShape {
 
     internal void CreateAssembly(int xWidth, cPolygon xPolygon) {
       //funkcja przeładowana
+      //xWidth - szerokość profilu
+      //xPolygon - wielokąt do przeprowadzenia assembly
 
       Dictionary<int, int> pC_Cln;
 
@@ -74,10 +76,10 @@ namespace DrawShape {
     }
 
     internal void CreateAssembly(int xWidth, cPolygon xPolygon, int xC) {
-      //funkcja tworząca Assembly dla poligonu
+      //funkcja przeładowana
       //xWidth - szerokość profilu
-      //xPolygon - poligon do przeprowadzenia assembly
-      //xC_Cln - kolekcja C - odległość od krawędzi elementu
+      //xPolygon - wielokąt do przeprowadzenia assembly
+      //xC - stała C dla każdego AssemblyItemu
 
       mAssembly = new cAssembly();
 
@@ -86,10 +88,10 @@ namespace DrawShape {
     }
 
     internal void CreateAssembly(int xWidth, cPolygon xPolygon, Dictionary<int, int> xC_Cln) {
-      //funkcja tworząca Assembly dla poligonu
+      //funkcja tworząca konstrukcję dla wielokąta
       //xWidth - szerokość profilu
       //xPolygon - poligon do przeprowadzenia assembly
-      //xC_Cln - kolekcja C - odległość od krawędzi elementu
+      //xC_Cln - kolekcja stałych C - odległość od krawędzi elementu
 
       mAssembly = new cAssembly();
 
@@ -128,8 +130,8 @@ namespace DrawShape {
     }
 
     internal cSegment GetSegmentByIndex(int xIndex) {
-      //funkcja zwracająca segment
-      //xIndex - numer segmentu
+      //funkcja zwracająca bok po jego indeksie
+      //xIndex - indeks boku 
 
       int pSegmentIndex;
       int pCountMax;
@@ -146,7 +148,7 @@ namespace DrawShape {
     }
 
     internal void FillMeByObject(cPolygon xPolygon) {
-      //funkcja wypełniająca podstawowe dane według wybranego boku
+      //funkcja wypełniająca podstawowe dane według wybranego wielokąta
       //xPolygon - wielokąt bazowy
 
       cSegment pSegment;
@@ -172,7 +174,7 @@ namespace DrawShape {
     }
 
     internal cPolygon Clone() {
-      //funkcja zwracająca kopie boku (wypełnionionia tylko podstawowe pola)
+      //funkcja zwracająca kopie wielokąta (wypełniamy tylko podstawowe pola)
 
       cPolygon pPolygon;
 
@@ -186,17 +188,17 @@ namespace DrawShape {
 
     internal void SetPolygonToMullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X,
                                       int xMullionPosition_Y, int xMullionWidth, int xC) {
-      //funkcja ustawiająca poszczególne parametry na parametry typowe dla Polygon_Mullion - pionowy
-      //xPolygon - Polygon bazowy
-      //xMullionPosition_X - współrzędna X osi słupka
+      //funkcja ustawiająca poszczególne parametry wielokąta na typowe dla słupka
+      //xCln_Polygons - kolekcja wielokątów wirtualnych pokrywających się z osią słupka
+      //xMullionPosition_X - 
+      //xMullionPosition_Y - 
       //xMullionWidth - szerokość słupka
-      //xWidth_Profile - szerokość profilu
-      //xC - odległość C dla słupka
+      //xC - stała C dla słupka
 
       cAssemblyItem pAssemblyItem;
       cSegment pSegment;
       cPolygon pPolygon_A, pPolygon_B;
-      cStraightLine pStraightLine, pStraightLine_A, pStraightLine_B, pStraightLine_Segment;
+      cStraightLine pStraightLine, pStraightLine_Parallel_A, pStraightLine_Parallel_B, pStraightLine_SegmentVirtual;
       int pIdx;
       cPoint pPoint;
 
@@ -204,41 +206,45 @@ namespace DrawShape {
       pPolygon_B = xCln_Polygons[2];
       pIdx = 0;
       
+      //pobranie punktów wspólnych z dwóch wielokątów wirtualnych
       foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
         foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
           if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
-            pSegment = new cSegment(pSegment_A.Point, pIdx+20);
-            AddSegment(pSegment);
+            pSegment = new cSegment(pSegment_A.Point, pIdx+20);    //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
+            AddSegment(pSegment);                                  //otrzymany punkt dodajemy do wielokąta słupka
             pSegment.Polygon_Parent = this;
             pIdx++;
           }
         }
       }
-      pStraightLine = new cStraightLine(mSegments[20].Point, mSegments[21].Point);
+      pStraightLine = new cStraightLine(mSegments[20].Point, mSegments[21].Point); //prosta będąca osią słupka
 
+      //dodanie nowych boków do wielokąta słupka na podstawie pPolygon_A
       foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
-
         pPoint = new cPoint();
-        pStraightLine_Segment = new cStraightLine(pSegment_A);
+        pStraightLine_SegmentVirtual = new cStraightLine(pSegment_A);             //prosta pokrywająca się z bokiem
+        pStraightLine_SegmentVirtual.Simplify(pStraightLine_SegmentVirtual);      //uproszczenie równania
 
-        pStraightLine_A = pStraightLine.Get_Parallel((xMullionWidth*1000));
+        pStraightLine_Parallel_A = pStraightLine.Get_Parallel((xMullionWidth));   //prosta równoległa odalona od osi słupka o szerokość
 
-        pPoint = pStraightLine_A.Get_PointFromCrossLines(pStraightLine_Segment);
+        //pobranie punktu przecięcia prostej_równoległej i prostej_boku_wirtualnego
+        pPoint = pStraightLine_Parallel_A.Get_PointFromCrossLines(pStraightLine_SegmentVirtual); 
         if (pPoint == null) continue;                           //jeśli prosta jest równoległa
 
-        pSegment = new cSegment(pPoint, pIdx+20);
+        pSegment = new cSegment(pPoint, pIdx+20);             //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
         AddSegment(pSegment);
         pSegment.Polygon_Parent = this;
         pIdx++;
       }
+      //dodanie nowych boków do wielokąta słupka na podstawie pPolygon_B - (działanie jak pPolygon_A)
       foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
-
         pPoint = new cPoint();
-        pStraightLine_Segment = new cStraightLine(pSegment_B);
+        pStraightLine_SegmentVirtual = new cStraightLine(pSegment_B);
+        pStraightLine_SegmentVirtual.Simplify(pStraightLine_SegmentVirtual);
 
-        pStraightLine_B = pStraightLine.Get_Parallel(-(xMullionWidth *1000));
+        pStraightLine_Parallel_B = pStraightLine.Get_Parallel(-(xMullionWidth));
 
-        pPoint = pStraightLine_B.Get_PointFromCrossLines(pStraightLine_Segment);
+        pPoint = pStraightLine_Parallel_B.Get_PointFromCrossLines(pStraightLine_SegmentVirtual);
         if (pPoint == null) continue;                           //jeśli prosta jest równoległa
 
         pSegment = new cSegment(pPoint, pIdx+20);
@@ -248,11 +254,11 @@ namespace DrawShape {
       }
 
       pAssemblyItem = new cAssemblyItem();
-    //  pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
+    //pAssemblyItem.CreateAssemblyItem_Mullion(this, xMullionWidth, xC, xMullionPosition_X, xMullionPosition_Y);
       pAssemblyItem.Axis_Symmetry = pStraightLine;
 
       mAssemblyItem = pAssemblyItem;
-      mParent = this.Clone();
+      mParent = this.Clone();       //utworzenie rodzica jako kopia - potrzebne do Organize_Segments()
 
     }
 
@@ -272,65 +278,68 @@ namespace DrawShape {
     internal void SetSegmentsPointBy_C() {
       //funkcja ustawiająca punkty boków w zależności od C
 
-      cVector pVector_1, pVector_2;
-      cVector pC_Vector;
-      int pC_1, pC_2;
-      double pC, pY;
-      double pCos, pSin;
-      double pAlfa, pAngleInRadian;
-      cAssemblyItem pAssemblyItem;
-      cStraightLine pStraightLine, pStraightLine_2;
-      cSegment pSegment_Oryginal;
+      int pC;
+      cStraightLine pStraightLine_SegmentOryg;
+      cStraightLine pStraightLine_Parallel;
+      cPoint pPoint;
+      Dictionary<int, cStraightLine> pCln;
 
-      float pOffset_X, pOffset_Y;
-      
-      foreach (cSegment pSegment in mSegments.Values) {
+      pCln = new Dictionary<int, cStraightLine>();
 
-        pC_1 = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Index].C;
-        pC_2 = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Segment_Before.Index].C;
+      //tworzymy kolekcję prostych równoległych oddaloną o stałą C do środka wielokąta
+      foreach(cSegment pSegment in mSegments.Values) {
+        pC = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Index].C;
 
-        pSegment_Oryginal = pSegment.Polygon_Parent.Parent.Segments[pSegment.Index];
-        pStraightLine = new cStraightLine(pSegment_Oryginal.Segment_Before);
+        pStraightLine_SegmentOryg = new cStraightLine(pSegment);          //prosta pokrywająca się z bokiem
+        pStraightLine_SegmentOryg.Simplify(pStraightLine_SegmentOryg);    //uproszczenie równania prostej
+        pStraightLine_Parallel = pStraightLine_SegmentOryg.Get_Parallel(pC);       //prosta oddalona o C
 
-        pSegment.CalculatePointOffset(pSegment, pC_1, pC_2, pStraightLine, out pOffset_X, out pOffset_Y);
+        pStraightLine_SegmentOryg = new cStraightLine(pSegment.Segment_Before);   //prosta pokrywająca się z poprzednim bokiem
+        pStraightLine_SegmentOryg.Simplify(pStraightLine_SegmentOryg);            //uproszczenie równania prostej
 
+        pPoint = pStraightLine_SegmentOryg.Get_PointFromCrossLines(pStraightLine_Parallel);//punkt przecięcia się prostych
 
+        if (pPoint.X >= pSegment.Segment_Before.Point.X && pPoint.X <= pSegment.Point.X || //jeśli punkt należy do wielokąta to dodajemy prostą
+           pPoint.X <= pSegment.Segment_Before.Point.X && pPoint.X >= pSegment.Point.X) {
+          if (pPoint.Y >= pSegment.Segment_Before.Point.Y && pPoint.Y <= pSegment.Point.Y ||
+              pPoint.Y <= pSegment.Segment_Before.Point.Y && pPoint.Y >= pSegment.Point.Y) {
+            pCln.Add(pSegment.Index, pStraightLine_Parallel);
 
-        pSegment.Point.X += pOffset_X;
-        pSegment.Point.Y += pOffset_Y;
+          } else {  //jeśli punkt nie należał to pobieramy prostą równoległą w drugą stronę
+            pStraightLine_SegmentOryg = new cStraightLine(pSegment);
+            pStraightLine_SegmentOryg.Simplify(pStraightLine_SegmentOryg);
+            pStraightLine_Parallel = pStraightLine_SegmentOryg.Get_Parallel(-pC );
 
-        /*     pAssemblyItem = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Index];
-             pSegment_Oryginal = pSegment.Polygon_Parent.Parent.Segments[pSegment.Index];
-             pC = pAssemblyItem.C;
-             pStraightLine_1 = new cStraightLine(pSegment_Oryginal.Segment_Before);
-             pStraightLine_2 = new cStraightLine(pSegment_Oryginal);
+            pStraightLine_SegmentOryg = new cStraightLine(pSegment.Segment_Before);
+            pStraightLine_SegmentOryg.Simplify(pStraightLine_SegmentOryg);
 
-             pAlfa = pStraightLine_1.Get_Angle(pStraightLine_2);
-             pAngleInRadian = (pAlfa * (Math.PI)) / 180;
-             pCos = Math.Cos(pAngleInRadian);
-             pSin = Math.Sin(pAngleInRadian);
-             pVector_1 = new cVector(pC * pCos, pC*pSin);
+            pPoint = pStraightLine_SegmentOryg.Get_PointFromCrossLines(pStraightLine_Parallel);
+            pCln.Add(pSegment.Index, pStraightLine_Parallel);
+          }
+        } else {      //jeśli punkt nie należał to pobieramy prostą równoległą w drugą stronę
+          pStraightLine_SegmentOryg = new cStraightLine(pSegment);
+          pStraightLine_SegmentOryg.Simplify(pStraightLine_SegmentOryg);
+          pStraightLine_Parallel = pStraightLine_SegmentOryg.Get_Parallel(-pC );
 
+          pStraightLine_SegmentOryg = new cStraightLine(pSegment.Segment_Before);
+          pStraightLine_SegmentOryg.Simplify(pStraightLine_SegmentOryg);
 
-             pAssemblyItem = pSegment.Polygon_Parent.Parent.Assembly.AssemblyItems[pSegment.Segment_Before.Index];
-             pC = pAssemblyItem.C;
-             pVector_2 = new cVector(pC * pSin, pC * pCos);
-
-             pC_Vector = pVector_1.AddVectors(pVector_1, pVector_2);
-
-             pSegment.Point.X += (float)pC_Vector.X;
-             pSegment.Point.Y += (float)pC_Vector.Y;
-
-             pY = 0;*/
+          pPoint = pStraightLine_SegmentOryg.Get_PointFromCrossLines(pStraightLine_Parallel);
+          pCln.Add(pSegment.Index, pStraightLine_Parallel);
+        }
       }
-
+      //przeniesienie punktów oryginalnych na punkty utworzone z przecięcia prostych
+      foreach(cSegment pSegment in mSegments.Values) {
+        pPoint = pCln[pSegment.Index].Get_PointFromCrossLines(pCln[pSegment.Segment_Before.Index]);
+        pPoint = new cPoint(pPoint.X, pPoint.Y);
+        pSegment.Point = pPoint;
+        
+      }
     }
 
-
-    public Dictionary<int, cPolygon> Split_PolygonByStreightLine(cStraightLine xStraightLine) {
-      // !!!  UWAGA FUNKJCA NIE DZIAŁA JEST W TRAKCIE TWORZENIA!!!
-      //funkcja zwracająca kolekcję podzielonych wielokątów prostą stworząną z wektora
-      //
+    public Dictionary<int, cPolygon> Split_Polygon_By_Line(cStraightLine xStraightLine) {
+      //funkcja zwracająca kolekcję podzielonych wielokątów prostą
+      //xStraightLine - równanie prostej dzielącej wielokąty
 
       Dictionary<int, cPolygon> pCln_Polygon;
       cPolygon pPolygon_A, pPolygon_B;
@@ -418,9 +427,6 @@ namespace DrawShape {
       cSegment pSegment;
       int pCountSegments;
       cStraightLine pStraightLine;
-      cPolygon pPolygon;
-
-      //pPolygon = new cPolygon()
 
       //dodajemy do listy wszystkie punkty wielokąta
       pCln_Points = new Dictionary<int, cPoint>();
@@ -430,6 +436,7 @@ namespace DrawShape {
       //wybieramy pierwszy punkt (położony najbliżej 0;0 ) i usuwamy go z listy
       pNewIdx_Segment = 1;
       var dict = pCln_Points.OrderBy(x => x.Value.X).ThenBy(x => x.Value.Y).ToDictionary(x => x.Key, x => x.Value);   //sortowanie listy: najmniejszy X, Y
+     
       xPolygon.Segments.Add(pNewIdx_Segment, xPolygon.Segments[dict.Keys.First()]);
       pCln_Points.Remove(dict.Keys.First());
       

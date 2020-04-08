@@ -185,7 +185,7 @@ namespace DrawShape {
       this.btnAddMullionVertical.TabIndex = 50;
       this.btnAddMullionVertical.Text = "btnAddMullionVertical";
       this.btnAddMullionVertical.UseVisualStyleBackColor = true;
-      this.btnAddMullionVertical.Click += new System.EventHandler(this.InsertMullion_Vertical);
+      this.btnAddMullionVertical.Click += new System.EventHandler(this.InsertMullion);
       // 
       // txtProjectName
       // 

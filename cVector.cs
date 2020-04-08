@@ -161,6 +161,7 @@ namespace DrawShape {
     }
 
     internal double Get_VectorLength() {
+      //funkcja zwracająca długość wektora
 
       double pLength;
 
