@@ -4,7 +4,7 @@ namespace DrawShape {
   
   public class cAssemblyItem {
 
-    private cStraightLine mAxis_Symmetry;                   //równanie prostej pokrywające oś symetrii
+    private cLine mAxis_Symmetry;                   //równanie prostej pokrywające oś symetrii
     private int mIndex;                                     //numer AssemblyItemu
     private cPolygon mPolygon;                              //Polygon AssemblyItemu
     private cPolygon mParent;                               //rodzic wielokąta
@@ -12,7 +12,7 @@ namespace DrawShape {
     private int mC;                                         //odległość od krawędzi do następnego elementu
     private cAssembly mAssemblyParent;
 
-    internal cStraightLine Axis_Symmetry { get { return mAxis_Symmetry; } set { mAxis_Symmetry = value; } }
+    internal cLine Axis_Symmetry { get { return mAxis_Symmetry; } set { mAxis_Symmetry = value; } }
     internal int Index { get { return mIndex; } set { mIndex = value; } }
     internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
     internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
@@ -46,7 +46,7 @@ namespace DrawShape {
 
       cSegment pSegment;
       float pOffset_X, pOffset_Y;
-      cStraightLine pStraightLine;
+      cLine pLine;
 
       mPolygon.CntPF = PolygonFunctionalityEnum.Profile;
       mWidth_Profile = xWidth_Profile;
@@ -62,10 +62,10 @@ namespace DrawShape {
 
       //Bok 3 przypisujemy wartość boku, z którego później robimy przesunięcie
       pSegment = new cSegment(xSegment.Segment_Next.Point, 3, xSegment.Segment_Next.IsCurve, mPolygon);
-      pStraightLine = new cStraightLine(xSegment); //prosta pokrywająca się z bokiem oryginału
+      pLine = new cLine(xSegment); //prosta pokrywająca się z bokiem oryginału
 
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 3
-      CalculatePointOffset(xSegment.Segment_Next, xWidth_Profile, pStraightLine, out pOffset_X, out pOffset_Y);
+      CalculatePointOffset(xSegment.Segment_Next, xWidth_Profile, pLine, out pOffset_X, out pOffset_Y);
 
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
@@ -73,10 +73,10 @@ namespace DrawShape {
 
       //Bok 4 przypisujemy wartość boku, z którego później robimy przesunięcie
       pSegment = new cSegment(xSegment.Point, 4, false, mPolygon);
-      pStraightLine = new cStraightLine(xSegment.Segment_Before); //prosta pokrywająca się z bokiem poprzedzającym oryginał
+      pLine = new cLine(xSegment.Segment_Before); //prosta pokrywająca się z bokiem poprzedzającym oryginał
 
       //obliczenie przesunięcia potrzebnego do wygenerowania pozycji punktu dla boku numer 4
-      CalculatePointOffset(xSegment, xWidth_Profile, pStraightLine, out pOffset_X, out pOffset_Y);
+      CalculatePointOffset(xSegment, xWidth_Profile, pLine, out pOffset_X, out pOffset_Y);
 
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
@@ -84,13 +84,13 @@ namespace DrawShape {
 
     }
 
-    private static void CalculatePointOffset(cSegment xSegment, int xWidth_Profile, cStraightLine xStraightLine,
+    private void CalculatePointOffset(cSegment xSegment, int xWidth_Profile, cLine xLine,
                                              out float xPtX_Offset, out float xPtY_Offset) {
       //funkcja zwracająca wartość przesunięcia punktów. 
       //działanie: pokrywający się z segment_next vektor (o długości przekątnej profilu) obracamy o kąt przy podstawie profilu
       //xSegment - bazowy segment
       //xWidth_Profile - szerokość profilu
-      //xStraightLine - prosta względem której liczymy kąt
+      //xLine - prosta względem której liczymy kąt
       //xPtX_Offset - końcowe przesunięcie X
       //xPtY_Offset - końcowe przesunięcie Y
 
@@ -99,13 +99,13 @@ namespace DrawShape {
       double pDiagonalSize;
       double pPt_X, pPt_Y;
       cVector pVector_SegNext, pVector_OX;
-      cStraightLine pStraightLine_1;
+      cLine pLine_1;
 
       pVector_SegNext = new cVector(xSegment, xSegment.Segment_Next);  //wektor pokrywający się z następnym bokiem
 
       pVector_OX = new cVector(100, 0);                                //wektor pomocniczy pokrywający się z osią OX
 
-      pCosAlfa = cVector.CosAlfa(pVector_OX, pVector_SegNext);         //cosinus kąta pomiędzy wektorami
+      pCosAlfa = pVector_OX.CosAlfa(pVector_OX, pVector_SegNext);         //cosinus kąta pomiędzy wektorami
 
       //ustawienie kąta Alfa
       if (pCosAlfa >= 0 && pVector_SegNext.Vector.Y >= 0) {
@@ -127,9 +127,9 @@ namespace DrawShape {
       pAlfaInRadian = (pAlfa * (Math.PI)) / 180;
       pSinAlfa = Math.Sin(pAlfaInRadian);
 
-      pStraightLine_1 = new cStraightLine(xSegment);   //prosta pokrywająca sie z bokiem
+      pLine_1 = new cLine(xSegment);   //prosta pokrywająca sie z bokiem
 
-      pBeta = (180 - pStraightLine_1.Get_Angle(xStraightLine)) / 2; //kąt pomiędzy dwoma kolejnymi bokami
+      pBeta = (180 - pLine_1.Get_Angle(xLine)) / 2; //kąt pomiędzy dwoma kolejnymi bokami
 
       pBetaInRadius = (pBeta * (Math.PI)) / 180;
       pSinBeta = Math.Sin(pBetaInRadius);

@@ -63,7 +63,7 @@
     <Compile Include="cProject.cs" />
     <Compile Include="cSegment.cs" />
     <Compile Include="cPoint.cs" />
-    <Compile Include="cStraightLine.cs" />
+    <Compile Include="cLine.cs" />
     <Compile Include="cVector.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

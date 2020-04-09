@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DrawShape {
 
-  public class cStraightLine {
+  public class cLine {
     //prosta w postaci ogólnej: Ax + By + C
 
     private double mA;                                         //parametr A prostej
@@ -17,11 +17,11 @@ namespace DrawShape {
     internal double B { get { return mB; } set { mB = value; } }
     internal double C { get { return mC; } set { mC = value; } }
 
-    public cStraightLine() {
+    public cLine() {
 
     }
 
-    public cStraightLine(cSegment xSegment) {
+    public cLine(cSegment xSegment) {
       //równanie prostej pokrywające się z bokiem
 
       float pX_1, pY_1;
@@ -39,7 +39,7 @@ namespace DrawShape {
 
     }
 
-    public cStraightLine(cPoint xPoint_1, cPoint xPoint_2) {
+    public cLine(cPoint xPoint_1, cPoint xPoint_2) {
       //równanie prostej przechodzącej przez dwa punkty
 
       float pX_1, pY_1;
@@ -59,7 +59,7 @@ namespace DrawShape {
 
     }
 
-    public cStraightLine(Dictionary<int, cPoint> xPoints) {
+    public cLine(Dictionary<int, cPoint> xPoints) {
       //rownanie prostej utworzonej z kolekcji dwóch punktów
 
       float pX_1, pY_1;
@@ -79,14 +79,14 @@ namespace DrawShape {
 
     }
 
-    public cStraightLine(double xA, double xB, double xC) {
+    public cLine(double xA, double xB, double xC) {
       //podstawowe równanie prostej
 
       mA = xA;
       mB = xB;
       mC = xC;
 
-      Simplify(this);
+     // Simplify(this);
 
     }
 
@@ -101,7 +101,7 @@ namespace DrawShape {
 
     }
 
-    internal cPoint Get_PointFromCrossLines(cStraightLine xLine_2) {
+    internal cPoint Get_PointFromCrossLines(cLine xLine_2) {
       //funkcja zwracajaca punkt przecięcia się dwóch prostych
       //xLine_2 - druga prosta
 
@@ -129,57 +129,57 @@ namespace DrawShape {
 
     }
 
-    internal cStraightLine Get_StraightLine_Parallel(cPoint xPoint) {
+    internal cLine Get_Line_Parallel(cPoint xPoint) {
       //funkcja zwracająca prostą równoległą przechodząca przez punkt
 
-      cStraightLine pStraightLine_Parallel;
+      cLine pLine_Parallel;
       double pC;
 
       pC = -(mA * xPoint.X + mB * xPoint.Y);
 
-      pStraightLine_Parallel = new cStraightLine(mA, mB, pC);
+      pLine_Parallel = new cLine(mA, mB, pC);
 
-      Simplify(pStraightLine_Parallel);
+      Simplify(pLine_Parallel);
 
-      return pStraightLine_Parallel;
+      return pLine_Parallel;
     }
 
-    internal cStraightLine Get_Parallel(double xDistance) {
+    internal cLine Get_Parallel(double xDistance) {
       //funkcja zwracająca prostą równoległą przesuniętą wzdłóż osi Y 
 
-      cStraightLine pStraightLine_Parallel;
+      cLine pLine_Parallel;
 
       double pC;
 
       pC = mC - xDistance;
 
-      pStraightLine_Parallel = new cStraightLine(mA, mB, pC);
+      pLine_Parallel = new cLine(mA, mB, pC);
 
-      Simplify(pStraightLine_Parallel);
+      Simplify(pLine_Parallel);
 
-      return pStraightLine_Parallel;
+      return pLine_Parallel;
 
     }
 
 
-    internal cStraightLine Get_StraightLine_Normal(cPoint xPoint) {
+    internal cLine Get_Line_Normal(cPoint xPoint) {
       //funkcja zwracająca prostą prostopadłą do danej
       //xPoint - punkt przecięcia prostych
 
-      cStraightLine pStraightLine_Normal;
+      cLine pLine_Normal;
       double pA, pB, pC;
       
       pA = -(mB);
       pB = mA;
       pC = -(pA * xPoint.X + pB * xPoint.Y); 
-      pStraightLine_Normal = new cStraightLine(pA, pB, pC);
+      pLine_Normal = new cLine(pA, pB, pC);
 
-      Simplify(pStraightLine_Normal);
+      Simplify(pLine_Normal);
 
-      return pStraightLine_Normal;
+      return pLine_Normal;
     }
 
-    internal double Get_Angle(cStraightLine xLine_2) {
+    internal double Get_Angle(cLine xLine_2) {
       //funkcja zwracająca kąt pomiędzy dwoma prostymi
       //xLine_2 - druga prosta
 
@@ -194,53 +194,40 @@ namespace DrawShape {
       return pAlfa;
     }
 
-    internal bool IsCover(cStraightLine xStraightLine) {
+    internal bool IsCover(cLine xLine) {
       //funkca sprawdzająca czy dwie proste pokrywają się
-      //xStraightLine - druga prosta
+      //xLine - druga prosta
 
       bool pCheck;
 
-      if (mA != 0 && xStraightLine.A != 0) {
-        mB /= mA;
-        mC /= mA;
-        xStraightLine.B /= xStraightLine.A;
-        xStraightLine.C /= xStraightLine.A;
+      
+     // Simplify(xLine);
 
-        if (mB == xStraightLine.B && mC == xStraightLine.C) pCheck = true;
+        if (mA == xLine.A && mB == xLine.B && mC == xLine.C) pCheck = true;
         else pCheck = false;
 
-      } else if (mB != 0 && xStraightLine.B != 0) {
-        mA /= mB;
-        mC /= mB;
-        xStraightLine.A /= xStraightLine.B;
-        xStraightLine.C /= xStraightLine.B;
-
-        if (mA == xStraightLine.A && mC == xStraightLine.C) pCheck = true;
-        else pCheck = false;
-
-      } else pCheck = false;
 
         return pCheck;
 
     }
-    internal void Simplify(cStraightLine xStraightLine) {
+    internal void Simplify(cLine xLine) {
       //funkcja skracająca równanie prostej do podstawowego (ciągle w postaci ogólnej)
 
       double pMax;
 
-      if (Math.Abs(xStraightLine.A) >= Math.Abs(xStraightLine.B) && xStraightLine.A != 0) {
-        pMax = xStraightLine.A;
+      if (Math.Abs(xLine.A) >= Math.Abs(xLine.B) && xLine.A != 0) {
+        pMax = xLine.A;
 
-        mA /= pMax;
-        mB /= pMax;
-        mC /= pMax;
+        mA = Math.Round((mA / pMax), 3);
+        mB = Math.Round((mB / pMax), 3);
+        mC = Math.Round((mC / pMax), 3);
 
-      } else if (Math.Abs(xStraightLine.B) > Math.Abs(xStraightLine.A) && xStraightLine.B != 0) {
-        pMax = xStraightLine.B;
+      } else if (Math.Abs(xLine.B) > Math.Abs(xLine.A) && xLine.B != 0) {
+        pMax = xLine.B;
 
-        mA /= pMax;
-        mB /= pMax;
-        mC /= pMax;
+        mA = Math.Round((mA / pMax), 3);
+        mB = Math.Round((mB / pMax), 3);
+        mC = Math.Round((mC / pMax), 3);
 
       } 
 

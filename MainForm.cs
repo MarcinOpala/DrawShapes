@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -13,6 +14,7 @@ namespace DrawShape {
     private cProject mProject;                              //inicjacja projektu
     private double mScale;                                  //przeliczona skala całego rysunku
     private cDrawingAdapter mDrawingAdapter;
+    private Dictionary<int, cPoint> mCln_Points;
 
     public MainForm() {
       //
@@ -49,8 +51,8 @@ namespace DrawShape {
       this.lblWidth.Text = "Szerokość:";
       this.lblUnitWidth.Text = "mm";
       this.lblUnitHeight.Text = "mm";
-      this.btnAddMullionVertical.Text = "Wstaw słupek |";
-      this.btnAddMullionHorizontal.Text = "Wstaw słupek -";
+      this.btnAddMullionVertical.Text = "Wstaw słupek";
+      this.btnAddMullionHorizontal.Text = "";
       this.txtMullionLocationX.Text = "700";
       this.txtMullionLocationY.Text = "700";
       this.lblMullionLocation.Text = "Pozycja słupeka (X , Y):";
@@ -93,7 +95,8 @@ namespace DrawShape {
       //funkcje inne
       this.Resize += new System.EventHandler(this.MainForm_Resize);                                
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);
-      
+      this.pnlCanvas.Click += new System.EventHandler(this.GetPositon_onMouseClick);
+      this.pnlCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMove);
     }
 
     private void pnlCanvas_Paint(object sender, PaintEventArgs e) {
@@ -142,7 +145,7 @@ namespace DrawShape {
 
       pHeight = int.Parse(txtHeight.Text);
       pWidth = int.Parse(txtWidth.Text);
-      pNe = "nowy projekt";
+      pNe = "Nowy Projekt";
       
       CalculateScale();
 
@@ -172,6 +175,8 @@ namespace DrawShape {
 
       mProject.PolygonsEnv.CreatePolygon_Virtual(pPolygon);
 
+      mCln_Points = new Dictionary<int, cPoint>();
+
       this.pnlCanvas.Refresh();
 
     }
@@ -180,11 +185,12 @@ namespace DrawShape {
       //funkcja wstawiająca słupek
 
       int pC_Mullion;
-      Dictionary<int, cPolygon> pCln;
+      Dictionary<int, cPolygon> pCln_Polygons;
+      Dictionary<int, cPoint> pCln_Points;
       int pMullionPosition_X, pMullionPosition_Y;
       cPoint pPoint;
       cPolygon pPolygon;
-      cStraightLine pStraightLine;
+      cLine pLine_Axis_Symetry_Mullion;
       int pWidth_Mullion;
       float pWidth_Profile;
 
@@ -195,23 +201,39 @@ namespace DrawShape {
       pWidth_Mullion = int.Parse(txtMullionWidth.Text);
       pWidth_Profile = float.Parse(txtProfileSize.Text);
 
-            // TODO!!!
-            //sprawdzenie czy słupek już w tym miejscu istnieje, graniczenia pozycji słupka 
+      // TODO!!!
+      //sprawdzenie czy słupek już w tym miejscu istnieje, graniczenia pozycji słupka 
 
-      pPoint = new cPoint(pMullionPosition_X, pMullionPosition_Y);
+      pCln_Points = mCln_Points;
+    //  if (pCln_Points.Count != 2) return;
+
+      pPoint = new cPoint(-100,100);
+
+      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_ByPoint(pPoint);
+
+
       //pobranie wielokąta, w którym znajduje się punkt słupka
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_MullionPositon(pPoint);
+      //  pCln_Polygons = mProject.PolygonsEnv.GetPolygonVirtual_By_Point(pPoint);
 
       //dzielenie Polygon_Virtual w miejscu prostej (osi słupka)
-      pStraightLine = new cStraightLine(1, 1, -700);              //chwilowo przypisane na "sztywno"
-      pPolygon = pCln[1];
-      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pStraightLine, pC_Mullion);
+
+
+      pLine_Axis_Symetry_Mullion = new cLine(pCln_Points);
+      pLine_Axis_Symetry_Mullion.Simplify(pLine_Axis_Symetry_Mullion);
+
+      pCln_Polygons = mProject.PolygonsEnv.GetPolygonsVirtual_CrossedBy_AxisSymmetry(pLine_Axis_Symetry_Mullion);
+   
+
+      pCln_Points.Remove(1);
+      pCln_Points.Remove(2);
+    //  pPolygon = pCln_Polygons[1];  //tutaj mamy tylko jeden poligon w kolekcji
+      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pLine_Axis_Symetry_Mullion, pC_Mullion);
       
-      //pobranie wielokątów wirtualnych, w których bok pokrywa się z osią słupka
-      pCln = mProject.PolygonsEnv.GetPolygonsVirtual_By_Line(pStraightLine);
+      //pobranie wielokątów wirtualnych stycznych do osi symetrii słupka
+      pCln_Polygons = mProject.PolygonsEnv.GetPolygonsVirtual_Tangential_To_AxisSymmetry(pLine_Axis_Symetry_Mullion);
 
       //utworzenie słupka na bazie wirtualnych wielokątów, w których się znajduje
-      mProject.PolygonsEnv.CreatePolygon_Mullion(pCln, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
+      mProject.PolygonsEnv.CreatePolygon_Mullion(pCln_Polygons, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
 
       this.pnlCanvas.Refresh();
 
@@ -414,6 +436,73 @@ namespace DrawShape {
 
     }
 
-  }
+    private void AddPointToSplit(cPoint xPoint) {
 
-}
+      int pIdx;
+
+      pIdx = mCln_Points.Count + 1;
+
+      mCln_Points.Add(pIdx, xPoint);
+      
+    }
+
+    private void GetPositon_onMouseClick(object sender, EventArgs e) {
+      //
+
+      Point point = pnlCanvas.PointToClient(Cursor.Position);
+
+      int pX;
+      int pY;
+      string pStr;
+      cPoint pPt_Base, pPoint;
+      int pHeight, pWidth;
+
+      pHeight = int.Parse(txtHeight.Text);
+      pWidth = int.Parse(txtWidth.Text);
+
+      pPt_Base = new cPoint();
+      pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - pWidth * mScale) / 2);
+      pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - pHeight * mScale) / 2));
+
+      pX = (int)((point.X - pPt_Base.X) / mScale);
+      pY = -(int)((point.Y - pPt_Base.Y) / mScale);
+      pPoint = new cPoint(pX, pY);
+
+      AddPointToSplit(pPoint);
+
+      pStr = $"Pozycja Myszki: X: {pX}, Y: {pY}  Skala: {mScale}, Baze Point: ( {pPt_Base.X} ; {pPt_Base.Y} )\n";
+
+      Console.WriteLine(pStr);
+
+    }
+
+
+    private void MouseMove(object sender, MouseEventArgs e) {
+      //
+
+      Point point = pnlCanvas.PointToClient(Cursor.Position);
+      int pX;
+      int pY;
+      string pStr;
+      cPoint pPt_Base, pPoint;
+      int pHeight, pWidth;
+
+      pHeight = int.Parse(txtHeight.Text);
+      pWidth = int.Parse(txtWidth.Text);
+
+      pPt_Base = new cPoint();
+      pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - pWidth * mScale) / 2);
+      pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - pHeight * mScale) / 2));
+
+      pX = (int)((point.X - pPt_Base.X) / mScale);
+      pY = -(int)((point.Y - pPt_Base.Y) / mScale);
+      pPoint = new cPoint(pX, pY);
+
+      pStr = $"Mouse move: X: {pX}, Y: {pY}  Skala: {mScale}, Baze Point: ( {pPt_Base.X} ; {pPt_Base.Y} )\n";
+
+      Console.WriteLine(pStr);
+    }
+
+    }
+
+  }

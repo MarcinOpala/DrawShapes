@@ -138,7 +138,7 @@ namespace DrawShape {
 
     }
 
-    internal static double CosAlfa(cVector xVector_First, cVector xVector_Secound) {
+    internal double CosAlfa(cVector xVector_First, cVector xVector_Secound) {
       //funkcja zwracająca wektor będący wynikiem iloczynu skalarnego
       //UWAGA: przy obliczaniu kąta Alfa pamiętać o cykliczności Cosinusa
       //xVector_First - pierwszy wektor
