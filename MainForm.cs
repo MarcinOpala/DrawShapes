@@ -185,7 +185,7 @@ namespace DrawShape {
       //funkcja wstawiająca słupek
 
       int pC_Mullion;
-      Dictionary<int, cPolygon> pCln_Polygons;
+      Dictionary<int, cPolygon> pCln_Polygons_Virtual, pCln_Polygons_Tangential, pCln_Polygons_Mullion;
       Dictionary<int, cPoint> pCln_Points;
       int pMullionPosition_X, pMullionPosition_Y;
       cPoint pPoint;
@@ -205,36 +205,38 @@ namespace DrawShape {
       //sprawdzenie czy słupek już w tym miejscu istnieje, graniczenia pozycji słupka 
 
       pCln_Points = mCln_Points;
-    //  if (pCln_Points.Count != 2) return;
+      if (pCln_Points.Count != 2) return;     //musimy mieć 2 punkty, żeby podzielić wielokąt
 
-      pPoint = new cPoint(-100,100);
+      pPoint = pCln_Points[1];
 
+      //wybranie wielokąta wirtualnego po kliknięciu myszką
       pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_ByPoint(pPoint);
-
-
-      //pobranie wielokąta, w którym znajduje się punkt słupka
-      //  pCln_Polygons = mProject.PolygonsEnv.GetPolygonVirtual_By_Point(pPoint);
-
-      //dzielenie Polygon_Virtual w miejscu prostej (osi słupka)
-
 
       pLine_Axis_Symetry_Mullion = new cLine(pCln_Points);
       pLine_Axis_Symetry_Mullion.Simplify(pLine_Axis_Symetry_Mullion);
 
-      pCln_Polygons = mProject.PolygonsEnv.GetPolygonsVirtual_CrossedBy_AxisSymmetry(pLine_Axis_Symetry_Mullion);
-   
+      //pobranie wielokątów wirtualnych, potrzebnych do podziału prostą (os słupka)
+      pCln_Polygons_Virtual = mProject.PolygonsEnv.GetPolygonsVirtual_CrossedBy_AxisSymmetry(pLine_Axis_Symetry_Mullion);
+        
+      foreach(cPolygon pPolygon_Virtual in pCln_Polygons_Virtual.Values) {
 
+        //dzielimy wielokąt wirtualny prostą (oś słupka)
+        mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon_Virtual, pLine_Axis_Symetry_Mullion, pC_Mullion);
+
+        //pobranie wielokątów wirtualnych stycznych do osi symetrii słupka
+        pCln_Polygons_Tangential = mProject.PolygonsEnv.GetPolygonsVirtual_Tangential_To_AxisSymmetry(pLine_Axis_Symetry_Mullion);
+
+        pCln_Polygons_Mullion = mProject.PolygonsEnv.GetPolygonsMullion_Tangential_To_PolygonsVirtual(pCln_Polygons_Tangential);
+
+        //utworzenie słupka na bazie wirtualnych wielokątów, w których się znajduje
+        mProject.PolygonsEnv.CreatePolygon_Mullion(pCln_Polygons_Tangential, pCln_Polygons_Mullion, pWidth_Mullion, pC_Mullion);
+
+      }
+
+      //punkty tworzące oś słupka są już nie potrzebne
       pCln_Points.Remove(1);
       pCln_Points.Remove(2);
-    //  pPolygon = pCln_Polygons[1];  //tutaj mamy tylko jeden poligon w kolekcji
-      mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon, pLine_Axis_Symetry_Mullion, pC_Mullion);
-      
-      //pobranie wielokątów wirtualnych stycznych do osi symetrii słupka
-      pCln_Polygons = mProject.PolygonsEnv.GetPolygonsVirtual_Tangential_To_AxisSymmetry(pLine_Axis_Symetry_Mullion);
-
-      //utworzenie słupka na bazie wirtualnych wielokątów, w których się znajduje
-      mProject.PolygonsEnv.CreatePolygon_Mullion(pCln_Polygons, 0, pMullionPosition_Y, pWidth_Mullion, pWidth_Profile, pC_Mullion);
-
+     
       this.pnlCanvas.Refresh();
 
     }

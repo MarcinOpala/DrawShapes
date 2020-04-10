@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DrawShape {
   
@@ -146,74 +147,86 @@ namespace DrawShape {
 
     }
 
-    internal void CreateAssemblyItem_Mullion(cPolygon xPolygon, float xMullionWidth, int xC, int xMullionPosition_X, int xMullionPosition_Y) {
+    internal void CreateAssemblyItem_Mullion(cPolygon xPolygon, Dictionary<int, cPolygon> xPolygonsVirtual,
+                                             Dictionary<int, cPolygon> xPolygonsMullion, int xC) {
       // !!! TO EDIT !!! - obecnie nie działa
       //funkcja tworząca AssemblyItem - kształt słupka (xPolygon skrócony o szerokość profilu / słupka)
-      //xPolygon - Polygon bazowy słupka
+      //xPolygon - wielokąt bazowy słupka
       //xMullionWidth - szerokość słupka
-      //xC - odległość od osi słupka do skrzydła, które dodamy
+      //xC - stała C (odległość od osi słupka do skrzydła)
       //xMullionPosition_X - pozycja słupka X
       //xMullionPosition_Y - pozycja słupka Y
 
-      cAssembly pAssembly_Virtual;
-      cPoint pPoint;
-      cPolygon pPolygon;
-      cSegment pSegment_Base;
-      cSegment pSegment;
+      cLine pLine_1, pLine_2, pLine_3, pLine_Segment, pLine_AssemblySegment;
+      Dictionary<int, cLine> pCln;
+      cPoint pPointAI, pPointMullion, pPoint_New;
+      cSegment pSegment_New, pSegment_AI;
       int pIdx;
-      float pWidth, pHeight;
+      bool pCheck;
 
       mPolygon.Parent = xPolygon;
       mC = xC;
       mPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
 
-      pAssembly_Virtual = xPolygon.Parent.Assembly;
+      pLine_1 = new cLine(xPolygon.Segments[2]);
+      pLine_1.Simplify(pLine_1);
+      pLine_2 = new cLine(xPolygon.Segments[1].Point, xPolygon.Segments[4].Point);
+      pLine_2.Simplify(pLine_2);
+      pLine_3 = new cLine(xPolygon.Segments[5]);
+      pLine_3.Simplify(pLine_3);
 
-      if (xMullionPosition_Y == 0) {    // jeśli słupek jest pionowy
+      pCln = new Dictionary<int, cLine>();
+      pCln.Add(1, pLine_1);
+      pCln.Add(2, pLine_2);
+      pCln.Add(3, pLine_3);
+      pIdx = 1;
 
-        //obliczamy dla każdego boku wysykość o którą będziemy skracać
-        foreach (cAssemblyItem pAssemblyItem in pAssembly_Virtual.AssemblyItems.Values) {
-          pIdx = pAssemblyItem.Index;
-          pPolygon = pAssemblyItem.Polygon;
+      foreach (cLine pLine in pCln.Values) {
+        foreach (cPolygon pPolygon in xPolygonsVirtual.Values) {
+          foreach (cAssemblyItem pAssemblyItem in pPolygon.Assembly.AssemblyItems.Values) {
+            pSegment_AI = pAssemblyItem.Polygon.Segments[3];
+            pLine_AssemblySegment = new cLine(pSegment_AI);
+            pLine_AssemblySegment.Simplify(pLine_AssemblySegment);
 
-          if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) { //jeśli przecinamy inny słupek
-            if (pIdx == 1 || pIdx == 2)
-              pHeight = (xMullionWidth / 2);
-            else
-              pHeight = -(xMullionWidth / 2);
-          } else                                                    //jeśli przecinamy profil
-            pHeight = (pPolygon.Segments[4].Point.Y - pPolygon.Segments[1].Point.Y);
+            pPointAI = pLine.Get_PointFromCrossLines(pLine_AssemblySegment);
 
-          //inicjujemy nowy, skrócony bok
-          pSegment_Base = xPolygon.Segments[pIdx];
-          pPoint = new cPoint(pSegment_Base.Point.X, pSegment_Base.Point.Y + pHeight);
-          pSegment = new cSegment(pPoint, pIdx, false, xPolygon);
+            if (xPolygonsMullion.Count != 0) {
+              foreach (cPolygon pPolygon_Mullion in xPolygonsMullion.Values) {
+                if (pPolygon_Mullion.IsInclude(pPointAI)) {                         //jeśli punkt należy do danego słupka i AI - pobieramy kolejny punkt
 
-          mPolygon.AddSegment(pSegment);
+                  pLine_Segment = new cLine(pPolygon_Mullion.Segments[2]);          //punkt z prawej strony danego słupka
+                  pLine_Segment.Simplify(pLine_Segment);
+                  pPointMullion = pLine.Get_PointFromCrossLines(pLine_Segment);
+
+                  if (xPolygon.IsInclude(pPointMullion)) {                          //jeśli punkt jest poza wielokątem tworzonego słupka
+                    pLine_Segment = new cLine(pPolygon_Mullion.Segments[5]);        //szukamy punktu z lewej strony danego słupka
+                    pLine_Segment.Simplify(pLine_Segment);
+                    pPointMullion = pLine.Get_PointFromCrossLines(pLine_Segment);
+
+                    pPoint_New = new cPoint(pPointMullion.X, pPointMullion.Y);
+                    pSegment_New = new cSegment(pPoint_New, pIdx);
+                    mPolygon.AddSegment(pSegment_New);
+                    pIdx++;
+                  }
+                } else {                  //punkt należy tylko do AI
+                  pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
+                  pSegment_New = new cSegment(pPoint_New, pIdx);
+                  mPolygon.AddSegment(pSegment_New);
+                  pIdx++;
+                }
+              }
+            } else {                  //punkt należy tylko do AI
+              if (pPointAI == null) continue;
+              pCheck = xPolygon.IsInclude(pPointAI);
+              if (!pCheck) continue;
+              pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
+              pSegment_New = new cSegment(pPoint_New, pIdx);
+              mPolygon.AddSegment(pSegment_New);
+              pIdx++;
+            }
+          }
         }
-      } else if (xMullionPosition_X == 0) {   //jeśli słupek jest poziomy
-        //obliczamy dla każdego boku szerokość o którą będziemy skracać
-        foreach (cAssemblyItem pAssemblyItem in pAssembly_Virtual.AssemblyItems.Values) {
-          pIdx = pAssemblyItem.Index;
-          pPolygon = pAssemblyItem.Polygon;
-
-          if (pPolygon.CntPF == PolygonFunctionalityEnum.Mullion) {   //jeśli przecinamy inny słupek
-            if (pIdx == 2 || pIdx == 3)
-              pWidth = -(xMullionWidth / 2);
-            else
-              pWidth = (xMullionWidth / 2);
-          } else                                                      //jeśli przecinamy profil
-            pWidth = (pPolygon.Segments[4].Point.X - pPolygon.Segments[1].Point.X);
-
-          //inicjujemy nowy, skrócony bok
-          pSegment_Base = xPolygon.Segments[pIdx];
-          pPoint = new cPoint(pSegment_Base.Point.X + pWidth, pSegment_Base.Point.Y);
-          pSegment = new cSegment(pPoint, pIdx, false, xPolygon);
-
-          mPolygon.AddSegment(pSegment);
-        }
-      } else { }
-
+      }
     }
 
     private cAssemblyItem GetAssemblyItem_Next() {

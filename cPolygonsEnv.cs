@@ -251,8 +251,8 @@ namespace DrawShape {
 
     }
 
-    internal void CreatePolygon_Mullion(Dictionary<int, cPolygon> xCln_Polygons, int xMullionPosition_X, int xMullionPosition_Y,
-                                        int xMullionWidth, float xWidth_Profile, int xC) {
+    internal void CreatePolygon_Mullion(Dictionary<int, cPolygon> xCln_PolygonsVirtual, Dictionary<int, cPolygon> xCln_PolygonsMullion,
+                                        int xMullionWidth, int xC) {
       //funkcja tworząca  wielokąt słupka - !!! Brakuje jeszcze AI !!!
       //xCln_Polygons - kolekcja wielokątów, z których będzie tworzony słupek
       //xMullionPosition_X - pozycja X słupka
@@ -267,13 +267,13 @@ namespace DrawShape {
 
       pPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
 
-      pPolygon.SetPolygonToMullion(xCln_Polygons, xMullionPosition_X, xMullionPosition_Y, xMullionWidth, xC);
+      pPolygon.SetPolygonToMullion(xCln_PolygonsVirtual, xCln_PolygonsMullion, xMullionWidth, xC);
 
-      pPolygon.Organize_Segments(pPolygon);
+      
 
       AddPolygon(pPolygon);
 
-      pPolygon.Parent = xCln_Polygons[1].Parent.Parent;
+      pPolygon.Parent = xCln_PolygonsVirtual[1].Parent.Parent; //rodzicem zostaje Outframe (rodzic wirtualki)
 
     }
 
@@ -327,53 +327,59 @@ namespace DrawShape {
 
 
     internal cPolygon GetPolygonVirtual_ByPoint(cPoint xPoint) {
+      //funkcja zwracająca wielokąt wirtualny za pomocą wskazanego punktu
+      //xPoint - punkt na płaszczyźnie do analizowania
 
       cPolygon pPolygon_Virtual;
-      cLine pLine_SegmentThis, pLine_SegmentBefore, pLine_SegmentToPoint;
-      cVector pVector_SegmentThis, pVector_SegmentBefore, pVector_SegmentToPoint;
-      double pAlfa, pBeta, pBeta2;
 
       pPolygon_Virtual = new cPolygon();
 
       foreach (cPolygon pPolygon in mPolygons.Values) {
-        if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue;
-        if (pPolygon.Child != null) continue;
+        if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue; //sprawdzamy tylko wirtualne
+        if (pPolygon.Child != null) continue;                                  //sprawdzamy bez wstawionych skrzydeł
 
-        foreach (cSegment pSegment in pPolygon.Segments.Values) {
-
-
-
-          pVector_SegmentBefore = new cVector(pSegment.Point, pSegment.Segment_Before.Point);
-          pVector_SegmentThis = new cVector(pSegment.Point, pSegment.Segment_Next.Point);
-          pVector_SegmentToPoint = new cVector(pSegment.Point, xPoint);
-
-          pAlfa = (Math.Acos(pVector_SegmentBefore.CosAlfa(pVector_SegmentBefore, pVector_SegmentThis))) * 180 / Math.PI;
-          pBeta = (Math.Acos(pVector_SegmentBefore.CosAlfa(pVector_SegmentBefore, pVector_SegmentToPoint))) * 180 / Math.PI;
-
-         // pAlfa = (Math.Acos(pCos)) * 180 / Math.PI;
-
-          /*          pLine_SegmentThis = new cLine(pSegment);
-                    pLine_SegmentThis.Simplify(pLine_SegmentThis);
-                    pLine_SegmentBefore = new cLine(pSegment.Segment_Before);
-                    pLine_SegmentBefore.Simplify(pLine_SegmentBefore);         
-                    pLine_SegmentToPoint = new cLine(pSegment.Point, xPoint);
-                    pLine_SegmentToPoint.Simplify(pLine_SegmentToPoint);*/
-
-          /*         pAlfa = pLine_SegmentThis.Get_Angle(pLine_SegmentBefore);
-                   pBeta = pLine_SegmentToPoint.Get_Angle(pLine_SegmentThis);
-                   pBeta2 = pLine_SegmentToPoint.Get_Angle(pLine_SegmentBefore);*/
-
-          if (pAlfa < pBeta) { }
-
+        pPolygon.IsInclude(xPoint); // sprawdzenie czy wielokąt zawiera w sobie punkt
+        {
+          //TODO
 
         }
-
-        Console.WriteLine();
-
       }
 
-
       return pPolygon_Virtual;
+
+    }
+
+    internal Dictionary<int, cPolygon> GetPolygonsMullion_Tangential_To_PolygonsVirtual(Dictionary<int, cPolygon> xCln_PolygonsVirtual) {
+      //funkcja zwracająca kolekcję wielokątów typu słupek, których oś symetrii jest styczna do boku wielokąta wirtualnego
+      //xLine - prosta względem której szukamy wielokątów
+
+      Dictionary<int, cPolygon> pCln;
+      cLine pLine, pLine_Axis_Symmetry;
+
+      pCln = new Dictionary<int, cPolygon>();
+
+      foreach (cPolygon pPolygonVirtual in xCln_PolygonsVirtual.Values) {
+        foreach (cPolygon pPolygon_Env in mPolygons.Values) {
+          if (pPolygon_Env.CntPF != PolygonFunctionalityEnum.Mullion) continue; //sprawdzamy tylko słupki
+          pLine_Axis_Symmetry = pPolygon_Env.AssemblyItem.Axis_Symmetry;
+
+          foreach (cSegment pSegment in pPolygonVirtual.Segments.Values) {
+            pLine = new cLine(pSegment);
+            pLine.Simplify(pLine);
+            if (pLine.IsCover(pLine_Axis_Symmetry)) {   //jeśli prosta pokrywa się z bokiem 
+              if (pCln.Count == 0)
+                pCln.Add(pPolygon_Env.Index, pPolygon_Env);
+
+              if (pCln.ContainsKey(pPolygon_Env.Index)) continue;     //jeśli słupek już jest dodany
+                  
+              pCln.Add(pPolygon_Env.Index, pPolygon_Env);
+
+            }
+          }
+        }
+      }
+
+      return pCln;
 
     }
 

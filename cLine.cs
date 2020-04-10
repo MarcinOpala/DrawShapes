@@ -230,7 +230,50 @@ namespace DrawShape {
         mC = Math.Round((mC / pMax), 3);
 
       } 
+    }
+
+    internal bool IsInclude(cPoint xPoint) {
+      //
+
+      double pDistanceToLine;
+      bool pCheck;
+
+      pDistanceToLine = ((mA * xPoint.X) + (mB * xPoint.Y) + mC);
+
+      if (pDistanceToLine >= -0.1 && pDistanceToLine <= 0.1) 
+        pCheck = true;
+
+      else pCheck = false;
+
+      return pCheck;
 
     }
+
+    internal int Get_IndexOf_PointNearest(cPoint xPoint, Dictionary<int, cPoint> xCln) {
+
+      Dictionary<int, double> pCln_Distance;
+      cVector pVector;
+      double pDistance;
+      int pIdx;
+
+      pIdx = 1;
+      pCln_Distance = new Dictionary<int, double>();
+
+      foreach (cPoint pPoint in xCln.Values) {
+        pVector = new cVector(xPoint, pPoint);
+        pDistance = pVector.Get_VectorLength();
+        pCln_Distance.Add(pIdx, pDistance);
+        pIdx++;
+
+      }
+
+      var pKeyR = pCln_Distance.OrderBy(kvp => kvp.Value).First();
+
+      return pKeyR.Key;
+
+    }
+
+
+
   }
 }

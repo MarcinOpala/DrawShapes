@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+
 namespace DrawShape {
 
   public class cVector {
@@ -170,6 +171,9 @@ namespace DrawShape {
       return pLength;
 
     }
+
+
+
 
   }
   
