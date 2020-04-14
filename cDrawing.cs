@@ -294,11 +294,14 @@ namespace DrawShape {
       if (pDrawingItem.CntDIF != DrawingItemFillingEnum.IsFilled) return;
 
       blueBrush = new SolidBrush(Color.White);              
-      pLinePoints = new PointF[4];
+      
       pIndex = 0;
+
+      pLinePoints = new PointF[pDrawingItem.DrawingSegments.Count];
 
       foreach (cDrawingSegment pDrawingSegment in pDrawingItem.DrawingSegments.Values) {
 
+       
         //przekształcam pozycję punktów według skali i punktu bazowego
         var pPoints = TransformPoints(pDrawingSegment.Segment, pDrawingSegment.Segment.Segment_Next, xScale, xPt_Base);
         pLinePoints[pIndex] = new PointF(pPoints.Pt_A.X, pPoints.Pt_A.Y);

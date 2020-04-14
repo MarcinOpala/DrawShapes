@@ -273,6 +273,33 @@ namespace DrawShape {
 
     }
 
+    internal cLine Get_Line_Joint(Dictionary<int, cPolygon> xCln_Polygon) {
+
+      cLine pLine_Axis_Symmetry;
+      cPolygon pPolygon_A, pPolygon_B;
+      cPoint pPoint;
+      Dictionary<int, cPoint> pCln_Point;
+      int pIdx;
+
+      pPolygon_A = xCln_Polygon[1];
+      pPolygon_B = xCln_Polygon[2];
+      pCln_Point = new Dictionary<int, cPoint>();
+      pIdx = 1;
+      
+      foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
+        foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
+          if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
+            pPoint = new cPoint(pSegment_A.Point.X, pSegment_A.Point.Y);
+            pCln_Point.Add(pIdx, pPoint);
+            pIdx++;
+          }
+        }
+      }
+      pLine_Axis_Symmetry = new cLine(pCln_Point[1], pCln_Point[2]); 
+
+
+      return pLine_Axis_Symmetry;
+    }
 
 
   }

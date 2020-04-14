@@ -129,11 +129,14 @@ namespace DrawShape {
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue; //sprawdzamy tylko wirtualne
         foreach (cSegment pSegment in pPolygon.Segments.Values) {
+          if (pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF == PolygonFunctionalityEnum.Mullion) continue;
           pLine = new cLine(pSegment);
           pLine.Simplify(pLine);
           if (pLine.IsCover(xLine)) {  //jeśli prosta pokrywa się z bokiem to dodajemy
             pCln.Add(pIdx, pPolygon);
+            pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
             pIdx++;
+
           }
         }
       }
@@ -262,18 +265,75 @@ namespace DrawShape {
       //xC - stała C słupka
 
       cPolygon pPolygon;
+      cAssemblyItem pAssemblyItem;
+      cSegment pSegment;
+      cLine pLine_Axis_Symmetry, pLine_Parallel_A, pLine_Parallel_B, pLine_SegmentVirtual;
+      int pIdx;
+      cPoint pPoint;
+      bool pCheck;
+      Dictionary<int, cLine> pCln_Line;
 
       pPolygon = new cPolygon();
+      pLine_Axis_Symmetry = new cLine();
 
+      pLine_Axis_Symmetry = pLine_Axis_Symmetry.Get_Line_Joint(xCln_PolygonsVirtual);
+      pLine_Parallel_A = pLine_Axis_Symmetry.Get_Parallel(-(xMullionWidth / 2));   //prosta równoległa odalona od osi słupka o szerokość
+      pLine_Parallel_B = pLine_Axis_Symmetry.Get_Parallel((xMullionWidth / 2));
+
+      pCln_Line = new Dictionary<int, cLine>();
+      pCln_Line.Add(1, pLine_Parallel_A);
+      pCln_Line.Add(2, pLine_Parallel_B);
+      pCln_Line.Add(3, pLine_Axis_Symmetry);
+      pIdx = 0;
+
+      foreach (cSegment pSegment_A in xCln_PolygonsVirtual[1].Segments.Values) {
+        foreach (cSegment pSegment_B in xCln_PolygonsVirtual[2].Segments.Values) {
+          if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
+            pSegment = new cSegment(pSegment_A.Point, pIdx + 20, false, pPolygon);    //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
+            pPolygon.AddSegment(pSegment);                                  //otrzymany punkt dodajemy do wielokąta słupka
+            pIdx++;
+          }
+        }
+      }
+
+      foreach (cPolygon pPolygon_Virtual in xCln_PolygonsVirtual.Values) {
+        foreach (cSegment pSegment_Virtual in pPolygon_Virtual.Segments.Values) {
+          foreach (cLine pLine in pCln_Line.Values) {
+            pPoint = new cPoint();
+            pLine_SegmentVirtual = new cLine(pSegment_Virtual);             //prosta pokrywająca się z bokiem
+            pLine_SegmentVirtual.Simplify(pLine_SegmentVirtual);      //uproszczenie równania
+
+            if (pLine.IsCover(pLine_SegmentVirtual)) {
+
+            }
+
+            //pobranie punktu przecięcia prostej i prostej_boku_wirtualnego
+            pPoint = pLine.Get_PointFromCrossLines(pLine_SegmentVirtual);
+            if (pPoint == null) continue;                           //jeśli prosta jest równoległa
+            pCheck = pPolygon_Virtual.IsInclude(pPoint);
+            if (!pCheck) continue;
+
+            pSegment = new cSegment(pPoint, pIdx + 20, false, pPolygon);             //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
+            pPolygon.AddSegment(pSegment);
+            pIdx++;
+          }
+        }
+      }
+
+      
       pPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
+      pPolygon.Parent = xCln_PolygonsVirtual[1].Parent.Parent;
+      pPolygon.Organize_Segments(pPolygon);
 
-      pPolygon.SetPolygonToMullion(xCln_PolygonsVirtual, xCln_PolygonsMullion, xMullionWidth, xC);
+      pAssemblyItem = new cAssemblyItem();
+      pPolygon.AssemblyItem = pAssemblyItem;
+      pAssemblyItem.CreateAssemblyItem_Mullion(pPolygon, xCln_PolygonsVirtual, xCln_PolygonsMullion, pCln_Line, xC);
+      pAssemblyItem.Axis_Symmetry = pLine_Axis_Symmetry;
 
       
 
-      AddPolygon(pPolygon);
 
-      pPolygon.Parent = xCln_PolygonsVirtual[1].Parent.Parent; //rodzicem zostaje Outframe (rodzic wirtualki)
+      AddPolygon(pPolygon);
 
     }
 
@@ -382,6 +442,9 @@ namespace DrawShape {
       return pCln;
 
     }
+
+
+
 
   }
 }

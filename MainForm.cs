@@ -231,6 +231,8 @@ namespace DrawShape {
         //utworzenie słupka na bazie wirtualnych wielokątów, w których się znajduje
         mProject.PolygonsEnv.CreatePolygon_Mullion(pCln_Polygons_Tangential, pCln_Polygons_Mullion, pWidth_Mullion, pC_Mullion);
 
+        pCln_Polygons_Tangential.Clear();
+        pCln_Polygons_Mullion.Clear();
       }
 
       //punkty tworzące oś słupka są już nie potrzebne

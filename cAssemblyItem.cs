@@ -148,7 +148,7 @@ namespace DrawShape {
     }
 
     internal void CreateAssemblyItem_Mullion(cPolygon xPolygon, Dictionary<int, cPolygon> xPolygonsVirtual,
-                                             Dictionary<int, cPolygon> xPolygonsMullion, int xC) {
+                                             Dictionary<int, cPolygon> xPolygonsMullion, Dictionary<int, cLine> xCln_Line, int xC) {
       // !!! TO EDIT !!! - obecnie nie działa
       //funkcja tworząca AssemblyItem - kształt słupka (xPolygon skrócony o szerokość profilu / słupka)
       //xPolygon - wielokąt bazowy słupka
@@ -168,7 +168,7 @@ namespace DrawShape {
       mC = xC;
       mPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
 
-      pLine_1 = new cLine(xPolygon.Segments[2]);
+/*      pLine_1 = new cLine(xPolygon.Segments[2]);
       pLine_1.Simplify(pLine_1);
       pLine_2 = new cLine(xPolygon.Segments[1].Point, xPolygon.Segments[4].Point);
       pLine_2.Simplify(pLine_2);
@@ -178,10 +178,10 @@ namespace DrawShape {
       pCln = new Dictionary<int, cLine>();
       pCln.Add(1, pLine_1);
       pCln.Add(2, pLine_2);
-      pCln.Add(3, pLine_3);
-      pIdx = 1;
+      pCln.Add(3, pLine_3);*/
+      pIdx = 20;
 
-      foreach (cLine pLine in pCln.Values) {
+      foreach (cLine pLine in xCln_Line.Values) {
         foreach (cPolygon pPolygon in xPolygonsVirtual.Values) {
           foreach (cAssemblyItem pAssemblyItem in pPolygon.Assembly.AssemblyItems.Values) {
             pSegment_AI = pAssemblyItem.Polygon.Segments[3];
@@ -204,29 +204,31 @@ namespace DrawShape {
                     pPointMullion = pLine.Get_PointFromCrossLines(pLine_Segment);
 
                     pPoint_New = new cPoint(pPointMullion.X, pPointMullion.Y);
-                    pSegment_New = new cSegment(pPoint_New, pIdx);
+                    pSegment_New = new cSegment(pPoint_New, pIdx, false, mPolygon);
                     mPolygon.AddSegment(pSegment_New);
                     pIdx++;
                   }
                 } else {                  //punkt należy tylko do AI
                   pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
-                  pSegment_New = new cSegment(pPoint_New, pIdx);
+                  pSegment_New = new cSegment(pPoint_New, pIdx, false, mPolygon);
                   mPolygon.AddSegment(pSegment_New);
                   pIdx++;
                 }
               }
             } else {                  //punkt należy tylko do AI
               if (pPointAI == null) continue;
-              pCheck = xPolygon.IsInclude(pPointAI);
+              pCheck = pPolygon.IsInclude(pPointAI);
               if (!pCheck) continue;
               pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
-              pSegment_New = new cSegment(pPoint_New, pIdx);
+              pSegment_New = new cSegment(pPoint_New, pIdx, false, mPolygon);
               mPolygon.AddSegment(pSegment_New);
               pIdx++;
             }
           }
         }
       }
+      mPolygon.Organize_Segments(mPolygon);
+
     }
 
     private cAssemblyItem GetAssemblyItem_Next() {

@@ -25,7 +25,7 @@ namespace DrawShape {
     private Dictionary<int, cSegment> mSegments;            //lista boków
 
     internal cAssembly Assembly { get { return mAssembly; } }
-    internal cAssemblyItem AssemblyItem { get { return mAssemblyItem; } }
+    internal cAssemblyItem AssemblyItem { get { return mAssemblyItem; } set { mAssemblyItem = value; } }
     internal cPolygon Child { get { return mChild; } set { mChild = value; } }
     internal PolygonFunctionalityEnum CntPF { get { return mCntPF; } set { mCntPF = value; } } 
     internal int Index { get { return mIndex; } set { mIndex = value; } }
@@ -184,90 +184,6 @@ namespace DrawShape {
 
       return pPolygon;
 
-    }
-
-    internal void SetPolygonToMullion(Dictionary<int, cPolygon> xCln_PolygonsVirtual, Dictionary<int, cPolygon> xCln_PolygonsMullion, 
-                                      int xMullionWidth, int xC) {
-      //funkcja ustawiająca poszczególne parametry wielokąta na typowe dla słupka
-      //xCln_Polygons - kolekcja wielokątów wirtualnych pokrywających się z osią słupka
-      //xMullionPosition_X - 
-      //xMullionPosition_Y - 
-      //xMullionWidth - szerokość słupka
-      //xC - stała C dla słupka
-
-      cAssemblyItem pAssemblyItem;
-      cSegment pSegment;
-      cPolygon pPolygon_A, pPolygon_B;
-      cLine pLine, pLine_Parallel_A, pLine_Parallel_B, pLine_SegmentVirtual;
-      int pIdx;
-      cPoint pPoint;
-      bool pCheck;
-
-      pPolygon_A = xCln_PolygonsVirtual[1];
-      pPolygon_B = xCln_PolygonsVirtual[2];
-      pIdx = 0;
-      
-      //pobranie punktów wspólnych z dwóch wielokątów wirtualnych
-      foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
-        foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
-          if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
-            pSegment = new cSegment(pSegment_A.Point, pIdx+20);    //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
-            AddSegment(pSegment);                                  //otrzymany punkt dodajemy do wielokąta słupka
-            pSegment.Polygon_Parent = this;
-            pIdx++;
-          }
-        }
-      }
-      pLine = new cLine(mSegments[20].Point, mSegments[21].Point); //prosta będąca osią słupka
-
-      //dodanie nowych boków do wielokąta słupka na podstawie pPolygon_A
-      foreach (cSegment pSegment_A in pPolygon_A.Segments.Values) {
-        pPoint = new cPoint();
-        pLine_SegmentVirtual = new cLine(pSegment_A);             //prosta pokrywająca się z bokiem
-        pLine_SegmentVirtual.Simplify(pLine_SegmentVirtual);      //uproszczenie równania
-
-        pLine_Parallel_A = pLine.Get_Parallel(-(xMullionWidth/2));   //prosta równoległa odalona od osi słupka o szerokość
-        pLine_Parallel_A.Simplify(pLine_Parallel_A);
-
-        //pobranie punktu przecięcia prostej_równoległej i prostej_boku_wirtualnego
-        pPoint = pLine_Parallel_A.Get_PointFromCrossLines(pLine_SegmentVirtual); 
-        if (pPoint == null) continue;                           //jeśli prosta jest równoległa
-        pCheck = pPolygon_A.IsInclude(pPoint);
-        if (!pCheck) continue;
-
-        pSegment = new cSegment(pPoint, pIdx+20);             //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
-        AddSegment(pSegment);
-        pSegment.Polygon_Parent = this;
-        pIdx++;
-      }
-      //dodanie nowych boków do wielokąta słupka na podstawie pPolygon_B - (działanie jak pPolygon_A)
-      foreach (cSegment pSegment_B in pPolygon_B.Segments.Values) {
-        pPoint = new cPoint();
-        pLine_SegmentVirtual = new cLine(pSegment_B);
-        pLine_SegmentVirtual.Simplify(pLine_SegmentVirtual);
-
-        pLine_Parallel_B = pLine.Get_Parallel((xMullionWidth/2));
-
-        pPoint = pLine_Parallel_B.Get_PointFromCrossLines(pLine_SegmentVirtual);
-        if (pPoint == null) continue;                           //jeśli prosta jest równoległa
-        pCheck = pPolygon_B.IsInclude(pPoint);
-        if (!pCheck) continue;
-
-        pSegment = new cSegment(pPoint, pIdx+20);
-        pSegment.Polygon_Parent = this;
-        AddSegment(pSegment);
-        pIdx++;
-      }
-
-      mParent = xCln_PolygonsVirtual[1].Parent.Parent;       //utworzenie rodzica jako kopia - potrzebne do Organize_Segments()
-      Organize_Segments(this);
-
-      //this.Parent = xCln_PolygonsVirtual[1].Parent.Parent;
-      pAssemblyItem = new cAssemblyItem();
-      //pAssemblyItem.CreateAssemblyItem_Mullion(this, xCln_PolygonsVirtual, xCln_PolygonsMullion, xC);
-      pAssemblyItem.Axis_Symmetry = pLine;
-
-      mAssemblyItem = pAssemblyItem;
     }
 
     internal void AddChild() {
@@ -429,101 +345,85 @@ namespace DrawShape {
       //Pierwszy najbliższy (0; 0), kolejne przeciwnie do ruchu zegara 
       //xPolygon - wielokąt do uporządkowania
 
-      double pDistance;
+      double pAlfa, pCosAlfa;
       Dictionary<int, cPoint> pCln_Points;
-      int pIdx_Cln_Points; 
-      int pIdx_NewSegment;
-      cSegment pSegment;
+      Dictionary<int, double> pCln_Angle;
+      Dictionary<int, Tuple<double, double>> pCln;
+      cSegment pSegment_New;
+      cVector pVectorToPoint, pVectorOX;
+      cPoint pBasePoint;
       int pCountSegments;
-      cLine pLine;
       int pIdx;
+      double pLength;
+      Tuple<double, double> pTuple;
 
       //dodajemy do listy wszystkie punkty wielokąta
       pCln_Points = new Dictionary<int, cPoint>();
       foreach (cSegment pSegment_Base in xPolygon.Segments.Values) {
         pCln_Points[pSegment_Base.Index] = pSegment_Base.Point;
+
       }
 
-      pIdx_NewSegment = 1;
+      var pBasePt = pCln_Points.OrderBy(x => x.Value.Y).ThenBy(x => x.Value.X).First();
 
-      //sprawdzam tylko outframe, trzeba szukać po wirtualnych??
-
-
-      foreach (cSegment pSegment_Parent in xPolygon.Parent.Segments.Values) {
-
-        foreach (cPoint pPoint in pCln_Points.Values) {   
-          pLine = new cLine(pSegment_Parent);
-          pLine.Simplify(pLine);
-
-          if (pLine.IsInclude(pPoint)) {
-
-            pIdx = pLine.Get_IndexOf_PointNearest(pSegment_Parent.Point, pCln_Points);
-
-            pSegment = xPolygon.Segments[pCln_Points.Keys.ElementAt(pIdx)];
-            xPolygon.Segments.Add(pIdx_NewSegment, pSegment);
-            pCln_Points.Remove(pCln_Points.Keys.ElementAt(pIdx));
-            pIdx_NewSegment++;
-
-          }
-
-
-
-
-        }
-      }
-
-
-
-
-
-
-        //wybieramy pierwszy punkt (położony najbliżej 0;0 ) i usuwamy go z listy
-        pIdx_NewSegment = 1;
-      var dict = pCln_Points.OrderBy(x => x.Value.Y).ThenBy(x => x.Value.X).ToDictionary(x => x.Key, x => x.Value);   //sortowanie listy: najmniejszy X, Y
-     
-      xPolygon.Segments.Add(pIdx_NewSegment, xPolygon.Segments[dict.Keys.First()]);
-      pCln_Points.Remove(dict.Keys.First());
+      pBasePoint = new cPoint(pBasePt.Value.X, pBasePt.Value.Y);
+      pVectorOX = new cVector(pBasePoint, new cPoint (pBasePoint.X+1, pBasePoint.Y));
+      pCln_Angle = new Dictionary<int, double>();
+      pCln = new Dictionary<int, Tuple<double, double>>();
       
-      pIdx_NewSegment++;
-      //boki numerujemy zgodnie z kolejnością jak u rodzica
-      foreach (cSegment pSegment_Parent in xPolygon.Parent.Segments.Values) {
-        pIdx_Cln_Points = 0;
-        foreach (cPoint pPoint in pCln_Points.Values) {   //każdy punkt sprawdzam, czy należy do danego boku rodzica
-          pIdx_Cln_Points++;
-          if (pPoint.X == pSegment_Parent.Point.X && pPoint.Y == pSegment_Parent.Point.Y) { //jeśli punkt pokrywa się
-            pSegment = xPolygon.Segments[pCln_Points.Keys.ElementAt(pIdx_Cln_Points-1)];
-            xPolygon.Segments.Add(pIdx_NewSegment, pSegment);
-            pCln_Points.Remove(pCln_Points.Keys.ElementAt(pIdx_Cln_Points-1));   //usuwam znaleziony punkt z listy
-            
-            pIdx_NewSegment++;
-            break;
-          }
-        }
-        pIdx_Cln_Points = 0;
-        foreach (cPoint pPoint in pCln_Points.Values) {  //każdy punkt z listy sprawdzamy, czy leży na prostej
-          pIdx_Cln_Points++;
-          pLine = new cLine(pSegment_Parent);
-          pLine.Simplify(pLine);
-          pDistance = pLine.Get_DistanceToLine(pPoint);
 
-          if (pDistance >= -0.1 && pDistance <= 0.1) {        //jeśli prawda to pPoint leży na prostej
-            pSegment = xPolygon.Segments[pCln_Points.Keys.ElementAt(pIdx_Cln_Points - 1)];
-            xPolygon.Segments.Add(pIdx_NewSegment, pSegment);
-            pCln_Points.Remove(pCln_Points.Keys.ElementAt(pIdx_Cln_Points - 1));  //usuwamy znaleziony punkt z listy
+      pIdx = 1;
+      pSegment_New = xPolygon.Segments[pBasePt.Key];
+      pSegment_New.Index = pIdx;
+      xPolygon.Segments.Add(pIdx, pSegment_New);
+      pCln_Points.Remove(pBasePt.Key);
 
-            pIdx_NewSegment++;
-            break;
-          }
-        }
+      foreach (cPoint pPoint in pCln_Points.Values) {
+        pVectorToPoint = new cVector(pBasePoint, pPoint);
+        pCosAlfa = pVectorOX.CosAlfa(pVectorOX, pVectorToPoint);
+        pAlfa = (Math.Acos(pCosAlfa)) * 180 / Math.PI;
+        pLength = pVectorToPoint.Vector.Length;
+        pTuple = new Tuple<double, double>(pAlfa, pLength);
+
+        pCln.Add(pIdx, pTuple);
+        pCln_Angle.Add(pIdx, pAlfa);
+        pIdx++;
+
       }
+
+
+      pIdx = 1;
+
+      pIdx++;
+
+      var pSortedAngle = pCln_Angle.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+      var pSortCLN = pCln.OrderBy(x => x.Value.Item1).ThenBy(x => x.Value.Item2).ToDictionary(x => x.Key, x => x.Value);
+
+      foreach (int i in pSortCLN.Keys) {
+
+
+
+        pSegment_New = xPolygon.Segments[pCln_Points.Keys.ElementAt(i-1)];
+        pSegment_New.Index = pIdx;
+        xPolygon.Segments.Add(pIdx, pSegment_New);
+        pIdx++;
+
+      }
+      foreach (cSegment pSegment in xPolygon.Segments.Values) {
+        
+
+      }
+
+
       pCountSegments = xPolygon.Segments.Count / 2;
+      for (int i = 1; i <= pCountSegments; i++) {  
+        xPolygon.Segments.Remove(xPolygon.Segments.Keys.ElementAt(0));
 
-      for (int i = 1; i <= pCountSegments; i++) {  // usuwamy niepotrzebne boki
-        xPolygon.Segments.Remove(i+19);
-        xPolygon.Segments[i].Index = i;
       }
+      
     }
-
+      
     internal bool IsInclude(cPoint xPoint) {
       //
 
@@ -554,6 +454,6 @@ namespace DrawShape {
       return pCheck;
 
     }
-  }
 
+  }
 }
