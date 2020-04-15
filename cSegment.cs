@@ -41,6 +41,17 @@ namespace DrawShape {
 
     }
 
+    public cSegment(cPoint xPoint, int xIndex, cPolygon xPolygon_Parent) {
+      //xPoint - pierwszy punkt danego cSegmentu
+      //xIndex - numer danego cSegmentu
+      //xPolygon_Parent - ustawienie rodzica
+
+      mPoint = new cPoint(xPoint.X, xPoint.Y);
+      mIndex = xIndex;
+      mPolygon_Parent = xPolygon_Parent;
+
+    }
+
     public cSegment(cPoint xPoint, int xIndex, bool xIsCurve, cPolygon xPolygon_Parent) {
       //xPoint - pierwszy punkt danego cSegmentu
       //xIndex - numer danego cSegmentu

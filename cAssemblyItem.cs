@@ -157,72 +157,74 @@ namespace DrawShape {
       //xMullionPosition_X - pozycja słupka X
       //xMullionPosition_Y - pozycja słupka Y
 
-      cLine pLine_1, pLine_2, pLine_3, pLine_Segment, pLine_AssemblySegment;
-      Dictionary<int, cLine> pCln;
+      cLine pLine_Mullion, pLine_AssemblySegment_1, pLine_AssemblySegment_3;
       cPoint pPointAI, pPointMullion, pPoint_New;
-      cSegment pSegment_New, pSegment_AI;
+      cSegment pSegment_New, pSegment_AI_1, pSegment_AI_3;
       int pIdx;
-      bool pCheck;
+      bool pCheck_Mullion, pCheck_AI, pCheck_Virtual;
 
       mPolygon.Parent = xPolygon;
       mC = xC;
       mPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
 
-/*      pLine_1 = new cLine(xPolygon.Segments[2]);
-      pLine_1.Simplify(pLine_1);
-      pLine_2 = new cLine(xPolygon.Segments[1].Point, xPolygon.Segments[4].Point);
-      pLine_2.Simplify(pLine_2);
-      pLine_3 = new cLine(xPolygon.Segments[5]);
-      pLine_3.Simplify(pLine_3);
-
-      pCln = new Dictionary<int, cLine>();
-      pCln.Add(1, pLine_1);
-      pCln.Add(2, pLine_2);
-      pCln.Add(3, pLine_3);*/
       pIdx = 20;
 
       foreach (cLine pLine in xCln_Line.Values) {
-        foreach (cPolygon pPolygon in xPolygonsVirtual.Values) {
-          foreach (cAssemblyItem pAssemblyItem in pPolygon.Assembly.AssemblyItems.Values) {
-            pSegment_AI = pAssemblyItem.Polygon.Segments[3];
-            pLine_AssemblySegment = new cLine(pSegment_AI);
-            pLine_AssemblySegment.Simplify(pLine_AssemblySegment);
+        foreach (cPolygon pPolygon_Virtual in xPolygonsVirtual.Values) {
+          foreach (cAssemblyItem pAssemblyItem in pPolygon_Virtual.Assembly.AssemblyItems.Values) {
+          
 
-            pPointAI = pLine.Get_PointFromCrossLines(pLine_AssemblySegment);
+            pSegment_AI_3 = pAssemblyItem.Polygon.Segments[3];
+            pLine_AssemblySegment_3 = new cLine(pSegment_AI_3);
+            pLine_AssemblySegment_3.Simplify(pLine_AssemblySegment_3);
+
+            pSegment_AI_1 = pAssemblyItem.Polygon.Segments[1];
+            pLine_AssemblySegment_1 = new cLine(pSegment_AI_1);
+            pLine_AssemblySegment_1.Simplify(pLine_AssemblySegment_1);
+
+            pPointAI = pLine.Get_PointFromCrossLines(pLine_AssemblySegment_3);
 
             if (xPolygonsMullion.Count != 0) {
-              foreach (cPolygon pPolygon_Mullion in xPolygonsMullion.Values) {
-                if (pPolygon_Mullion.IsInclude(pPointAI)) {                         //jeśli punkt należy do danego słupka i AI - pobieramy kolejny punkt
+              if (pAssemblyItem.Polygon.CntPF == PolygonFunctionalityEnum.Mullion) {
+                foreach (cPolygon pPolygon_Mullion in xPolygonsMullion.Values) {
+                  if (pLine_AssemblySegment_1.IsCover(pPolygon_Mullion.AssemblyItem.Axis_Symmetry)) {
+                    foreach (cSegment pSegment in pPolygon_Mullion.AssemblyItem.Polygon.Segments.Values) {
+                      pLine_Mullion = new cLine(pSegment);
+                      pPointMullion = pLine.Get_PointFromCrossLines(pLine_Mullion);
 
-                  pLine_Segment = new cLine(pPolygon_Mullion.Segments[2]);          //punkt z prawej strony danego słupka
-                  pLine_Segment.Simplify(pLine_Segment);
-                  pPointMullion = pLine.Get_PointFromCrossLines(pLine_Segment);
+                      pCheck_Virtual = pPolygon_Virtual.IsInclude(pPointMullion);
+                      if (!pCheck_Virtual) continue;
 
-                  if (xPolygon.IsInclude(pPointMullion)) {                          //jeśli punkt jest poza wielokątem tworzonego słupka
-                    pLine_Segment = new cLine(pPolygon_Mullion.Segments[5]);        //szukamy punktu z lewej strony danego słupka
-                    pLine_Segment.Simplify(pLine_Segment);
-                    pPointMullion = pLine.Get_PointFromCrossLines(pLine_Segment);
+                      pPoint_New = new cPoint(pPointMullion.X, pPointMullion.Y);
+                      pSegment_New = new cSegment(pPoint_New, pIdx, mPolygon);
+                      mPolygon.AddSegment(pSegment_New);
+                      pIdx++;
+                      break;
 
-                    pPoint_New = new cPoint(pPointMullion.X, pPointMullion.Y);
-                    pSegment_New = new cSegment(pPoint_New, pIdx, false, mPolygon);
-                    mPolygon.AddSegment(pSegment_New);
-                    pIdx++;
+                    }
                   }
-                } else {                  //punkt należy tylko do AI
-                  pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
-                  pSegment_New = new cSegment(pPoint_New, pIdx, false, mPolygon);
-                  mPolygon.AddSegment(pSegment_New);
-                  pIdx++;
                 }
+              } else {
+                if (pPointAI == null) continue;
+                pCheck_Virtual = pPolygon_Virtual.IsInclude(pPointAI);
+                if (!pCheck_Virtual) continue;
+
+                pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
+                pSegment_New = new cSegment(pPoint_New, pIdx, mPolygon);
+                mPolygon.AddSegment(pSegment_New);
+                pIdx++;
+
               }
             } else {                  //punkt należy tylko do AI
               if (pPointAI == null) continue;
-              pCheck = pPolygon.IsInclude(pPointAI);
-              if (!pCheck) continue;
+              pCheck_Virtual = pPolygon_Virtual.IsInclude(pPointAI);
+              if (!pCheck_Virtual) continue;
+
               pPoint_New = new cPoint(pPointAI.X, pPointAI.Y);
-              pSegment_New = new cSegment(pPoint_New, pIdx, false, mPolygon);
+              pSegment_New = new cSegment(pPoint_New, pIdx, mPolygon);
               mPolygon.AddSegment(pSegment_New);
               pIdx++;
+
             }
           }
         }

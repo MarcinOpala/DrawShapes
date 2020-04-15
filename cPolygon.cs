@@ -347,12 +347,11 @@ namespace DrawShape {
 
       double pAlfa, pCosAlfa;
       Dictionary<int, cPoint> pCln_Points;
-      Dictionary<int, double> pCln_Angle;
       Dictionary<int, Tuple<double, double>> pCln;
       cSegment pSegment_New;
       cVector pVectorToPoint, pVectorOX;
       cPoint pBasePoint;
-      int pCountSegments;
+      int pCount;
       int pIdx;
       double pLength;
       Tuple<double, double> pTuple;
@@ -363,65 +362,45 @@ namespace DrawShape {
         pCln_Points[pSegment_Base.Index] = pSegment_Base.Point;
 
       }
-
       var pBasePt = pCln_Points.OrderBy(x => x.Value.Y).ThenBy(x => x.Value.X).First();
 
       pBasePoint = new cPoint(pBasePt.Value.X, pBasePt.Value.Y);
       pVectorOX = new cVector(pBasePoint, new cPoint (pBasePoint.X+1, pBasePoint.Y));
-      pCln_Angle = new Dictionary<int, double>();
       pCln = new Dictionary<int, Tuple<double, double>>();
       
-
       pIdx = 1;
-      pSegment_New = xPolygon.Segments[pBasePt.Key];
-      pSegment_New.Index = pIdx;
-      xPolygon.Segments.Add(pIdx, pSegment_New);
-      pCln_Points.Remove(pBasePt.Key);
-
       foreach (cPoint pPoint in pCln_Points.Values) {
         pVectorToPoint = new cVector(pBasePoint, pPoint);
         pCosAlfa = pVectorOX.CosAlfa(pVectorOX, pVectorToPoint);
-        pAlfa = (Math.Acos(pCosAlfa)) * 180 / Math.PI;
+        pAlfa = Math.Round(((Math.Acos(pCosAlfa)) * 180 / Math.PI), 4);
         pLength = pVectorToPoint.Vector.Length;
         pTuple = new Tuple<double, double>(pAlfa, pLength);
 
         pCln.Add(pIdx, pTuple);
-        pCln_Angle.Add(pIdx, pAlfa);
         pIdx++;
 
       }
+      var pSortCLN = pCln.OrderBy(x => x.Value.Item1).ThenBy(x => x.Value.Item2).ToDictionary(x => x.Key, x => x.Value);
+      pCount = pSortCLN.Values.Count;
 
+      if (pSortCLN.Values.ElementAt(pCount - 1).Item1 == pSortCLN.Values.ElementAt(pCount - 2).Item1 &&
+          pSortCLN.Values.ElementAt(pCount - 1).Item2 > pSortCLN.Values.ElementAt(pCount - 2).Item2)
+
+      pSortCLN = pCln.OrderBy(x => x.Value.Item1).ThenByDescending(x => x.Value.Item2).ToDictionary(x => x.Key, x => x.Value);
 
       pIdx = 1;
-
-      pIdx++;
-
-      var pSortedAngle = pCln_Angle.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-
-      var pSortCLN = pCln.OrderBy(x => x.Value.Item1).ThenBy(x => x.Value.Item2).ToDictionary(x => x.Key, x => x.Value);
-
       foreach (int i in pSortCLN.Keys) {
-
-
-
         pSegment_New = xPolygon.Segments[pCln_Points.Keys.ElementAt(i-1)];
         pSegment_New.Index = pIdx;
         xPolygon.Segments.Add(pIdx, pSegment_New);
         pIdx++;
 
       }
-      foreach (cSegment pSegment in xPolygon.Segments.Values) {
-        
-
-      }
-
-
-      pCountSegments = xPolygon.Segments.Count / 2;
-      for (int i = 1; i <= pCountSegments; i++) {  
+      pCount = xPolygon.Segments.Count / 2;
+      for (int i = 1; i <= pCount; i++) {  
         xPolygon.Segments.Remove(xPolygon.Segments.Keys.ElementAt(0));
 
       }
-      
     }
       
     internal bool IsInclude(cPoint xPoint) {
@@ -440,8 +419,8 @@ namespace DrawShape {
         pVector_SegmentThis = new cVector(pSegment.Point, pSegment.Segment_Next.Point);
         pVector_SegmentToPoint = new cVector(pSegment.Point, xPoint);
 
-        pAlfa = (Math.Acos(pVector_SegmentBefore.CosAlfa(pVector_SegmentBefore, pVector_SegmentThis))) * 180 / Math.PI;
-        pBeta = (Math.Acos(pVector_SegmentBefore.CosAlfa(pVector_SegmentBefore, pVector_SegmentToPoint))) * 180 / Math.PI;
+        pAlfa = Math.Round((Math.Acos(pVector_SegmentBefore.CosAlfa(pVector_SegmentBefore, pVector_SegmentThis)) * 180 / Math.PI), 4);
+        pBeta = Math.Round((Math.Acos(pVector_SegmentBefore.CosAlfa(pVector_SegmentBefore, pVector_SegmentToPoint)) * 180 / Math.PI), 4);
 
         if (pAlfa >= pBeta)
           pCheck = true;

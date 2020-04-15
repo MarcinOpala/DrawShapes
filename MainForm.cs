@@ -220,11 +220,8 @@ namespace DrawShape {
         
       foreach(cPolygon pPolygon_Virtual in pCln_Polygons_Virtual.Values) {
 
-        //dzielimy wielokąt wirtualny prostą (oś słupka)
-        mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon_Virtual, pLine_Axis_Symetry_Mullion, pC_Mullion);
-
-        //pobranie wielokątów wirtualnych stycznych do osi symetrii słupka
-        pCln_Polygons_Tangential = mProject.PolygonsEnv.GetPolygonsVirtual_Tangential_To_AxisSymmetry(pLine_Axis_Symetry_Mullion);
+        //dzielimy wielokąt wirtualny prostą (oś słupka)      NAZAWA!!!!
+        pCln_Polygons_Tangential = mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon_Virtual, pLine_Axis_Symetry_Mullion, pC_Mullion);
 
         pCln_Polygons_Mullion = mProject.PolygonsEnv.GetPolygonsMullion_Tangential_To_PolygonsVirtual(pCln_Polygons_Tangential);
 
@@ -236,8 +233,7 @@ namespace DrawShape {
       }
 
       //punkty tworzące oś słupka są już nie potrzebne
-      pCln_Points.Remove(1);
-      pCln_Points.Remove(2);
+      pCln_Points.Clear();
      
       this.pnlCanvas.Refresh();
 

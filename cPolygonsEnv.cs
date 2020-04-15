@@ -35,17 +35,20 @@ namespace DrawShape {
 
     }
 
-    internal void SplitPolygonVirtual_ByLine(cPolygon xPolygon, cLine xLine, int xC_Mullion) {
+    internal Dictionary<int, cPolygon> SplitPolygonVirtual_ByLine(cPolygon xPolygon, cLine xLine, int xC_Mullion) {
       //funkcja dzieląca wielokąt wirtualny na dwa za pomocą prostej
       //xPolygon - wielokąt do podziału
       //xStraight - prosta dzieląca
       //xC_Mullion - stała C dla słupka
+
 
       Dictionary<int, cPolygon> pPolygons;
       cPolygon pPolygon_A, pPolygon_B;
       Dictionary<int, int> pC_Cln_A, pC_Cln_B;
       int pWidht_Profile;
       int pIdx;
+      cLine pLine_Segment;
+      bool pCheck;
 
       //szerokość profilu (dla wszystkich obiektów taka sama)
       pWidht_Profile = xPolygon.Assembly.AssemblyItems[1].Width_Profile;
@@ -54,8 +57,37 @@ namespace DrawShape {
       pPolygon_A = pPolygons[1];
       pPolygon_B = pPolygons[2];
 
+      pPolygon_A.Parent = xPolygon;
+      pPolygon_B.Parent = xPolygon;
+
       pC_Cln_A = Prepare_Cln_C(pPolygon_A, xLine, xC_Mullion);    //przygotowanie stałych C do wirtualanego Assembly
       pC_Cln_B = Prepare_Cln_C(pPolygon_B, xLine, xC_Mullion);
+
+
+
+      pPolygon_A.CreateAssembly(pWidht_Profile, pPolygon_A, pC_Cln_A);
+      pPolygon_B.CreateAssembly(pWidht_Profile, pPolygon_B, pC_Cln_B);
+
+      foreach (cPolygon pPolygon in pPolygons.Values) {
+        foreach (cSegment pSegment in pPolygon.Segments.Values) {
+          foreach (cPolygon pPolygon_Mullion in mPolygons.Values) {
+            if (pPolygon_Mullion.CntPF != PolygonFunctionalityEnum.Mullion) continue;
+
+            pLine_Segment = new cLine(pSegment);
+            pLine_Segment.Simplify(pLine_Segment);
+            pCheck = pLine_Segment.IsCover(pPolygon_Mullion.AssemblyItem.Axis_Symmetry);
+            if (pCheck)
+              pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
+
+
+          }
+          pLine_Segment = new cLine(pSegment);
+          pLine_Segment.Simplify(pLine_Segment);
+          pCheck = pLine_Segment.IsCover(xLine);
+          if (pCheck)
+            pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
+        }
+      }
 
       pIdx = xPolygon.Index;
       mPolygons.Remove(xPolygon.Index);
@@ -63,9 +95,7 @@ namespace DrawShape {
       AddPolygon(pIdx, pPolygon_B);
       AddPolygon(pPolygon_A);
 
-      pPolygon_A.CreateAssembly(pWidht_Profile, pPolygon_A, pC_Cln_A);
-      pPolygon_B.CreateAssembly(pWidht_Profile, pPolygon_B, pC_Cln_B);
-
+      return pPolygons;
     }
 
     internal int GetEmptyIndex() {
@@ -129,12 +159,12 @@ namespace DrawShape {
       foreach (cPolygon pPolygon in mPolygons.Values) {
         if (pPolygon.CntPF != PolygonFunctionalityEnum.FrameVirtual) continue; //sprawdzamy tylko wirtualne
         foreach (cSegment pSegment in pPolygon.Segments.Values) {
-          if (pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF == PolygonFunctionalityEnum.Mullion) continue;
+         // if (pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF == PolygonFunctionalityEnum.Mullion) continue;
           pLine = new cLine(pSegment);
           pLine.Simplify(pLine);
           if (pLine.IsCover(xLine)) {  //jeśli prosta pokrywa się z bokiem to dodajemy
             pCln.Add(pIdx, pPolygon);
-            pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
+            //pPolygon.Assembly.AssemblyItems[pSegment.Index].Polygon.CntPF = PolygonFunctionalityEnum.Mullion;
             pIdx++;
 
           }
@@ -165,6 +195,7 @@ namespace DrawShape {
           if (pLine_Segment.IsCover(xAxisSymmetry)) continue;   //jeśli prosta pokrywa się z bokiem szukamy dalej
 
           pPoint = pLine_Segment.Get_PointFromCrossLines(xAxisSymmetry);
+          if (pPoint == null) continue;
           if (pPoint.X >= pSegment.Segment_Next.Point.X && pPoint.X <= pSegment.Point.X || //jeśli punkt należy do wielokąta to dodajemy prostą
               pPoint.X <= pSegment.Segment_Next.Point.X && pPoint.X >= pSegment.Point.X) {
             if (pPoint.Y >= pSegment.Segment_Next.Point.Y && pPoint.Y <= pSegment.Point.Y ||
@@ -283,7 +314,7 @@ namespace DrawShape {
       pCln_Line = new Dictionary<int, cLine>();
       pCln_Line.Add(1, pLine_Parallel_A);
       pCln_Line.Add(2, pLine_Parallel_B);
-      pCln_Line.Add(3, pLine_Axis_Symmetry);
+      
       pIdx = 0;
 
       foreach (cSegment pSegment_A in xCln_PolygonsVirtual[1].Segments.Values) {
@@ -303,23 +334,18 @@ namespace DrawShape {
             pLine_SegmentVirtual = new cLine(pSegment_Virtual);             //prosta pokrywająca się z bokiem
             pLine_SegmentVirtual.Simplify(pLine_SegmentVirtual);      //uproszczenie równania
 
-            if (pLine.IsCover(pLine_SegmentVirtual)) {
-
-            }
-
             //pobranie punktu przecięcia prostej i prostej_boku_wirtualnego
             pPoint = pLine.Get_PointFromCrossLines(pLine_SegmentVirtual);
             if (pPoint == null) continue;                           //jeśli prosta jest równoległa
             pCheck = pPolygon_Virtual.IsInclude(pPoint);
             if (!pCheck) continue;
-
+             
             pSegment = new cSegment(pPoint, pIdx + 20, false, pPolygon);             //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
             pPolygon.AddSegment(pSegment);
             pIdx++;
           }
         }
       }
-
       
       pPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
       pPolygon.Parent = xCln_PolygonsVirtual[1].Parent.Parent;
@@ -327,11 +353,9 @@ namespace DrawShape {
 
       pAssemblyItem = new cAssemblyItem();
       pPolygon.AssemblyItem = pAssemblyItem;
+      pCln_Line.Add(3, pLine_Axis_Symmetry);
       pAssemblyItem.CreateAssemblyItem_Mullion(pPolygon, xCln_PolygonsVirtual, xCln_PolygonsMullion, pCln_Line, xC);
       pAssemblyItem.Axis_Symmetry = pLine_Axis_Symmetry;
-
-      
-
 
       AddPolygon(pPolygon);
 
@@ -366,7 +390,7 @@ namespace DrawShape {
 
       Dictionary<int, int> pC_Cln;
       int pIdx;
-      cLine pLine;
+      cLine pLine, pLine_Parent;
 
       pC_Cln = new Dictionary<int, int>();
 
@@ -375,12 +399,20 @@ namespace DrawShape {
       foreach (cSegment pSegment in xPolygon.Segments.Values) {
         pLine = new cLine(pSegment);
         pLine.Simplify(pLine);
-        if (pLine.IsCover(xAxis_Symmetry_Mullion)) //jeśli prosta pokrywa się z osią słupka wstawiamy C słupka
-          pC_Cln[pIdx] = xC_Mullion;
-        else
-          pC_Cln[pIdx] = xPolygon.Parent.Assembly.AssemblyItems[1].C;  //w innym przypadku C profilu
-        pIdx++;
+
+        foreach (cSegment pSegment_Parent in xPolygon.Parent.Segments.Values) {
+          pLine_Parent = new cLine(pSegment_Parent);
+          pLine_Parent.Simplify(pLine_Parent);
+
+          if (pLine.IsCover(xAxis_Symmetry_Mullion))          //jeśli prosta pokrywa się z osią słupka wstawiamy C słupka
+            pC_Cln[pSegment.Index] = xC_Mullion;
+
+          else if (pLine.IsCover(pLine_Parent))
+            pC_Cln[pSegment.Index] = xPolygon.Parent.Assembly.AssemblyItems[pSegment_Parent.Index].C;  
+
+        }
       }
+
       return pC_Cln;
 
       }
@@ -427,9 +459,6 @@ namespace DrawShape {
             pLine = new cLine(pSegment);
             pLine.Simplify(pLine);
             if (pLine.IsCover(pLine_Axis_Symmetry)) {   //jeśli prosta pokrywa się z bokiem 
-              if (pCln.Count == 0)
-                pCln.Add(pPolygon_Env.Index, pPolygon_Env);
-
               if (pCln.ContainsKey(pPolygon_Env.Index)) continue;     //jeśli słupek już jest dodany
                   
               pCln.Add(pPolygon_Env.Index, pPolygon_Env);
