@@ -119,6 +119,7 @@ namespace DrawShape {
       pPt_Base.X = (float)(mMarginH + (pnlCanvas.Width - 2 * mMarginH - pWidth * mScale) / 2);
       pPt_Base.Y = (float)(pnlCanvas.Height - (mMarginV + (pnlCanvas.Height - 2 * mMarginV - pHeight * mScale) / 2));
 
+      mProject.ProjectRegions.CreateProjectRegions(mProject.PolygonsEnv);
 
       mDrawingAdapter = new cDrawingAdapter();
       pDrawing = mDrawingAdapter.GetDrawing(mProject); 
@@ -132,6 +133,7 @@ namespace DrawShape {
             Console.WriteLine("\n"+pPoly.CntPF + " " + pPoly.Index);
             foreach (cSegment pseg in pPoly.Segments.Values) {
               Console.WriteLine(pseg.Index + ": (" + pseg.Point.X + " ; " + pseg.Point.Y + ")");
+
             }
           }
 
@@ -187,19 +189,14 @@ namespace DrawShape {
       int pC_Mullion;
       Dictionary<int, cPolygon> pCln_Polygons_Virtual, pCln_Polygons_Tangential, pCln_Polygons_Mullion;
       Dictionary<int, cPoint> pCln_Points;
-      int pMullionPosition_X, pMullionPosition_Y;
       cPoint pPoint;
       cPolygon pPolygon;
       cLine pLine_Axis_Symetry_Mullion;
       int pWidth_Mullion;
-      float pWidth_Profile;
 
       //pobieranie wartości Input z menu - settings
       pC_Mullion = int.Parse(txtCWidth_Mullion.Text);
-      pMullionPosition_X = int.Parse(txtMullionLocationX.Text);
-      pMullionPosition_Y = int.Parse(txtMullionLocationY.Text);
       pWidth_Mullion = int.Parse(txtMullionWidth.Text);
-      pWidth_Profile = float.Parse(txtProfileSize.Text);
 
       // TODO!!!
       //sprawdzenie czy słupek już w tym miejscu istnieje, graniczenia pozycji słupka 
@@ -209,7 +206,7 @@ namespace DrawShape {
 
       pPoint = pCln_Points[1];
 
-      //wybranie wielokąta wirtualnego po kliknięciu myszką
+      //wybranie wielokąta wirtualnego po kliknięciu myszką - !  Narazie nie jest to wykorzystywane  !
       pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_ByPoint(pPoint);
 
       pLine_Axis_Symetry_Mullion = new cLine(pCln_Points);
@@ -220,9 +217,10 @@ namespace DrawShape {
         
       foreach(cPolygon pPolygon_Virtual in pCln_Polygons_Virtual.Values) {
 
-        //dzielimy wielokąt wirtualny prostą (oś słupka)      NAZAWA!!!!
+        //dzielimy wielokąt wirtualny prostą (oś słupka) i dodajemy oba do kolekcji
         pCln_Polygons_Tangential = mProject.PolygonsEnv.SplitPolygonVirtual_ByLine(pPolygon_Virtual, pLine_Axis_Symetry_Mullion, pC_Mullion);
 
+        //pobieramy wszystkie słupki styczne do wybranych wielokątów wirtualnych
         pCln_Polygons_Mullion = mProject.PolygonsEnv.GetPolygonsMullion_Tangential_To_PolygonsVirtual(pCln_Polygons_Tangential);
 
         //utworzenie słupka na bazie wirtualnych wielokątów, w których się znajduje
@@ -232,7 +230,7 @@ namespace DrawShape {
         pCln_Polygons_Mullion.Clear();
       }
 
-      //punkty tworzące oś słupka są już nie potrzebne
+      //punkty tworzące oś słupka już można wyczyścić
       pCln_Points.Clear();
      
       this.pnlCanvas.Refresh();
@@ -475,7 +473,6 @@ namespace DrawShape {
       Console.WriteLine(pStr);
 
     }
-
 
     private void MouseMove(object sender, MouseEventArgs e) {
       //

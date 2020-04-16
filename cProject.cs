@@ -8,15 +8,20 @@ namespace DrawShape {
 
   public class cProject {
 
-    private cPolygonsEnv mPolygonsEnv;                      //lista poligonów w projekcie
+    private cPolygonsEnv mPolygonsEnv;                      //lista wielokątów w projekcie
+    private cProjectRegions mProjectRegions;                //lista regionów w projekcie
     private string mNe;                                     //nazwa projektu
 
     internal cPolygonsEnv PolygonsEnv { get { return mPolygonsEnv; } set { mPolygonsEnv = value; } }
+    internal cProjectRegions ProjectRegions { get { return mProjectRegions; } set { mProjectRegions = value; } }
     internal string Ne { get { return mNe; } set { mNe = value; } }
 
     public cProject() {
 
       mPolygonsEnv = new cPolygonsEnv();
+      mProjectRegions = new cProjectRegions();
+
+      
 
     }
 
@@ -40,6 +45,7 @@ namespace DrawShape {
 
       mPolygonsEnv.AddPolygon(pPolygon);
       
+
     }
 
     

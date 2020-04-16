@@ -287,12 +287,10 @@ namespace DrawShape {
 
     internal void CreatePolygon_Mullion(Dictionary<int, cPolygon> xCln_PolygonsVirtual, Dictionary<int, cPolygon> xCln_PolygonsMullion,
                                         int xMullionWidth, int xC) {
-      //funkcja tworząca  wielokąt słupka - !!! Brakuje jeszcze AI !!!
-      //xCln_Polygons - kolekcja wielokątów, z których będzie tworzony słupek
-      //xMullionPosition_X - pozycja X słupka
-      //xMullionPosition_Y - pozycja Y słupka
+      //funkcja tworząca  wielokąt słupka 
+      //xCln_PolygonsVirtual - kolekcja wielokątów wirtualnych stycznych do budowanego słupka
+      //xCln_PolygonsMullion - kolekcja wielokątów Słupek graniczących z wielokątami wirtualnymi
       //xMullionWidth - szerokość słupka
-      //xWidth_Profile - szerokość profilu
       //xC - stała C słupka
 
       cPolygon pPolygon;
@@ -307,40 +305,43 @@ namespace DrawShape {
       pPolygon = new cPolygon();
       pLine_Axis_Symmetry = new cLine();
 
-      pLine_Axis_Symmetry = pLine_Axis_Symmetry.Get_Line_Joint(xCln_PolygonsVirtual);
-      pLine_Parallel_A = pLine_Axis_Symmetry.Get_Parallel(-(xMullionWidth / 2));   //prosta równoległa odalona od osi słupka o szerokość
-      pLine_Parallel_B = pLine_Axis_Symmetry.Get_Parallel((xMullionWidth / 2));
+      pLine_Axis_Symmetry = pLine_Axis_Symmetry.Get_Line_Joint(xCln_PolygonsVirtual); //oś słupka
+      pLine_Parallel_A = pLine_Axis_Symmetry.Get_Parallel(-(xMullionWidth / 2));   //prosta równoległa odalona od osi słupka o -szerokość
+      pLine_Parallel_B = pLine_Axis_Symmetry.Get_Parallel((xMullionWidth / 2));    //prosta równoległa odalona od osi słupka o szerokość
 
       pCln_Line = new Dictionary<int, cLine>();
       pCln_Line.Add(1, pLine_Parallel_A);
       pCln_Line.Add(2, pLine_Parallel_B);
       
       pIdx = 0;
-
+      //do nowego wielokąta dodajemy punkty wspólne dla obu wielokątów wirtualnych
       foreach (cSegment pSegment_A in xCln_PolygonsVirtual[1].Segments.Values) {
         foreach (cSegment pSegment_B in xCln_PolygonsVirtual[2].Segments.Values) {
           if (pSegment_A.Point.X == pSegment_B.Point.X && pSegment_A.Point.Y == pSegment_B.Point.Y) {
-            pSegment = new cSegment(pSegment_A.Point, pIdx + 20, false, pPolygon);    //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
+            pSegment = new cSegment(pSegment_A.Point, pIdx + 20, pPolygon);    //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
             pPolygon.AddSegment(pSegment);                                  //otrzymany punkt dodajemy do wielokąta słupka
             pIdx++;
           }
         }
       }
-
+      //do wielokąta dodajemy punkty przecięcia wielokątów wirtualnych z prostymi rówoległymi do osi słupka 
       foreach (cPolygon pPolygon_Virtual in xCln_PolygonsVirtual.Values) {
         foreach (cSegment pSegment_Virtual in pPolygon_Virtual.Segments.Values) {
           foreach (cLine pLine in pCln_Line.Values) {
             pPoint = new cPoint();
-            pLine_SegmentVirtual = new cLine(pSegment_Virtual);             //prosta pokrywająca się z bokiem
-            pLine_SegmentVirtual.Simplify(pLine_SegmentVirtual);      //uproszczenie równania
+            pLine_SegmentVirtual = new cLine(pSegment_Virtual);           //prosta pokrywająca się z bokiem
+            pLine_SegmentVirtual.Simplify(pLine_SegmentVirtual);          //uproszczenie równania
 
-            //pobranie punktu przecięcia prostej i prostej_boku_wirtualnego
-            pPoint = pLine.Get_PointFromCrossLines(pLine_SegmentVirtual);
-            if (pPoint == null) continue;                           //jeśli prosta jest równoległa
+            pPoint = pLine.Get_PointFromCrossLines(pLine_SegmentVirtual); //pobranie punktu przecięcia prostej i prostej_boku_wirtualnego
+
+            if (pPoint == null) continue;                                 //jeśli prosta jest równoległa
             pCheck = pPolygon_Virtual.IsInclude(pPoint);
-            if (!pCheck) continue;
-             
-            pSegment = new cSegment(pPoint, pIdx + 20, false, pPolygon);             //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
+            if (!pCheck) {
+              pCheck = pPolygon_Virtual.IsInclude(pPoint);
+              continue;                                        //jeśli punkt przecięcia prostych leży poza figurą
+            
+            }
+            pSegment = new cSegment(pPoint, pIdx + 20, pPolygon);         //dodajemy 20 tylko dla łatwiejszego obliczania, ten bok zostanie później usunięty
             pPolygon.AddSegment(pSegment);
             pIdx++;
           }
@@ -349,11 +350,12 @@ namespace DrawShape {
       
       pPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
       pPolygon.Parent = xCln_PolygonsVirtual[1].Parent.Parent;
-      pPolygon.Organize_Segments(pPolygon);
+      pPolygon.Organize_Segments(pPolygon);                     //porządkujemy boki
+
+      pCln_Line.Add(3, pLine_Axis_Symmetry);    //do kolekcji prostych dodajemy oś słupka
 
       pAssemblyItem = new cAssemblyItem();
       pPolygon.AssemblyItem = pAssemblyItem;
-      pCln_Line.Add(3, pLine_Axis_Symmetry);
       pAssemblyItem.CreateAssemblyItem_Mullion(pPolygon, xCln_PolygonsVirtual, xCln_PolygonsMullion, pCln_Line, xC);
       pAssemblyItem.Axis_Symmetry = pLine_Axis_Symmetry;
 

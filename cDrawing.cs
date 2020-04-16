@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace DrawShape {
 
     private Dictionary<int, cDrawingItem> mDrawingItems;    //lista DrawingItems
 
-    internal Dictionary<int, cDrawingItem> DrawingItem { get { return mDrawingItems; } set { mDrawingItems = value; } }
+    internal Dictionary<int, cDrawingItem> DrawingItems { get { return mDrawingItems; } set { mDrawingItems = value; } }
 
     public cDrawing() {
 
@@ -60,6 +61,7 @@ namespace DrawShape {
       cSegment pSegment;
       cSegment pSegment_Next;
       cDrawingItem pDrawingItem;
+      Graphics pGraphics;
 
       pBluePen = new Pen(Color.Blue, 2);
       pLinePoints = new PointF[2];
@@ -77,7 +79,9 @@ namespace DrawShape {
           pLinePoints[0] = new PointF(pPoints.Pt_A.X, pPoints.Pt_A.Y);
           pLinePoints[1] = new PointF(pPoints.Pt_B.X, pPoints.Pt_B.Y);
 
-          e.Graphics.DrawPolygon(pBluePen, pLinePoints);
+          pGraphics = e.Graphics;
+          pGraphics.SmoothingMode = SmoothingMode.AntiAlias;
+          pGraphics.DrawPolygon(pBluePen, pLinePoints);
 
         } else {                                            //jeśli segment jest krzywywą
           DrawBezierCurve(pSegment, pPoints.Pt_A, pPoints.Pt_B, xIndex, e);
