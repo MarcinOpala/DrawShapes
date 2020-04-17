@@ -55,8 +55,10 @@
     <Compile Include="cAssemblyItem.cs" />
     <Compile Include="cDrawing.cs" />
     <Compile Include="cDrawingAdapter.cs" />
+    <Compile Include="cDrawingFilter.cs" />
     <Compile Include="cDrawingItem.cs" />
     <Compile Include="cDrawingSegment.cs" />
+    <Compile Include="cObjectHitController.cs" />
     <Compile Include="cPolygonFactory.cs" />
     <Compile Include="cPolygon.cs" />
     <Compile Include="cPolygonsEnv.cs" />

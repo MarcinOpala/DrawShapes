@@ -24,17 +24,17 @@ namespace DrawShape {
     internal ProjectRegionEnum CntProjectRegion { get { return mCntProjectRegion; } set { mCntProjectRegion = value; } }
 
     public cProjectRegion(cPolygon xPolygon) {
+      //konstruktor tworzący pojedyńczy region
+      //xPolygon - wielokąt dla którego ma być utworzony region
 
       GraphicsPath xPath;
       PointF[] pPoints;
-      int pIdx;
 
       pPoints = new PointF[xPolygon.Segments.Count];
-      pIdx = 1;
 
       foreach (cSegment pSegment in xPolygon.Segments.Values) {
-        pPoints[pIdx] = new PointF(pSegment.Point.X, pSegment.Point.X);
-
+        pPoints[pSegment.Index-1] = new PointF(pSegment.Point.X, pSegment.Point.Y);
+ 
       }
 
       xPath = new GraphicsPath();
@@ -42,21 +42,22 @@ namespace DrawShape {
 
       mPolygon = xPolygon;
       mRegion = new Region(xPath);
+
       mCntProjectRegion = ProjectRegionEnum.Polygon;
 
     }
 
     public cProjectRegion(cAssemblyItem xAssemblyItem) {
+      //konstruktor tworzący pojedyńczy region
+      //xAssemblyItem - element dla którego ma być utworzony region
 
       GraphicsPath xPath;
       PointF[] pPoints;
-      int pIdx;
 
       pPoints = new PointF[xAssemblyItem.Polygon.Segments.Count];
-      pIdx = 1;
 
       foreach (cSegment pSegment in xAssemblyItem.Polygon.Segments.Values) {
-        pPoints[pIdx] = new PointF(pSegment.Point.X, pSegment.Point.X);
+        pPoints[pSegment.Index - 1] = new PointF(pSegment.Point.X, pSegment.Point.Y);
 
       }
 

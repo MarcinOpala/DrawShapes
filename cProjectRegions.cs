@@ -13,15 +13,21 @@ namespace DrawShape {
     internal Dictionary<int, cProjectRegion> Regions { get { return mRegions; } set { mRegions = value; } }
 
     internal void CreateProjectRegions(cPolygonsEnv xPolygonsEnv) {
-      //
+      //funkcja tworząca regiony projektu
+      //xPolygonsEnv - lista wielokątów w projekcie
 
       cProjectRegion pProjectRegion;
 
       mRegions = new Dictionary<int, cProjectRegion>();
 
+      //dodajemy każdy wielokąt oraz element konstrukcji
       foreach (cPolygon pPolygon in xPolygonsEnv.Polygons.Values) {
 
-        if (pPolygon.Assembly != null) {
+        if (pPolygon.CntPF == PolygonFunctionalityEnum.FrameOutline && pPolygon.Assembly == null) {
+          pProjectRegion = new cProjectRegion(pPolygon);
+          AddRegion(pProjectRegion);
+
+        } if (pPolygon.Assembly != null) {
           pProjectRegion = new cProjectRegion(pPolygon);
           AddRegion(pProjectRegion);
 
@@ -30,32 +36,32 @@ namespace DrawShape {
             AddRegion(pProjectRegion);
 
           }
-        } else if (pPolygon.AssemblyItem != null) {
+
+        } if (pPolygon.AssemblyItem != null) {
             pProjectRegion = new cProjectRegion(pPolygon);
             AddRegion(pProjectRegion);
 
             pProjectRegion = new cProjectRegion(pPolygon.AssemblyItem);
             AddRegion(pProjectRegion);
 
-        } else if (pPolygon.Child != null) {
-            pProjectRegion = new cProjectRegion(pPolygon);
-            AddRegion(pProjectRegion);
-
+        } if (pPolygon.Child != null) {
+    
             pProjectRegion = new cProjectRegion(pPolygon.Child);
             AddRegion(pProjectRegion);
 
-        } else {
-            pProjectRegion = new cProjectRegion(pPolygon);
+          foreach (cAssemblyItem pAssemblyItem in pPolygon.Child.Assembly.AssemblyItems.Values) {
+            pProjectRegion = new cProjectRegion(pAssemblyItem);
             AddRegion(pProjectRegion);
 
-        }
+          }
+        } 
       }
 
     }
 
     internal void AddRegion(cProjectRegion xProjectRegion) {
-      //funkcja dodająca xProjectRegion do listy
-      //
+      //funkcja dodająca region do listy
+      //xProjectRegion - region do dodania
 
       bool pExist;
       pExist = false;

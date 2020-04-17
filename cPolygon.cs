@@ -37,7 +37,6 @@ namespace DrawShape {
 
       mSegments = new Dictionary<int, cSegment>();
       mCntPF = PolygonFunctionalityEnum.Undefined;
-      mAssembly = new cAssembly();
 
     }
 

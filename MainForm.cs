@@ -64,8 +64,11 @@ namespace DrawShape {
       this.lblCWidth_Profile.Text = "C Profilu:";
       this.txtCWidth_Mullion.Text = "10";
       this.lblCWidth_Mullion.Text = "C Słupka:";
-
-
+      this.tabController.Text = "Region Controller";
+      this.chBoxAssembly.Text = "Pokaż konstrukcję";
+      this.chBoxSash.Text = "Pokaż skrzydło";
+      this.chBoxMullion.Text = "Pokaż słupek";
+      this.lblDisplayFilter.Text = "Filtr Wyświetlania:";
 
 
       //włączenie funkcji blokującej wpisanie liter i znaków szczególnych w wybranych polach
@@ -97,6 +100,7 @@ namespace DrawShape {
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);
       this.pnlCanvas.Click += new System.EventHandler(this.GetPositon_onMouseClick);
       this.pnlCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMove);
+      
     }
 
     private void pnlCanvas_Paint(object sender, PaintEventArgs e) {
@@ -125,17 +129,6 @@ namespace DrawShape {
       pDrawing = mDrawingAdapter.GetDrawing(mProject); 
 
       pDrawing.Draw(mScale, pPt_Base, e);
-
-
-          //wypisanie wszystkich polygonsów w ENV
-          Console.WriteLine("......................");
-          foreach (cPolygon pPoly in mProject.PolygonsEnv.Polygons.Values) {
-            Console.WriteLine("\n"+pPoly.CntPF + " " + pPoly.Index);
-            foreach (cSegment pseg in pPoly.Segments.Values) {
-              Console.WriteLine(pseg.Index + ": (" + pseg.Point.X + " ; " + pseg.Point.Y + ")");
-
-            }
-          }
 
     }
 
@@ -483,6 +476,9 @@ namespace DrawShape {
       string pStr;
       cPoint pPt_Base, pPoint;
       int pHeight, pWidth;
+      cObjectHitController pObject_Region;
+
+      if (mProject == null) return;
 
       pHeight = int.Parse(txtHeight.Text);
       pWidth = int.Parse(txtWidth.Text);
@@ -495,11 +491,48 @@ namespace DrawShape {
       pY = -(int)((point.Y - pPt_Base.Y) / mScale);
       pPoint = new cPoint(pX, pY);
 
-      pStr = $"Mouse move: X: {pX}, Y: {pY}  Skala: {mScale}, Baze Point: ( {pPt_Base.X} ; {pPt_Base.Y} )\n";
+      pStr = $"Pozycja Myszki: ({pX} ; {pY})" + Environment.NewLine + Environment.NewLine;
 
-      Console.WriteLine(pStr);
+      foreach (cProjectRegion pProjectRegion in mProject.ProjectRegions.Regions.Values) {
+
+        pObject_Region = new cObjectHitController();
+        pStr += pObject_Region.HitTest(pPoint, pProjectRegion);
+                 
+      }
+
+      this.txtController.Text = pStr;
     }
 
+    private void chBoxSash_CheckedChanged(object sender, EventArgs e) {
+
+      cDrawingFilter pDrawingFilter;
+
+      pDrawingFilter = new cDrawingFilter();
+      pDrawingFilter.SetFilter(chBoxAssembly.Checked, chBoxSash.Checked, chBoxMullion.Checked);
+
     }
+
+    private void chBoxMullion_CheckedChanged(object sender, EventArgs e) {
+
+      cDrawingFilter pDrawingFilter;
+
+      pDrawingFilter = new cDrawingFilter();
+      pDrawingFilter.SetFilter(chBoxAssembly.Checked, chBoxSash.Checked, chBoxMullion.Checked);
+    }
+
+    private void chBoxAssembly_CheckedChanged(object sender, EventArgs e) {
+
+      cDrawingFilter pDrawingFilter;
+
+      pDrawingFilter = new cDrawingFilter();
+      pDrawingFilter.SetFilter(chBoxAssembly.Checked, chBoxSash.Checked, chBoxMullion.Checked);
+
+    }
+
+
+
+
 
   }
+
+}

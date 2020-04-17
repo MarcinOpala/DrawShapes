@@ -351,6 +351,7 @@ namespace DrawShape {
       pPolygon.CntPF = PolygonFunctionalityEnum.Mullion;
       pPolygon.Parent = xCln_PolygonsVirtual[1].Parent.Parent;
       pPolygon.Organize_Segments(pPolygon);                     //porządkujemy boki
+      
 
       pCln_Line.Add(3, pLine_Axis_Symmetry);    //do kolekcji prostych dodajemy oś słupka
 

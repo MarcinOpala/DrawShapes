@@ -34,6 +34,10 @@ namespace DrawShape {
       this.pnlInput = new System.Windows.Forms.Panel();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.lblDisplayFilter = new System.Windows.Forms.Label();
+      this.chBoxMullion = new System.Windows.Forms.CheckBox();
+      this.chBoxSash = new System.Windows.Forms.CheckBox();
+      this.chBoxAssembly = new System.Windows.Forms.CheckBox();
       this.btnAddMullionHorizontal = new System.Windows.Forms.Button();
       this.btnRemoveSash = new System.Windows.Forms.Button();
       this.btnAddSash = new System.Windows.Forms.Button();
@@ -75,6 +79,8 @@ namespace DrawShape {
       this.txtMarginH = new System.Windows.Forms.TextBox();
       this.lblMarginVertical = new System.Windows.Forms.Label();
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
+      this.tabController = new System.Windows.Forms.TabPage();
+      this.txtController = new System.Windows.Forms.TextBox();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
       this.pnlAllForm.SuspendLayout();
@@ -82,6 +88,7 @@ namespace DrawShape {
       this.tabControl1.SuspendLayout();
       this.tabPage1.SuspendLayout();
       this.tabPage2.SuspendLayout();
+      this.tabController.SuspendLayout();
       this.pnlDraw.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -115,6 +122,7 @@ namespace DrawShape {
             | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl1.Controls.Add(this.tabPage1);
       this.tabControl1.Controls.Add(this.tabPage2);
+      this.tabControl1.Controls.Add(this.tabController);
       this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
       this.tabControl1.ItemSize = new System.Drawing.Size(200, 35);
       this.tabControl1.Location = new System.Drawing.Point(1, 3);
@@ -127,6 +135,10 @@ namespace DrawShape {
       // tabPage1
       // 
       this.tabPage1.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage1.Controls.Add(this.lblDisplayFilter);
+      this.tabPage1.Controls.Add(this.chBoxMullion);
+      this.tabPage1.Controls.Add(this.chBoxSash);
+      this.tabPage1.Controls.Add(this.chBoxAssembly);
       this.tabPage1.Controls.Add(this.btnAddMullionHorizontal);
       this.tabPage1.Controls.Add(this.btnRemoveSash);
       this.tabPage1.Controls.Add(this.btnAddSash);
@@ -143,6 +155,56 @@ namespace DrawShape {
       this.tabPage1.Size = new System.Drawing.Size(438, 645);
       this.tabPage1.TabIndex = 0;
       this.tabPage1.Text = "tabPage1";
+      // 
+      // lblDisplayFilter
+      // 
+      this.lblDisplayFilter.AutoSize = true;
+      this.lblDisplayFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+      this.lblDisplayFilter.ForeColor = System.Drawing.SystemColors.WindowText;
+      this.lblDisplayFilter.Location = new System.Drawing.Point(240, 85);
+      this.lblDisplayFilter.Name = "lblDisplayFilter";
+      this.lblDisplayFilter.Size = new System.Drawing.Size(137, 25);
+      this.lblDisplayFilter.TabIndex = 57;
+      this.lblDisplayFilter.Text = "lblDisplayFilter";
+      // 
+      // chBoxMullion
+      // 
+      this.chBoxMullion.AutoSize = true;
+      this.chBoxMullion.Checked = true;
+      this.chBoxMullion.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chBoxMullion.Location = new System.Drawing.Point(242, 230);
+      this.chBoxMullion.Name = "chBoxMullion";
+      this.chBoxMullion.Size = new System.Drawing.Size(151, 29);
+      this.chBoxMullion.TabIndex = 56;
+      this.chBoxMullion.Text = "chBoxMullion";
+      this.chBoxMullion.UseVisualStyleBackColor = true;
+      this.chBoxMullion.CheckedChanged += new System.EventHandler(this.chBoxMullion_CheckedChanged);
+      // 
+      // chBoxSash
+      // 
+      this.chBoxSash.AutoSize = true;
+      this.chBoxSash.Checked = true;
+      this.chBoxSash.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chBoxSash.Location = new System.Drawing.Point(242, 180);
+      this.chBoxSash.Name = "chBoxSash";
+      this.chBoxSash.Size = new System.Drawing.Size(135, 29);
+      this.chBoxSash.TabIndex = 55;
+      this.chBoxSash.Text = "chBoxSash";
+      this.chBoxSash.UseVisualStyleBackColor = true;
+      this.chBoxSash.CheckedChanged += new System.EventHandler(this.chBoxSash_CheckedChanged);
+      // 
+      // chBoxAssembly
+      // 
+      this.chBoxAssembly.AutoSize = true;
+      this.chBoxAssembly.Checked = true;
+      this.chBoxAssembly.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chBoxAssembly.Location = new System.Drawing.Point(242, 130);
+      this.chBoxAssembly.Name = "chBoxAssembly";
+      this.chBoxAssembly.Size = new System.Drawing.Size(175, 29);
+      this.chBoxAssembly.TabIndex = 54;
+      this.chBoxAssembly.Text = "chBoxAssembly";
+      this.chBoxAssembly.UseVisualStyleBackColor = true;
+      this.chBoxAssembly.CheckedChanged += new System.EventHandler(this.chBoxAssembly_CheckedChanged);
       // 
       // btnAddMullionHorizontal
       // 
@@ -543,6 +605,27 @@ namespace DrawShape {
       this.lblMarginHorizontal.TabIndex = 45;
       this.lblMarginHorizontal.Text = "lblMarginHorizontal";
       // 
+      // tabController
+      // 
+      this.tabController.BackColor = System.Drawing.Color.LightGray;
+      this.tabController.Controls.Add(this.txtController);
+      this.tabController.Location = new System.Drawing.Point(4, 39);
+      this.tabController.Name = "tabController";
+      this.tabController.Padding = new System.Windows.Forms.Padding(3);
+      this.tabController.Size = new System.Drawing.Size(438, 645);
+      this.tabController.TabIndex = 2;
+      this.tabController.Text = "tabController";
+      // 
+      // txtController
+      // 
+      this.txtController.Cursor = System.Windows.Forms.Cursors.No;
+      this.txtController.Location = new System.Drawing.Point(25, 25);
+      this.txtController.Multiline = true;
+      this.txtController.Name = "txtController";
+      this.txtController.ReadOnly = true;
+      this.txtController.Size = new System.Drawing.Size(388, 591);
+      this.txtController.TabIndex = 0;
+      // 
       // pnlDraw
       // 
       this.pnlDraw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -585,6 +668,8 @@ namespace DrawShape {
       this.tabPage1.PerformLayout();
       this.tabPage2.ResumeLayout(false);
       this.tabPage2.PerformLayout();
+      this.tabController.ResumeLayout(false);
+      this.tabController.PerformLayout();
       this.pnlDraw.ResumeLayout(false);
       this.ResumeLayout(false);
 
@@ -639,6 +724,12 @@ namespace DrawShape {
     private TextBox txtCWidth_Profile;
         private Button btnAddMullionHorizontal;
     private TextBox txtMullionLocationY;
-  }
+        private TabPage tabController;
+        private TextBox txtController;
+        private Label lblDisplayFilter;
+        public CheckBox chBoxMullion;
+        public CheckBox chBoxSash;
+        public CheckBox chBoxAssembly;
+    }
 }
 
