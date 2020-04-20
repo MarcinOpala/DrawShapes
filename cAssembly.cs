@@ -12,6 +12,7 @@ namespace DrawShape {
     private cPolygon mPolygon_Parent;                       //poligon bazowy
 
     internal Dictionary<int, cAssemblyItem> AssemblyItems { get { return mAssemblyItems; } }
+    internal cPolygon Polygon_Parent { get { return mPolygon_Parent; } set { mPolygon_Parent = value; } }
 
     public cAssembly( ) {
       //utworzenie pustej konstrukji wielokąta
@@ -34,6 +35,7 @@ namespace DrawShape {
       foreach (cSegment pSegment in xPolygon_Parent.Segments.Values) {
 
         pAssemblyItem = new cAssemblyItem(pSegment.Index);
+        pAssemblyItem.AssemblyParent = this;
         pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth, xC);
 
         AddAssemblyItem(pSegment.Index, pAssemblyItem);
@@ -50,6 +52,7 @@ namespace DrawShape {
 
       cAssemblyItem pAssemblyItem;
       int pIdx;
+      
 
       pIdx = 1;
       mPolygon_Parent = xPolygon_Parent;
@@ -58,6 +61,7 @@ namespace DrawShape {
       foreach (cSegment pSegment in xPolygon_Parent.Segments.Values) {
 
         pAssemblyItem = new cAssemblyItem(pSegment.Index);
+        pAssemblyItem.AssemblyParent = this;
         pAssemblyItem.CreateAssemblyItem_Profile(pSegment, xWidth, xC_Cln[pIdx]);
 
         AddAssemblyItem(pSegment.Index, pAssemblyItem);

@@ -35,9 +35,9 @@ namespace DrawShape {
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage1 = new System.Windows.Forms.TabPage();
       this.lblDisplayFilter = new System.Windows.Forms.Label();
-      this.chBoxMullion = new System.Windows.Forms.CheckBox();
-      this.chBoxSash = new System.Windows.Forms.CheckBox();
-      this.chBoxAssembly = new System.Windows.Forms.CheckBox();
+      this.chkMullion_IsVisible = new System.Windows.Forms.CheckBox();
+      this.chkSash_IsVisible = new System.Windows.Forms.CheckBox();
+      this.chkFrame_IsVisible = new System.Windows.Forms.CheckBox();
       this.btnAddMullionHorizontal = new System.Windows.Forms.Button();
       this.btnRemoveSash = new System.Windows.Forms.Button();
       this.btnAddSash = new System.Windows.Forms.Button();
@@ -136,9 +136,9 @@ namespace DrawShape {
       // 
       this.tabPage1.BackColor = System.Drawing.Color.LightGray;
       this.tabPage1.Controls.Add(this.lblDisplayFilter);
-      this.tabPage1.Controls.Add(this.chBoxMullion);
-      this.tabPage1.Controls.Add(this.chBoxSash);
-      this.tabPage1.Controls.Add(this.chBoxAssembly);
+      this.tabPage1.Controls.Add(this.chkMullion_IsVisible);
+      this.tabPage1.Controls.Add(this.chkSash_IsVisible);
+      this.tabPage1.Controls.Add(this.chkFrame_IsVisible);
       this.tabPage1.Controls.Add(this.btnAddMullionHorizontal);
       this.tabPage1.Controls.Add(this.btnRemoveSash);
       this.tabPage1.Controls.Add(this.btnAddSash);
@@ -169,42 +169,39 @@ namespace DrawShape {
       // 
       // chBoxMullion
       // 
-      this.chBoxMullion.AutoSize = true;
-      this.chBoxMullion.Checked = true;
-      this.chBoxMullion.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chBoxMullion.Location = new System.Drawing.Point(242, 230);
-      this.chBoxMullion.Name = "chBoxMullion";
-      this.chBoxMullion.Size = new System.Drawing.Size(151, 29);
-      this.chBoxMullion.TabIndex = 56;
-      this.chBoxMullion.Text = "chBoxMullion";
-      this.chBoxMullion.UseVisualStyleBackColor = true;
-      this.chBoxMullion.CheckedChanged += new System.EventHandler(this.chBoxMullion_CheckedChanged);
+      this.chkMullion_IsVisible.AutoSize = true;
+      this.chkMullion_IsVisible.Checked = true;
+      this.chkMullion_IsVisible.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chkMullion_IsVisible.Location = new System.Drawing.Point(242, 230);
+      this.chkMullion_IsVisible.Name = "chBoxMullion";
+      this.chkMullion_IsVisible.Size = new System.Drawing.Size(151, 29);
+      this.chkMullion_IsVisible.TabIndex = 56;
+      this.chkMullion_IsVisible.Text = "chBoxMullion";
+      this.chkMullion_IsVisible.UseVisualStyleBackColor = true;
       // 
       // chBoxSash
       // 
-      this.chBoxSash.AutoSize = true;
-      this.chBoxSash.Checked = true;
-      this.chBoxSash.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chBoxSash.Location = new System.Drawing.Point(242, 180);
-      this.chBoxSash.Name = "chBoxSash";
-      this.chBoxSash.Size = new System.Drawing.Size(135, 29);
-      this.chBoxSash.TabIndex = 55;
-      this.chBoxSash.Text = "chBoxSash";
-      this.chBoxSash.UseVisualStyleBackColor = true;
-      this.chBoxSash.CheckedChanged += new System.EventHandler(this.chBoxSash_CheckedChanged);
+      this.chkSash_IsVisible.AutoSize = true;
+      this.chkSash_IsVisible.Checked = true;
+      this.chkSash_IsVisible.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chkSash_IsVisible.Location = new System.Drawing.Point(242, 180);
+      this.chkSash_IsVisible.Name = "chBoxSash";
+      this.chkSash_IsVisible.Size = new System.Drawing.Size(135, 29);
+      this.chkSash_IsVisible.TabIndex = 55;
+      this.chkSash_IsVisible.Text = "chBoxSash";
+      this.chkSash_IsVisible.UseVisualStyleBackColor = true;
       // 
       // chBoxAssembly
       // 
-      this.chBoxAssembly.AutoSize = true;
-      this.chBoxAssembly.Checked = true;
-      this.chBoxAssembly.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chBoxAssembly.Location = new System.Drawing.Point(242, 130);
-      this.chBoxAssembly.Name = "chBoxAssembly";
-      this.chBoxAssembly.Size = new System.Drawing.Size(175, 29);
-      this.chBoxAssembly.TabIndex = 54;
-      this.chBoxAssembly.Text = "chBoxAssembly";
-      this.chBoxAssembly.UseVisualStyleBackColor = true;
-      this.chBoxAssembly.CheckedChanged += new System.EventHandler(this.chBoxAssembly_CheckedChanged);
+      this.chkFrame_IsVisible.AutoSize = true;
+      this.chkFrame_IsVisible.Checked = true;
+      this.chkFrame_IsVisible.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chkFrame_IsVisible.Location = new System.Drawing.Point(242, 130);
+      this.chkFrame_IsVisible.Name = "chBoxAssembly";
+      this.chkFrame_IsVisible.Size = new System.Drawing.Size(175, 29);
+      this.chkFrame_IsVisible.TabIndex = 54;
+      this.chkFrame_IsVisible.Text = "chBoxAssembly";
+      this.chkFrame_IsVisible.UseVisualStyleBackColor = true;
       // 
       // btnAddMullionHorizontal
       // 
@@ -727,9 +724,9 @@ namespace DrawShape {
         private TabPage tabController;
         private TextBox txtController;
         private Label lblDisplayFilter;
-        public CheckBox chBoxMullion;
-        public CheckBox chBoxSash;
-        public CheckBox chBoxAssembly;
+        public CheckBox chkMullion_IsVisible;
+        public CheckBox chkSash_IsVisible;
+        public CheckBox chkFrame_IsVisible;
     }
 }
 

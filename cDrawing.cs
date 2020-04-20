@@ -31,11 +31,11 @@ namespace DrawShape {
     }
 
     public void Draw(double xScale, cPoint xPt_Base, PaintEventArgs e) {
-      //funkcja rysująca wielobok
-      //xPolygon - poligon bazowy
+      //funkcja rysująca wielokąt
+      //xPolygon - wielokąt bazowy
       //xScale - skala rysunku
-      //xBasePtX - współrzędne X punktu bazowego
-      //xBasePtY - współrzędne Y punktu bazowego
+      //xPt_Base - punkt bazowy
+      
 
       int pCount;
       int pIndex;

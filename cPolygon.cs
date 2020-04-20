@@ -11,7 +11,8 @@ namespace DrawShape {
     FrameOutline = 1,                                       //poligon posiada assembly
     FrameVirtual = 2,                                       //wirualny kształt ramy
     Mullion = 3,                                            //słupek
-    Profile = 4,                                             //poligon jest profilem
+    Profile = 4,                                            //wielokąt jest profilem
+    Sash = 5,                                               //wielokąt jest skrzydłem
   }
 
   public class cPolygon {
@@ -81,7 +82,7 @@ namespace DrawShape {
       //xC - stała C dla każdego AssemblyItemu
 
       mAssembly = new cAssembly();
-
+      mAssembly.Polygon_Parent = xPolygon;
       mAssembly.CreateMe(xWidth, xPolygon, xC);
 
     }

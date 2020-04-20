@@ -5,23 +5,27 @@ namespace DrawShape {
   
   public class cAssemblyItem {
 
-    private cLine mAxis_Symmetry;                   //równanie prostej pokrywające oś symetrii
-    private int mIndex;                                     //numer AssemblyItemu
-    private cPolygon mPolygon;                              //Polygon AssemblyItemu
-    private cPolygon mParent;                               //rodzic wielokąta
-    private int mWidth_Profile;                             //szerokość profilu
-    private int mC;                                         //odległość od krawędzi do następnego elementu
     private cAssembly mAssemblyParent;
+    private cLine mAxis_Symmetry;                   //równanie prostej pokrywające oś symetrii
+    private int mC;                                         //odległość od krawędzi do następnego elementu
+    private int mIndex;                                     //numer AssemblyItemu
+    private double mLength;
+    private cPolygon mParent;                               //rodzic wielokąta
+    private cPolygon mPolygon;                              //Polygon AssemblyItemu
+    private cTechElement mTechElement;
+    private int mWidth_Profile;                             //szerokość profilu
 
+
+    internal cAssembly AssemblyParent { get { return mAssemblyParent; } set { mAssemblyParent = value; } }
     internal cLine Axis_Symmetry { get { return mAxis_Symmetry; } set { mAxis_Symmetry = value; } }
-    internal int Index { get { return mIndex; } set { mIndex = value; } }
-    internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
-    internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
     internal int C { get { return mC; } }
+    internal int Index { get { return mIndex; } set { mIndex = value; } }
+    internal double Length { get { return mLength; } set { mLength = value; } }
+    internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
+    internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
+    internal cTechElement TechElement { get { return mTechElement; } set { mTechElement = value; } }
     internal int Width_Profile { get { return mWidth_Profile; } }
 
-    internal cAssembly AssemblyParent { get { return mAssemblyParent; } }
-    internal cAssemblyItem AssemblyItem_Next { get { return GetAssemblyItem_Next(); } }
 
 
     public cAssemblyItem() {
@@ -36,7 +40,7 @@ namespace DrawShape {
 
       mPolygon = new cPolygon(xIndex);
       mIndex = xIndex;
-
+      
     }
 
     public void CreateAssemblyItem_Profile(cSegment xSegment, int xWidth_Profile, int xC) {
@@ -48,10 +52,23 @@ namespace DrawShape {
       cSegment pSegment;
       float pOffset_X, pOffset_Y;
       cLine pLine;
+      cTechElement pTechElement;
 
+      
       mPolygon.CntPF = PolygonFunctionalityEnum.Profile;
       mWidth_Profile = xWidth_Profile;
       mC = xC;
+
+      switch (mAssemblyParent.Polygon_Parent.CntPF) {
+        case PolygonFunctionalityEnum.Sash:
+          pTechElement = new cTechElement("+ Skrzydło 404");
+          AddTechElement(pTechElement);
+          break;
+        case PolygonFunctionalityEnum.FrameOutline:
+          pTechElement = new cTechElement("+ Konstrukcja 505");
+          AddTechElement(pTechElement);
+          break;
+      }
 
       //Bok 1 punkt z oryginału
       pSegment = new cSegment(xSegment.Point, 1, xSegment.IsCurve, mPolygon);
@@ -82,6 +99,9 @@ namespace DrawShape {
       pSegment.Point.X += pOffset_X;
       pSegment.Point.Y += pOffset_Y;
       mPolygon.AddSegment(pSegment);
+
+      mLength = GetLength();
+     
 
     }
 
@@ -162,6 +182,8 @@ namespace DrawShape {
       cSegment pSegment_New, pSegment_AI_1, pSegment_AI_3;
       int pIdx;
       bool pCheck_Mullion, pCheck_AI, pCheck_Virtual;
+      cTechElement pTechElement;
+
 
       mPolygon.Parent = xPolygon;
       mC = xC;
@@ -231,9 +253,15 @@ namespace DrawShape {
       }
       mPolygon.Organize_Segments(mPolygon);
 
+      mLength = GetLength();
+
+
+      pTechElement = new cTechElement("+ Skrzydło 404");
+      AddTechElement(pTechElement);
+
     }
 
-    private cAssemblyItem GetAssemblyItem_Next() {
+/*    private cAssemblyItem GetAssemblyItem_Next() {
       //funkja zwracjąca następny AssemblyItem
 
       int pIndex_Next;
@@ -247,6 +275,35 @@ namespace DrawShape {
         pIndex_Next = 1;
 
       return mParent.Assembly.GetAssemblyItemByIndex(pIndex_Next);
+
+    }*/
+
+    private double GetLength() {
+
+      double pLength;
+      cVector pVector;
+      pVector = new cVector(0, 0);
+
+      switch (mPolygon.CntPF) {
+        case PolygonFunctionalityEnum.Undefined:
+          break;
+        case PolygonFunctionalityEnum.Profile:
+          pVector = new cVector(mPolygon.Segments[1], mPolygon.Segments[2]);
+          break;
+        case PolygonFunctionalityEnum.Mullion:
+          pVector = new cVector(mPolygon.Segments[1], mPolygon.Segments[2]);
+          break;
+      }
+
+      pLength = pVector.Vector.Length;
+
+      return pLength;
+      
+    }
+
+    internal void AddTechElement(cTechElement xTechElement) {
+
+      mTechElement = xTechElement;
 
     }
 

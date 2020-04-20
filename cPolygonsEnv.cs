@@ -271,6 +271,7 @@ namespace DrawShape {
       pPolygon_Virtual = xPolygon.Clone();
 
       pPolygon_Virtual.Parent = xPolygon;    //rodzicem staje się wielokąt wzorcowy
+      pPolygon_Virtual.CntPF = PolygonFunctionalityEnum.FrameVirtual;
 
       //szerokość, C  - dla wszystkich obiektów takie same
       pWidth_Profile = pPolygon_Virtual.Parent.Assembly.AssemblyItems[1].Width_Profile;
@@ -278,8 +279,6 @@ namespace DrawShape {
 
       //utworzenie konstrukcji w wielokącie wirtualnym
       pPolygon_Virtual.CreateAssembly(pWidth_Profile, pPolygon_Virtual, pC);
-
-      pPolygon_Virtual.CntPF = PolygonFunctionalityEnum.FrameVirtual;
 
       AddPolygon(pPolygon_Virtual);
 
@@ -360,21 +359,23 @@ namespace DrawShape {
       pAssemblyItem.CreateAssemblyItem_Mullion(pPolygon, xCln_PolygonsVirtual, xCln_PolygonsMullion, pCln_Line, xC);
       pAssemblyItem.Axis_Symmetry = pLine_Axis_Symmetry;
 
+
       AddPolygon(pPolygon);
 
     }
 
-    internal void CreatePolygon_Sash(cPolygon xPolygon, int xWidth_Profile) {
+    internal void CreatePolygon_Sash(cPolygon xPolygon_Virtual, int xWidth_Profile) {
       //funkcja tworząca wielokąt skrzydła wraz z konstrukcją
-      //xPolygon - wielokąt, do którego wstawiamy skrzydło (Polygon_Sash)
+      //xPolygon - wielokąt wirtualny, do którego wstawiamy skrzydło (Polygon_Sash)
       //xWidth_Profile - szerokość profilu skrzydła
 
       cPolygon pPolygon_Sash;
 
-      xPolygon.AddChild();
+      xPolygon_Virtual.AddChild();
 
-      pPolygon_Sash = xPolygon.Child;
-      pPolygon_Sash.CntPF = PolygonFunctionalityEnum.FrameOutline;
+      pPolygon_Sash = xPolygon_Virtual.Child;
+      pPolygon_Sash.Parent = xPolygon_Virtual;
+      pPolygon_Sash.CntPF = PolygonFunctionalityEnum.Sash;
       pPolygon_Sash.Index = GetEmptyIndex();
 
       //zmniejszam boki wielokąta o stałą C

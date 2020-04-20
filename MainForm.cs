@@ -15,8 +15,11 @@ namespace DrawShape {
     private double mScale;                                  //przeliczona skala całego rysunku
     private cDrawingAdapter mDrawingAdapter;
     private Dictionary<int, cPoint> mCln_Points;
+    private cDrawingFilter mDrawingFilter;
 
-    public MainForm() {
+
+
+    public  MainForm() {
       //
 
       InitializeComponent();
@@ -65,9 +68,9 @@ namespace DrawShape {
       this.txtCWidth_Mullion.Text = "10";
       this.lblCWidth_Mullion.Text = "C Słupka:";
       this.tabController.Text = "Region Controller";
-      this.chBoxAssembly.Text = "Pokaż konstrukcję";
-      this.chBoxSash.Text = "Pokaż skrzydło";
-      this.chBoxMullion.Text = "Pokaż słupek";
+      this.chkFrame_IsVisible.Text = "Pokaż konstrukcję";
+      this.chkSash_IsVisible.Text = "Pokaż skrzydło";
+      this.chkMullion_IsVisible.Text = "Pokaż słupek";
       this.lblDisplayFilter.Text = "Filtr Wyświetlania:";
 
 
@@ -89,18 +92,20 @@ namespace DrawShape {
       this.txtMullionLocationX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Insert_Cross);
       this.txtMullionLocationY.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Insert_Cross);
 
-
       //funkcje CLICK
       this.btnCreateProject.Click += new System.EventHandler(this.CreateProject);            
       this.btnSetToCurve.Click += new System.EventHandler(this.SetToCurve_Click);                  
-      this.btnDrawAssembly.Click += new System.EventHandler(this.InsertProfile);       
-      
+      this.btnDrawAssembly.Click += new System.EventHandler(this.InsertProfile);
+      this.chkFrame_IsVisible.CheckedChanged += DrawingFilter_Changed;
+      this.chkSash_IsVisible.CheckedChanged += DrawingFilter_Changed;
+      this.chkMullion_IsVisible.CheckedChanged += DrawingFilter_Changed;
+
       //funkcje inne
       this.Resize += new System.EventHandler(this.MainForm_Resize);                                
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);
       this.pnlCanvas.Click += new System.EventHandler(this.GetPositon_onMouseClick);
       this.pnlCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMove);
-      
+
     }
 
     private void pnlCanvas_Paint(object sender, PaintEventArgs e) {
@@ -109,9 +114,8 @@ namespace DrawShape {
       cDrawing pDrawing;
       cPoint pPt_Base;
       int pHeight, pWidth;
-    
-      if (mProject == null)                         //jeśli nie istnieje projekt
-        return;
+
+      if (mProject == null) return;                      //jeśli nie istnieje projekt
 
       pHeight = int.Parse(txtHeight.Text);
       pWidth = int.Parse(txtWidth.Text);
@@ -126,7 +130,7 @@ namespace DrawShape {
       mProject.ProjectRegions.CreateProjectRegions(mProject.PolygonsEnv);
 
       mDrawingAdapter = new cDrawingAdapter();
-      pDrawing = mDrawingAdapter.GetDrawing(mProject); 
+      pDrawing = mDrawingAdapter.GetDrawing(mProject, mDrawingFilter); 
 
       pDrawing.Draw(mScale, pPt_Base, e);
 
@@ -144,6 +148,7 @@ namespace DrawShape {
       
       CalculateScale();
 
+      mDrawingFilter = new cDrawingFilter();
       mProject = new cProject();
       mProject.CreateMe(pWidth, pHeight, pNe);
 
@@ -162,11 +167,11 @@ namespace DrawShape {
 
       //pobieranie wartości z Input txt w settings
       pC_Frame = int.Parse(txtCWidth_Profile.Text);
-      pWidth_Profile = int.Parse(txtProfileSize.Text);      
-
-      pPolygon.CreateAssembly(pWidth_Profile, pPolygon, pC_Frame);
+      pWidth_Profile = int.Parse(txtProfileSize.Text);
 
       pPolygon.CntPF = PolygonFunctionalityEnum.FrameOutline;
+
+      pPolygon.CreateAssembly(pWidth_Profile, pPolygon, pC_Frame);
 
       mProject.PolygonsEnv.CreatePolygon_Virtual(pPolygon);
 
@@ -233,17 +238,17 @@ namespace DrawShape {
     private void InsertSash(object sender, EventArgs e) {
       //funkcja wstawiająca skrzydło w pierwszym wolnym wielokącie wirtualnym
 
-      cPolygon pPolygon;
+      cPolygon pPolygon_Virtual;
       int pWidth_Profile;
 
-      pPolygon = mProject.PolygonsEnv.GetPolygonVirtual_WithoutChild();
+      pPolygon_Virtual = mProject.PolygonsEnv.GetPolygonVirtual_WithoutChild();
 
-      if (pPolygon == null) return;         //jeśli nie ma wolnego miejsca to wyjście
+      if (pPolygon_Virtual == null) return;         //jeśli nie ma wolnego miejsca to wyjście
 
       //przypisujemy wartość z Input menu - settings
       pWidth_Profile = int.Parse(txtProfileSize.Text);
 
-      mProject.PolygonsEnv.CreatePolygon_Sash(pPolygon, pWidth_Profile);
+      mProject.PolygonsEnv.CreatePolygon_Sash(pPolygon_Virtual, pWidth_Profile);
 
       this.pnlCanvas.Refresh();
 
@@ -503,34 +508,20 @@ namespace DrawShape {
       this.txtController.Text = pStr;
     }
 
-    private void chBoxSash_CheckedChanged(object sender, EventArgs e) {
+    private void DrawingFilter_Changed(object sender, EventArgs e) {
+      //funkcja zmieniająca ustawienia filtra przy zmianie checkBoxów
 
-      cDrawingFilter pDrawingFilter;
+      bool pFrame_IsVisible, pSash_IsVisible, pMullion_IsVisible;
+      
+      pFrame_IsVisible = chkFrame_IsVisible.Checked;     //wyświetlanie konstrukcji
+      pSash_IsVisible = chkSash_IsVisible.Checked;             //wyświetlanie skrzydeł
+      pMullion_IsVisible = chkMullion_IsVisible.Checked;       //wyświetlanie słupków
 
-      pDrawingFilter = new cDrawingFilter();
-      pDrawingFilter.SetFilter(chBoxAssembly.Checked, chBoxSash.Checked, chBoxMullion.Checked);
+      mDrawingFilter.SetFilter(pFrame_IsVisible, pSash_IsVisible, pMullion_IsVisible);
 
-    }
-
-    private void chBoxMullion_CheckedChanged(object sender, EventArgs e) {
-
-      cDrawingFilter pDrawingFilter;
-
-      pDrawingFilter = new cDrawingFilter();
-      pDrawingFilter.SetFilter(chBoxAssembly.Checked, chBoxSash.Checked, chBoxMullion.Checked);
-    }
-
-    private void chBoxAssembly_CheckedChanged(object sender, EventArgs e) {
-
-      cDrawingFilter pDrawingFilter;
-
-      pDrawingFilter = new cDrawingFilter();
-      pDrawingFilter.SetFilter(chBoxAssembly.Checked, chBoxSash.Checked, chBoxMullion.Checked);
+      this.pnlCanvas.Refresh();
 
     }
-
-
-
 
 
   }

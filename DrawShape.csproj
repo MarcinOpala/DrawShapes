@@ -58,6 +58,7 @@
     <Compile Include="cDrawingFilter.cs" />
     <Compile Include="cDrawingItem.cs" />
     <Compile Include="cDrawingSegment.cs" />
+    <Compile Include="cElement.cs" />
     <Compile Include="cObjectHitController.cs" />
     <Compile Include="cPolygonFactory.cs" />
     <Compile Include="cPolygon.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="cSegment.cs" />
     <Compile Include="cPoint.cs" />
     <Compile Include="cLine.cs" />
+    <Compile Include="cTechElement.cs" />
     <Compile Include="cVector.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
