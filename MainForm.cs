@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Documents;
 using System.Windows.Forms;
 
 namespace DrawShape {
@@ -105,7 +107,7 @@ namespace DrawShape {
       this.pnlCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlCanvas_Paint);
       this.pnlCanvas.Click += new System.EventHandler(this.GetPositon_onMouseClick);
       this.pnlCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMove);
-
+      
     }
 
     private void pnlCanvas_Paint(object sender, PaintEventArgs e) {
@@ -134,6 +136,9 @@ namespace DrawShape {
 
       pDrawing.Draw(mScale, pPt_Base, e);
 
+      
+      AddNodes_ToAnalysisTreeView();
+
     }
 
     private void CreateProject(object sender, EventArgs e) {
@@ -151,6 +156,8 @@ namespace DrawShape {
       mDrawingFilter = new cDrawingFilter();
       mProject = new cProject();
       mProject.CreateMe(pWidth, pHeight, pNe);
+
+      InitializeDataTable_TechElement();
 
       this.pnlCanvas.Refresh();
 
@@ -523,7 +530,112 @@ namespace DrawShape {
 
     }
 
+    private void AddNodes_ToAnalysisTreeView() {
+      //funkcja dodająca elementy do drzewa analizy projektu
 
+      int pIdx_TechElement, pIdx_Element;
+      string pStr_Base, pStr, pStr2;
+
+      treeViewAnalysis.Nodes.Clear();
+
+
+     // pStr_Base = xTable.Rows[0].ItemArray[2].ToString();
+     // Console.WriteLine(pStr_Base);
+
+      pIdx_TechElement = 0;
+      
+      //sprawdzamy każdy wielokąt w projekcie
+      foreach (cPolygon pPolygon in mProject.PolygonsEnv.Polygons.Values) {
+        switch (pPolygon.CntPF) {
+          case PolygonFunctionalityEnum.FrameOutline:       //rama
+            treeViewAnalysis.Nodes.Add("Konstrukcja Ramy:");
+            pIdx_Element = 0;
+            foreach (cAssemblyItem pAssemblyItem in pPolygon.Assembly.AssemblyItems.Values) {
+              //nazwa elementu technologicznego
+              pStr = $"{pAssemblyItem.TechElements[1].Ne}  ( {pAssemblyItem.Length} [mm] )";
+              //dodajemy w gałąź drzewa
+              treeViewAnalysis.Nodes[pIdx_TechElement].Nodes.Add(pStr);
+              //nazwa elementu
+              pStr2 = $"{pAssemblyItem.TechElements[1].Element.Ne}";
+              treeViewAnalysis.Nodes[pIdx_TechElement].Nodes[pIdx_Element].Nodes.Add(pStr2);
+              pIdx_Element++;
+            }
+            pIdx_TechElement++;
+            break;
+          case PolygonFunctionalityEnum.FrameVirtual:       //skrzydło    
+            if (pPolygon.Child == null) continue;
+            treeViewAnalysis.Nodes.Add("Konstrukcja Skrzydła:");
+            pIdx_Element = 0;
+            foreach (cAssemblyItem pAssemblyItem in pPolygon.Child.Assembly.AssemblyItems.Values) {
+              //nazwa elementu technologicznego
+              pStr = $"{pAssemblyItem.TechElements[1].Ne}  ( {pAssemblyItem.Length} [mm] )";
+              //dodajemy w gałąź drzewa
+              treeViewAnalysis.Nodes[pIdx_TechElement].Nodes.Add(pStr);
+              //nazwa elementu
+              pStr2 = $"{pAssemblyItem.TechElements[1].Element.Ne}";
+              treeViewAnalysis.Nodes[pIdx_TechElement].Nodes[pIdx_Element].Nodes.Add(pStr2);
+              pIdx_Element++;
+            }
+            pIdx_TechElement++;
+            break;
+          case PolygonFunctionalityEnum.Mullion:            //słupek
+            treeViewAnalysis.Nodes.Add("Konstrukcja Słupka:");
+            pIdx_Element = 0;
+            //nazwa elementu technologicznego
+            pStr = $"{pPolygon.AssemblyItem.TechElements[1].Ne}  ( {pPolygon.AssemblyItem.Length} [mm] )";
+            //dodajemy w gałąź drzewa
+            treeViewAnalysis.Nodes[pIdx_TechElement].Nodes.Add(pStr);
+            //nazwa elementu 
+            pStr2 = $"{pPolygon.AssemblyItem.TechElements[1].Element.Ne}";
+            treeViewAnalysis.Nodes[pIdx_TechElement].Nodes[pIdx_Element].Nodes.Add(pStr2);
+            pIdx_TechElement++;
+            break;
+
+        }
+      }
+
+    }
+
+    private void InitializeDataTable_TechElement() {
+      //funkcja inicjująca tabelę wraz z wartościami w poszczególnych wierszach 
+
+      DataTable pTable;
+      string pNe_TechElement, pNe_Element, pNe;
+      cTechElement pTechElement;
+
+      pTable = new DataTable();
+      //do tabeli dotajemy kolumny
+      pTable.Columns.Add("Nazwa Elementu Technologicznego", typeof(string));
+      pTable.Columns.Add("Nazwa Elementu", typeof(string));
+      pTable.Columns.Add("PolygonFunctionalityEnum", typeof(PolygonFunctionalityEnum));
+
+      pNe = "Konstrukcja 505";
+      pTechElement = new cTechElement(pNe);
+      pNe_TechElement = pTechElement.Ne;
+      pNe_Element = pTechElement.Element.Ne;
+      pTable.Rows.Add(pNe_TechElement, pNe_Element, PolygonFunctionalityEnum.FrameOutline);
+
+      pNe = "Słupek 303";
+      pTechElement = new cTechElement(pNe);
+      pNe_TechElement = pTechElement.Ne;
+      pNe_Element = pTechElement.Element.Ne;
+      pTable.Rows.Add(pNe_TechElement, pNe_Element, PolygonFunctionalityEnum.Mullion);
+
+      pNe = "Skrzydło 404";
+      pTechElement = new cTechElement(pNe);
+      pNe_TechElement = pTechElement.Ne;
+      pNe_Element = pTechElement.Element.Ne;
+      pTable.Rows.Add(pNe_TechElement, pNe_Element, PolygonFunctionalityEnum.Sash);
+
+      //do talbeli wrzucamy dane + ustawiamy szerokość kolumn
+      dataGridView1.DataSource = pTable;
+      dataGridView1.Columns[0].AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+      dataGridView1.Columns[1].AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+      dataGridView1.Columns[2].Visible = false;
+
+      
+
+    }
   }
 
 }

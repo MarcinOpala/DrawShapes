@@ -385,7 +385,6 @@ namespace DrawShape {
 
     }
 
-
     private Dictionary<int, int> Prepare_Cln_C(cPolygon xPolygon, cLine xAxis_Symmetry_Mullion, int xC_Mullion) {
       //funkcja zwracająca kolekcję przygotowanych stałych C
       //xPolygon - wielokąt 
@@ -420,7 +419,6 @@ namespace DrawShape {
       return pC_Cln;
 
       }
-
 
     internal cPolygon GetPolygonVirtual_ByPoint(cPoint xPoint) {
       //funkcja zwracająca wielokąt wirtualny za pomocą wskazanego punktu

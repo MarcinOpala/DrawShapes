@@ -12,9 +12,9 @@ namespace DrawShape {
 
     internal string Ne { get { return mNe; } set { mNe = value; } }
 
-    public cElement() {
+    public cElement(string xNe) {
 
-      mNe = "";
+      mNe = xNe;
 
     }
   }

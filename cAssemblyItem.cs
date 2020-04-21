@@ -12,7 +12,7 @@ namespace DrawShape {
     private double mLength;
     private cPolygon mParent;                               //rodzic wielokąta
     private cPolygon mPolygon;                              //Polygon AssemblyItemu
-    private cTechElement mTechElement;
+    private Dictionary <int, cTechElement> mTechElements;
     private int mWidth_Profile;                             //szerokość profilu
 
 
@@ -23,7 +23,7 @@ namespace DrawShape {
     internal double Length { get { return mLength; } set { mLength = value; } }
     internal cPolygon Parent { get { return mParent; } set { mParent = value; } }
     internal cPolygon Polygon { get { return mPolygon; } set { mPolygon = value; } }
-    internal cTechElement TechElement { get { return mTechElement; } set { mTechElement = value; } }
+    internal Dictionary<int, cTechElement> TechElements { get { return mTechElements; } set { mTechElements = value; } }
     internal int Width_Profile { get { return mWidth_Profile; } }
 
 
@@ -32,7 +32,7 @@ namespace DrawShape {
       //xIndex - numer AssemblyItemu
 
       mPolygon = new cPolygon();
-      
+      mTechElements = new Dictionary<int, cTechElement>();
     }
 
     public cAssemblyItem(int xIndex) {
@@ -40,7 +40,8 @@ namespace DrawShape {
 
       mPolygon = new cPolygon(xIndex);
       mIndex = xIndex;
-      
+      mTechElements = new Dictionary<int, cTechElement>();
+
     }
 
     public void CreateAssemblyItem_Profile(cSegment xSegment, int xWidth_Profile, int xC) {
@@ -53,22 +54,17 @@ namespace DrawShape {
       float pOffset_X, pOffset_Y;
       cLine pLine;
       cTechElement pTechElement;
+      //Dictionary<int, cTechElement> pTechElements;
 
-      
+
       mPolygon.CntPF = PolygonFunctionalityEnum.Profile;
       mWidth_Profile = xWidth_Profile;
       mC = xC;
 
-      switch (mAssemblyParent.Polygon_Parent.CntPF) {
-        case PolygonFunctionalityEnum.Sash:
-          pTechElement = new cTechElement("+ Skrzydło 404");
-          AddTechElement(pTechElement);
-          break;
-        case PolygonFunctionalityEnum.FrameOutline:
-          pTechElement = new cTechElement("+ Konstrukcja 505");
-          AddTechElement(pTechElement);
-          break;
-      }
+      pTechElement = new cTechElement(mAssemblyParent.Polygon_Parent);
+     // pTechElements = new Dictionary<int, cTechElement>();
+
+      AddTechElement(pTechElement);
 
       //Bok 1 punkt z oryginału
       pSegment = new cSegment(xSegment.Point, 1, xSegment.IsCurve, mPolygon);
@@ -255,30 +251,13 @@ namespace DrawShape {
 
       mLength = GetLength();
 
-
-      pTechElement = new cTechElement("+ Skrzydło 404");
+      pTechElement = new cTechElement(xPolygon);
       AddTechElement(pTechElement);
 
     }
 
-/*    private cAssemblyItem GetAssemblyItem_Next() {
-      //funkja zwracjąca następny AssemblyItem
-
-      int pIndex_Next;
-      int pCountMax;
-
-      pCountMax = mParent.Assembly.AssemblyItems.Count;
-
-      pIndex_Next = mIndex + 1;
-
-      if (mIndex > pCountMax)
-        pIndex_Next = 1;
-
-      return mParent.Assembly.GetAssemblyItemByIndex(pIndex_Next);
-
-    }*/
-
     private double GetLength() {
+      //funkcja zwracająca długość elementu konstrukcji
 
       double pLength;
       cVector pVector;
@@ -291,22 +270,34 @@ namespace DrawShape {
           pVector = new cVector(mPolygon.Segments[1], mPolygon.Segments[2]);
           break;
         case PolygonFunctionalityEnum.Mullion:
-          pVector = new cVector(mPolygon.Segments[1], mPolygon.Segments[2]);
+          pVector = new cVector(mPolygon.Segments[1], mPolygon.Segments[4]);
           break;
       }
-
-      pLength = pVector.Vector.Length;
+      
+      pLength = Math.Round(pVector.Vector.Length, 2);
 
       return pLength;
       
     }
 
     internal void AddTechElement(cTechElement xTechElement) {
+      //funkcja dodająca Element Technologiczny
+      //xTechElement - Element Technologiczny do dodania
 
-      mTechElement = xTechElement;
+      mTechElements.Add(GetEmptyIndex(), xTechElement);
 
     }
 
+    internal int GetEmptyIndex() {
+      //funkcja zwracająca pierwszy wolny Index z listy mTechElements
+
+      int pIndex;
+
+      pIndex = mTechElements.Count + 1;
+
+      return pIndex;
+
+    }
   }
 
 }

@@ -81,6 +81,10 @@ namespace DrawShape {
       this.lblMarginHorizontal = new System.Windows.Forms.Label();
       this.tabController = new System.Windows.Forms.TabPage();
       this.txtController = new System.Windows.Forms.TextBox();
+      this.tabPage3 = new System.Windows.Forms.TabPage();
+      this.dataGridView1 = new System.Windows.Forms.DataGridView();
+      this.tabPage4 = new System.Windows.Forms.TabPage();
+      this.treeViewAnalysis = new System.Windows.Forms.TreeView();
       this.pnlDraw = new System.Windows.Forms.Panel();
       this.pnlCanvas = new System.Windows.Forms.Panel();
       this.pnlAllForm.SuspendLayout();
@@ -89,6 +93,9 @@ namespace DrawShape {
       this.tabPage1.SuspendLayout();
       this.tabPage2.SuspendLayout();
       this.tabController.SuspendLayout();
+      this.tabPage3.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+      this.tabPage4.SuspendLayout();
       this.pnlDraw.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -123,6 +130,8 @@ namespace DrawShape {
       this.tabControl1.Controls.Add(this.tabPage1);
       this.tabControl1.Controls.Add(this.tabPage2);
       this.tabControl1.Controls.Add(this.tabController);
+      this.tabControl1.Controls.Add(this.tabPage3);
+      this.tabControl1.Controls.Add(this.tabPage4);
       this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
       this.tabControl1.ItemSize = new System.Drawing.Size(200, 35);
       this.tabControl1.Location = new System.Drawing.Point(1, 3);
@@ -167,37 +176,37 @@ namespace DrawShape {
       this.lblDisplayFilter.TabIndex = 57;
       this.lblDisplayFilter.Text = "lblDisplayFilter";
       // 
-      // chBoxMullion
+      // chkMullion_IsVisible
       // 
       this.chkMullion_IsVisible.AutoSize = true;
       this.chkMullion_IsVisible.Checked = true;
       this.chkMullion_IsVisible.CheckState = System.Windows.Forms.CheckState.Checked;
       this.chkMullion_IsVisible.Location = new System.Drawing.Point(242, 230);
-      this.chkMullion_IsVisible.Name = "chBoxMullion";
+      this.chkMullion_IsVisible.Name = "chkMullion_IsVisible";
       this.chkMullion_IsVisible.Size = new System.Drawing.Size(151, 29);
       this.chkMullion_IsVisible.TabIndex = 56;
       this.chkMullion_IsVisible.Text = "chBoxMullion";
       this.chkMullion_IsVisible.UseVisualStyleBackColor = true;
       // 
-      // chBoxSash
+      // chkSash_IsVisible
       // 
       this.chkSash_IsVisible.AutoSize = true;
       this.chkSash_IsVisible.Checked = true;
       this.chkSash_IsVisible.CheckState = System.Windows.Forms.CheckState.Checked;
       this.chkSash_IsVisible.Location = new System.Drawing.Point(242, 180);
-      this.chkSash_IsVisible.Name = "chBoxSash";
+      this.chkSash_IsVisible.Name = "chkSash_IsVisible";
       this.chkSash_IsVisible.Size = new System.Drawing.Size(135, 29);
       this.chkSash_IsVisible.TabIndex = 55;
       this.chkSash_IsVisible.Text = "chBoxSash";
       this.chkSash_IsVisible.UseVisualStyleBackColor = true;
       // 
-      // chBoxAssembly
+      // chkFrame_IsVisible
       // 
       this.chkFrame_IsVisible.AutoSize = true;
       this.chkFrame_IsVisible.Checked = true;
       this.chkFrame_IsVisible.CheckState = System.Windows.Forms.CheckState.Checked;
       this.chkFrame_IsVisible.Location = new System.Drawing.Point(242, 130);
-      this.chkFrame_IsVisible.Name = "chBoxAssembly";
+      this.chkFrame_IsVisible.Name = "chkFrame_IsVisible";
       this.chkFrame_IsVisible.Size = new System.Drawing.Size(175, 29);
       this.chkFrame_IsVisible.TabIndex = 54;
       this.chkFrame_IsVisible.Text = "chBoxAssembly";
@@ -623,6 +632,46 @@ namespace DrawShape {
       this.txtController.Size = new System.Drawing.Size(388, 591);
       this.txtController.TabIndex = 0;
       // 
+      // tabPage3
+      // 
+      this.tabPage3.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage3.Controls.Add(this.dataGridView1);
+      this.tabPage3.Location = new System.Drawing.Point(4, 39);
+      this.tabPage3.Name = "tabPage3";
+      this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage3.Size = new System.Drawing.Size(438, 645);
+      this.tabPage3.TabIndex = 3;
+      this.tabPage3.Text = "Konfiguracja El. Tech.";
+      // 
+      // dataGridView1
+      // 
+      this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+      this.dataGridView1.Name = "dataGridView1";
+      this.dataGridView1.RowHeadersWidth = 51;
+      this.dataGridView1.RowTemplate.Height = 24;
+      this.dataGridView1.Size = new System.Drawing.Size(432, 639);
+      this.dataGridView1.TabIndex = 0;
+      // 
+      // tabPage4
+      // 
+      this.tabPage4.BackColor = System.Drawing.Color.LightGray;
+      this.tabPage4.Controls.Add(this.treeViewAnalysis);
+      this.tabPage4.Location = new System.Drawing.Point(4, 39);
+      this.tabPage4.Name = "tabPage4";
+      this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage4.Size = new System.Drawing.Size(438, 645);
+      this.tabPage4.TabIndex = 4;
+      this.tabPage4.Text = "Analiza Projektu";
+      // 
+      // treeViewAnalysis
+      // 
+      this.treeViewAnalysis.Location = new System.Drawing.Point(20, 24);
+      this.treeViewAnalysis.Name = "treeViewAnalysis";
+      this.treeViewAnalysis.Size = new System.Drawing.Size(397, 589);
+      this.treeViewAnalysis.TabIndex = 2;
+      // 
       // pnlDraw
       // 
       this.pnlDraw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -667,6 +716,9 @@ namespace DrawShape {
       this.tabPage2.PerformLayout();
       this.tabController.ResumeLayout(false);
       this.tabController.PerformLayout();
+      this.tabPage3.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+      this.tabPage4.ResumeLayout(false);
       this.pnlDraw.ResumeLayout(false);
       this.ResumeLayout(false);
 
@@ -727,6 +779,10 @@ namespace DrawShape {
         public CheckBox chkMullion_IsVisible;
         public CheckBox chkSash_IsVisible;
         public CheckBox chkFrame_IsVisible;
-    }
+        private TabPage tabPage3;
+        private TabPage tabPage4;
+        private TreeView treeViewAnalysis;
+    private DataGridView dataGridView1;
+  }
 }
 
